@@ -88,4 +88,20 @@ public class EmployeeController {
         Map<String, Object> response = employeeService.createEmployee(dto);
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete an employee and all associated infos (education , experience ...)")
+    public ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
+        Map<String, Object> response = employeeService.deleteEmployee(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{id}")
+    @Operation(summary = "Update an employee's infos partially")
+    public ResponseEntity<EmployeeDetailsDTO> patchEmployee(
+            @PathVariable Long id,
+            @RequestBody EmployeeCreateDTO dto) {
+        EmployeeDetailsDTO updatedEmployee = employeeService.patchEmployee(id, dto);
+        return ResponseEntity.ok(updatedEmployee);
+    }
 }

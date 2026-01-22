@@ -13,23 +13,23 @@ public class EmployeeCreateDTO {
     private String firstNameAr;
     private String lastNameAr;
     private String matricule;
-    private String cin;
-    private String numero_cnss;
-    private LocalDate birthDate;
-    private String birthPlace;
-    private String nationality;
-    private String gender;
-    private String maritalStatus;
-    private Integer numberOfChildren;
-    private String address;
-    private String city;
-    private String postalCode;
-    private String country;
-    private String phone;
-    private String email;
+    private String cin;//
+    private String numero_cnss;//
+    private LocalDate birthDate;//
+    private String birthPlace;//
+    private String nationality;//
+    private String gender;//
+    private String maritalStatus;//
+    private Integer numberOfChildren;//
+    private String address;//
+    private String city;//
+    private String postalCode;//
+    private String country;//
+    private String phone;//
+    private String email;//
     private Long departmentId;
     private LocalDate hireDate;
-    private String professionalCategory;
+    private String professionalCategory;//
     private String status;
     private Boolean isActive;
 }

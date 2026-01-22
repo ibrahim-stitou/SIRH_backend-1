@@ -1,6 +1,8 @@
 package com.tarmiz.SIRH_backend.service;
 
 import com.tarmiz.SIRH_backend.enums.EmployeeStatus;
+import com.tarmiz.SIRH_backend.enums.Gender;
+import com.tarmiz.SIRH_backend.enums.MaritalStatus;
 import com.tarmiz.SIRH_backend.exception.EmployeeNotFoundException;
 import com.tarmiz.SIRH_backend.mapper.EmployeeCreateMapper;
 import com.tarmiz.SIRH_backend.mapper.EmployeeDetailsMapper;
@@ -8,6 +10,7 @@ import com.tarmiz.SIRH_backend.mapper.EmployeesListMapper;
 import com.tarmiz.SIRH_backend.model.DTO.EmployeeCreateDTO;
 import com.tarmiz.SIRH_backend.model.DTO.EmployeeDetailsDTO;
 import com.tarmiz.SIRH_backend.model.DTO.EmployeesListDTO;
+import com.tarmiz.SIRH_backend.model.entity.Address;
 import com.tarmiz.SIRH_backend.model.entity.Department;
 import com.tarmiz.SIRH_backend.model.entity.Employee;
 import com.tarmiz.SIRH_backend.model.repository.EmployeeRepository;
@@ -114,4 +117,73 @@ public class EmployeeService {
                 "data", response
         );
     }
+
+    @Transactional
+    public EmployeeDetailsDTO patchEmployee(Long id, EmployeeCreateDTO dto) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new EmployeeNotFoundException(id));
+
+        // --- Partial updates ---
+        if (dto.getFirstName() != null) employee.setFirstName(dto.getFirstName());
+        if (dto.getLastName() != null) employee.setLastName(dto.getLastName());
+        if (dto.getFirstNameAr() != null) employee.setFirstNameAr(dto.getFirstNameAr());
+        if (dto.getLastNameAr() != null) employee.setLastNameAr(dto.getLastNameAr());
+        if (dto.getMatricule() != null) employee.setMatricule(dto.getMatricule());
+        if (dto.getCin() != null) employee.setCin(dto.getCin());
+        if (dto.getBirthDate() != null) employee.setBirthDate(dto.getBirthDate());
+        if (dto.getBirthPlace() != null) employee.setBirthPlace(dto.getBirthPlace());
+        if (dto.getNationality() != null) employee.setNationality(dto.getNationality());
+
+        if (dto.getGender() != null) employee.setGender(Gender.valueOf(dto.getGender()));
+        if (dto.getMaritalStatus() != null) employee.setMaritalStatus(MaritalStatus.valueOf(dto.getMaritalStatus()));
+        if (dto.getNumberOfChildren() != null) employee.setNumberOfChildren(dto.getNumberOfChildren());
+
+        if (dto.getPhone() != null) employee.setPhone(dto.getPhone());
+        if (dto.getEmail() != null) employee.setEmail(dto.getEmail());
+
+        // --- Address partial update ---
+        Address address = employee.getAddress();
+        if (address == null) {
+            address = new Address();
+            address.setEmployee(employee);
+            employee.setAddress(address);
+        }
+        if (dto.getAddress() != null) address.setStreet(dto.getAddress());
+        if (dto.getCity() != null) address.setCity(dto.getCity());
+        if (dto.getPostalCode() != null) address.setPostalCode(dto.getPostalCode());
+        if (dto.getCountry() != null) address.setCountry(dto.getCountry());
+
+        // --- Department ---
+        if (dto.getDepartmentId() != null) {
+            Department dept = new Department();
+            dept.setId(dto.getDepartmentId());
+            employee.setDepartment(dept);
+        }
+
+        // --- Status / isActive ---
+        if (dto.getIsActive() != null) {
+            employee.setStatus(dto.getIsActive() ? EmployeeStatus.ACTIF : EmployeeStatus.SUSPENDU);
+        } else if (dto.getStatus() != null) {
+            employee.setStatus(EmployeeStatus.valueOf(dto.getStatus().toUpperCase()));
+        }
+
+        // --- updatedAt ---
+        employee.setUpdatedAt(LocalDateTime.now());
+
+        Employee updated = employeeRepository.save(employee);
+
+        return employeeDetailsMapper.toResponse(updated);
+    }
+
+
+    @Transactional
+    public Map<String, Object> deleteEmployee(Long id) {
+        employeeRepository.deleteById(id);
+
+        return Map.of(
+                "status", "success",
+                "message", "Suppression réussie"
+        );
+    }
+
 }

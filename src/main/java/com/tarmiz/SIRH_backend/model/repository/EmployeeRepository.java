@@ -23,4 +23,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     })
     Optional<Employee> findById(Long id);
     Page<Employee> findAll(Pageable pageable);
+    void deleteById(Long id);
 }
