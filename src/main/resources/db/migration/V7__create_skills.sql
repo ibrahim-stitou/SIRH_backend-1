@@ -1,4 +1,4 @@
-CREATE TABLE skill (
+CREATE TABLE skills (
                         id BIGSERIAL PRIMARY KEY,
 
                         skill_name VARCHAR(255) NOT NULL,
@@ -10,6 +10,6 @@ CREATE TABLE skill (
                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
                         CONSTRAINT fk_skill_employee FOREIGN KEY (employee_id)
-                            REFERENCES employee(id)
+                            REFERENCES employees(id)
                             ON DELETE CASCADE
 );

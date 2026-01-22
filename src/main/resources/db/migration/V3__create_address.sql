@@ -1,4 +1,4 @@
-CREATE TABLE addresse (
+CREATE TABLE addresses (
                            id BIGSERIAL PRIMARY KEY,
 
                            street VARCHAR(255),
@@ -12,6 +12,6 @@ CREATE TABLE addresse (
                            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
                            CONSTRAINT fk_addresses_employee FOREIGN KEY (employee_id)
-                               REFERENCES employee(id)
+                               REFERENCES employees(id)
                                ON DELETE CASCADE
 );

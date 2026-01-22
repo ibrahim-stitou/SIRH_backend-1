@@ -1,4 +1,4 @@
-CREATE TABLE employee (
+CREATE TABLE employees (
                            id BIGSERIAL PRIMARY KEY,
 
                            matricule VARCHAR(255) NOT NULL UNIQUE,
@@ -26,17 +26,17 @@ CREATE TABLE employee (
                            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
                            CONSTRAINT fk_employee_department FOREIGN KEY (department_id)
-                               REFERENCES department(id)
-                               ON DELETE RESTRICT
+                           REFERENCES departments(id)
+                           ON DELETE RESTRICT
 );
 
 
-CREATE INDEX idx_employee_status ON employee(status);
+CREATE INDEX idx_employee_status ON employees(status);
 
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
-CREATE INDEX idx_employee_name_trgm ON employee USING gin (
-    first_name gin_trgm_ops,
-    last_name gin_trgm_ops,
-    matricule gin_trgm_ops
+CREATE INDEX idx_employee_name_trgm ON employees USING gin (
+                                                            first_name gin_trgm_ops,
+                                                            last_name gin_trgm_ops,
+                                                            matricule gin_trgm_ops
     );

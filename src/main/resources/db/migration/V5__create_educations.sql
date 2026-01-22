@@ -1,4 +1,4 @@
-CREATE TABLE education (
+CREATE TABLE educations (
                             id BIGSERIAL PRIMARY KEY,
 
                             level VARCHAR(255),
@@ -12,6 +12,6 @@ CREATE TABLE education (
                             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
                             CONSTRAINT fk_education_employee FOREIGN KEY (employee_id)
-                                REFERENCES employee(id)
+                                REFERENCES employees(id)
                                 ON DELETE CASCADE
 );
