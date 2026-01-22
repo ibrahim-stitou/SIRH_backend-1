@@ -1,5 +1,6 @@
 package com.tarmiz.SIRH_backend.controller;
 
+import com.tarmiz.SIRH_backend.model.DTO.EmployeeCreateDTO;
 import com.tarmiz.SIRH_backend.model.DTO.EmployeeDetailsDTO;
 import com.tarmiz.SIRH_backend.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,6 +40,12 @@ public class EmployeeController {
             @RequestParam(defaultValue = "asc") String sortDir
     ) {
         Map<String, Object> response = employeeService.getEmployeesList(start, length, sortBy, sortDir);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping
+    public ResponseEntity<?> createEmployee(@RequestBody EmployeeCreateDTO dto) {
+        Map<String, Object> response = employeeService.createEmployee(dto);
         return ResponseEntity.ok(response);
     }
 }
