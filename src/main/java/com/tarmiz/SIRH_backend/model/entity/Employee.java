@@ -1,18 +1,24 @@
 package com.tarmiz.SIRH_backend.model.entity;
 
+import com.tarmiz.SIRH_backend.enums.AptitudeMedical;
 import com.tarmiz.SIRH_backend.enums.EmployeeStatus;
 import com.tarmiz.SIRH_backend.enums.Gender;
 import com.tarmiz.SIRH_backend.enums.MaritalStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 @Entity
 @Table(
-        name = "employee",
+        name = "employees",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "email"),
                 @UniqueConstraint(columnNames = "matricule"),
@@ -66,6 +72,9 @@ public class Employee {
 
     private String bankName;
     private String rib;
+
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 
     /* ================= Relations ================= */
 

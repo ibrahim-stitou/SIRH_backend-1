@@ -1,8 +1,11 @@
 package com.tarmiz.SIRH_backend.model.entity;
 
-import com.tarmiz.SIRH_backend.enums.SkillLevel;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "skills")
 public class Skill {
@@ -14,10 +17,12 @@ public class Skill {
     @Column(nullable = false)
     private String skillName;
 
-    @Enumerated(EnumType.STRING)
-    private SkillLevel skillLevel;
+    @Column(name = "skill_level", nullable = false)
+    private int skillLevel;
 
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
+
+
 }

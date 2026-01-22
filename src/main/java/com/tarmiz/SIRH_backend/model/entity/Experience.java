@@ -1,9 +1,13 @@
 package com.tarmiz.SIRH_backend.model.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "experiences")
 public class Experience {

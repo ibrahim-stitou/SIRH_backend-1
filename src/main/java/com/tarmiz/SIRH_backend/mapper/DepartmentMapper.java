@@ -1,4 +1,11 @@
 package com.tarmiz.SIRH_backend.mapper;
 
-public class DepartmentMapper {
+import com.tarmiz.SIRH_backend.model.DTO.DepartmentDTO;
+import com.tarmiz.SIRH_backend.model.entity.Department;
+import org.mapstruct.Mapper;
+
+@Mapper(componentModel = "spring")
+public interface DepartmentMapper {
+
+    DepartmentDTO toDto(Department department);
 }

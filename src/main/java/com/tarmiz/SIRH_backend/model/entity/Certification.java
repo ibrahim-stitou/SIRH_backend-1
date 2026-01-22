@@ -1,9 +1,13 @@
 package com.tarmiz.SIRH_backend.model.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "certifications")
 public class Certification {
@@ -18,6 +22,8 @@ public class Certification {
     private String issuer;
 
     private LocalDate issueDate;
+
+    private LocalDate expirationDate;
 
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)

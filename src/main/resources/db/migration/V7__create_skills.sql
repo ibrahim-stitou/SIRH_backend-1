@@ -2,7 +2,7 @@ CREATE TABLE skills (
                         id BIGSERIAL PRIMARY KEY,
 
                         skill_name VARCHAR(255) NOT NULL,
-                        skill_level VARCHAR(50),
+                        skill_level integer,
 
                         employee_id BIGINT NOT NULL,
 

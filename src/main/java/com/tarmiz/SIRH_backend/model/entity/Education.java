@@ -1,7 +1,11 @@
 package com.tarmiz.SIRH_backend.model.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "educations")
 public class Education {
