@@ -3,7 +3,8 @@ package com.tarmiz.SIRH_backend.service;
 import com.tarmiz.SIRH_backend.enums.EmployeeStatus;
 import com.tarmiz.SIRH_backend.enums.Gender;
 import com.tarmiz.SIRH_backend.enums.MaritalStatus;
-import com.tarmiz.SIRH_backend.exception.EmployeeNotFoundException;
+import com.tarmiz.SIRH_backend.exception.BusinessException.*;
+import com.tarmiz.SIRH_backend.exception.TechnicalException.TechnicalException;
 import com.tarmiz.SIRH_backend.mapper.EmployeeCreateMapper;
 import com.tarmiz.SIRH_backend.mapper.EmployeeDetailsMapper;
 import com.tarmiz.SIRH_backend.mapper.EmployeesListMapper;
@@ -14,12 +15,15 @@ import com.tarmiz.SIRH_backend.model.entity.Address;
 import com.tarmiz.SIRH_backend.model.entity.Department;
 import com.tarmiz.SIRH_backend.model.entity.Employee;
 import com.tarmiz.SIRH_backend.model.repository.EmployeeRepository;
-import lombok.RequiredArgsConstructor;
 import com.tarmiz.SIRH_backend.model.repository.DepartmentRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -31,29 +35,33 @@ import java.util.Map;
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final DepartmentRepository departmentRepository;
+
     private final EmployeeDetailsMapper employeeDetailsMapper;
     private final EmployeesListMapper employeesListMapper;
     private final EmployeeCreateMapper employeeCreateMapper;
 
-    private final DepartmentRepository departmentRepository;
-
+    // ------------------------- GET EMPLOYEE -------------------------
     @Transactional(readOnly = true)
     public EmployeeDetailsDTO getEmployeeDetails(Long id) {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EmployeeNotFoundException(id));
-
         return employeeDetailsMapper.toResponse(employee);
     }
 
+    // ------------------------- LIST EMPLOYEES -------------------------
     public Map<String, Object> getEmployeesList(int start, int length, String sortBy, String sortDir) {
         int page = start / length;
         Sort.Direction direction = "desc".equalsIgnoreCase(sortDir) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        sortBy = (sortBy == null || sortBy.isEmpty()) ? "createdAt" : sortBy;
 
-        if (sortBy == null || sortBy.isEmpty()) {
-            sortBy = "createdAt";
-        }
         PageRequest pageRequest = PageRequest.of(page, length, direction, sortBy);
-        Page<Employee> pageResult = employeeRepository.findAll(pageRequest);
+        Page<Employee> pageResult;
+        try {
+            pageResult = employeeRepository.findAll(pageRequest);
+        } catch (DataAccessException ex) {
+            throw new TechnicalException("Database error while retrieving employees list", 500, ex);
+        }
 
         List<EmployeesListDTO> data = pageResult.getContent()
                 .stream()
@@ -69,25 +77,129 @@ public class EmployeeService {
         );
     }
 
+    // ------------------------- CREATE EMPLOYEE -------------------------
     @Transactional
     public Map<String, Object> createEmployee(EmployeeCreateDTO dto) {
 
         Employee employee = employeeCreateMapper.toEntity(dto);
 
-        Department department = departmentRepository.findById(1L)
-                .orElseThrow(() -> new RuntimeException("Department with id 1 not found"));
+        Department department = departmentRepository.findById(dto.getDepartmentId() != null ? dto.getDepartmentId() : 1L)
+                .orElseThrow(() -> new DepartmentNotFoundException(dto.getDepartmentId() != null ? dto.getDepartmentId() : 1L));
+
         employee.setDepartment(department);
         employee.setCreatedAt(LocalDateTime.now());
 
+        // Set Address if exists
         if (employee.getAddress() != null) {
             employee.getAddress().setEmployee(employee);
         }
 
-        employee.setStatus(dto.getIsActive() != null && dto.getIsActive() ? employee.getStatus() : EmployeeStatus.SUSPENDU);
+        // Set status
+        employee.setStatus(dto.getIsActive() != null && dto.getIsActive() ? EmployeeStatus.ACTIF : EmployeeStatus.SUSPENDU);
 
-        // Persist Employee (cascade saves Address)
-        Employee saved = employeeRepository.save(employee);
+        try {
+            Employee saved = employeeRepository.save(employee);
 
+            // Map saved entity to DTO response
+            EmployeeCreateDTO response = mapEmployeeToDTO(saved);
+
+            return Map.of(
+                    "status", "success",
+                    "message", "Création réussie",
+                    "data", response
+            );
+        } catch (DataIntegrityViolationException | TransactionSystemException ex) {
+            throw new TechnicalException("Database error while creating employee", 500, ex);
+        }
+    }
+
+    // ------------------------- PATCH EMPLOYEE -------------------------
+    @Transactional
+    public EmployeeDetailsDTO patchEmployee(Long id, EmployeeCreateDTO dto) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new EmployeeNotFoundException(id));
+
+        try {
+            updateEmployeeFields(employee, dto);
+            employee.setUpdatedAt(LocalDateTime.now());
+
+            Employee updated = employeeRepository.save(employee);
+
+            return employeeDetailsMapper.toResponse(updated);
+
+        } catch (IllegalArgumentException ex) {
+            throw ex;
+        } catch (DataAccessException | TransactionSystemException ex) {
+            throw new TechnicalException("Database error while updating employee", 500, ex);
+        }
+    }
+
+    // ------------------------- DELETE EMPLOYEE -------------------------
+    @Transactional
+    public Map<String, Object> deleteEmployee(Long id) {
+        if (!employeeRepository.existsById(id)) {
+            throw new EmployeeNotFoundException(id);
+        }
+
+        try {
+            employeeRepository.deleteById(id);
+        } catch (DataIntegrityViolationException ex) {
+            throw new EmployeeDeletionNotAllowedException(id);
+        } catch (DataAccessException | TransactionSystemException ex) {
+            throw new TechnicalException("Database error while deleting employee", 500, ex);
+        }
+
+        return Map.of(
+                "status", "success",
+                "message", "Suppression réussie"
+        );
+    }
+
+    // ------------------------- HELPER METHODS -------------------------
+    private void updateEmployeeFields(Employee employee, EmployeeCreateDTO dto) {
+        if (dto.getFirstName() != null) employee.setFirstName(dto.getFirstName());
+        if (dto.getLastName() != null) employee.setLastName(dto.getLastName());
+        if (dto.getFirstNameAr() != null) employee.setFirstNameAr(dto.getFirstNameAr());
+        if (dto.getLastNameAr() != null) employee.setLastNameAr(dto.getLastNameAr());
+        if (dto.getMatricule() != null) employee.setMatricule(dto.getMatricule());
+        if (dto.getCin() != null) employee.setCin(dto.getCin());
+        if (dto.getBirthDate() != null) employee.setBirthDate(dto.getBirthDate());
+        if (dto.getBirthPlace() != null) employee.setBirthPlace(dto.getBirthPlace());
+        if (dto.getNationality() != null) employee.setNationality(dto.getNationality());
+        if (dto.getGender() != null) employee.setGender(Gender.valueOf(dto.getGender()));
+        if (dto.getMaritalStatus() != null) employee.setMaritalStatus(MaritalStatus.valueOf(dto.getMaritalStatus()));
+        if (dto.getNumberOfChildren() != null) employee.setNumberOfChildren(dto.getNumberOfChildren());
+        if (dto.getPhone() != null) employee.setPhone(dto.getPhone());
+        if (dto.getEmail() != null) employee.setEmail(dto.getEmail());
+
+        // Address
+        Address address = employee.getAddress();
+        if (address == null) {
+            address = new Address();
+            address.setEmployee(employee);
+            employee.setAddress(address);
+        }
+        if (dto.getAddress() != null) address.setStreet(dto.getAddress());
+        if (dto.getCity() != null) address.setCity(dto.getCity());
+        if (dto.getPostalCode() != null) address.setPostalCode(dto.getPostalCode());
+        if (dto.getCountry() != null) address.setCountry(dto.getCountry());
+
+        // Department
+        if (dto.getDepartmentId() != null) {
+            Department dept = new Department();
+            dept.setId(dto.getDepartmentId());
+            employee.setDepartment(dept);
+        }
+
+        // Status
+        if (dto.getIsActive() != null) {
+            employee.setStatus(dto.getIsActive() ? EmployeeStatus.ACTIF : EmployeeStatus.SUSPENDU);
+        } else if (dto.getStatus() != null) {
+            employee.setStatus(EmployeeStatus.valueOf(dto.getStatus().toUpperCase()));
+        }
+    }
+
+    private EmployeeCreateDTO mapEmployeeToDTO(Employee saved) {
         EmployeeCreateDTO response = new EmployeeCreateDTO();
         response.setFirstName(saved.getFirstName());
         response.setLastName(saved.getLastName());
@@ -110,80 +222,6 @@ public class EmployeeService {
         response.setDepartmentId(saved.getDepartment() != null ? saved.getDepartment().getId() : null);
         response.setStatus(saved.getStatus() != null ? saved.getStatus().getLabel() : null);
         response.setIsActive(saved.getStatus() == EmployeeStatus.ACTIF);
-
-        return Map.of(
-                "status", "success",
-                "message", "Création réussie",
-                "data", response
-        );
+        return response;
     }
-
-    @Transactional
-    public EmployeeDetailsDTO patchEmployee(Long id, EmployeeCreateDTO dto) {
-        Employee employee = employeeRepository.findById(id)
-                .orElseThrow(() -> new EmployeeNotFoundException(id));
-
-        // --- Partial updates ---
-        if (dto.getFirstName() != null) employee.setFirstName(dto.getFirstName());
-        if (dto.getLastName() != null) employee.setLastName(dto.getLastName());
-        if (dto.getFirstNameAr() != null) employee.setFirstNameAr(dto.getFirstNameAr());
-        if (dto.getLastNameAr() != null) employee.setLastNameAr(dto.getLastNameAr());
-        if (dto.getMatricule() != null) employee.setMatricule(dto.getMatricule());
-        if (dto.getCin() != null) employee.setCin(dto.getCin());
-        if (dto.getBirthDate() != null) employee.setBirthDate(dto.getBirthDate());
-        if (dto.getBirthPlace() != null) employee.setBirthPlace(dto.getBirthPlace());
-        if (dto.getNationality() != null) employee.setNationality(dto.getNationality());
-
-        if (dto.getGender() != null) employee.setGender(Gender.valueOf(dto.getGender()));
-        if (dto.getMaritalStatus() != null) employee.setMaritalStatus(MaritalStatus.valueOf(dto.getMaritalStatus()));
-        if (dto.getNumberOfChildren() != null) employee.setNumberOfChildren(dto.getNumberOfChildren());
-
-        if (dto.getPhone() != null) employee.setPhone(dto.getPhone());
-        if (dto.getEmail() != null) employee.setEmail(dto.getEmail());
-
-        // --- Address partial update ---
-        Address address = employee.getAddress();
-        if (address == null) {
-            address = new Address();
-            address.setEmployee(employee);
-            employee.setAddress(address);
-        }
-        if (dto.getAddress() != null) address.setStreet(dto.getAddress());
-        if (dto.getCity() != null) address.setCity(dto.getCity());
-        if (dto.getPostalCode() != null) address.setPostalCode(dto.getPostalCode());
-        if (dto.getCountry() != null) address.setCountry(dto.getCountry());
-
-        // --- Department ---
-        if (dto.getDepartmentId() != null) {
-            Department dept = new Department();
-            dept.setId(dto.getDepartmentId());
-            employee.setDepartment(dept);
-        }
-
-        // --- Status / isActive ---
-        if (dto.getIsActive() != null) {
-            employee.setStatus(dto.getIsActive() ? EmployeeStatus.ACTIF : EmployeeStatus.SUSPENDU);
-        } else if (dto.getStatus() != null) {
-            employee.setStatus(EmployeeStatus.valueOf(dto.getStatus().toUpperCase()));
-        }
-
-        // --- updatedAt ---
-        employee.setUpdatedAt(LocalDateTime.now());
-
-        Employee updated = employeeRepository.save(employee);
-
-        return employeeDetailsMapper.toResponse(updated);
-    }
-
-
-    @Transactional
-    public Map<String, Object> deleteEmployee(Long id) {
-        employeeRepository.deleteById(id);
-
-        return Map.of(
-                "status", "success",
-                "message", "Suppression réussie"
-        );
-    }
-
 }
