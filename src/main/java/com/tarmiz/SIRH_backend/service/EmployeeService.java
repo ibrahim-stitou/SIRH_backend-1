@@ -14,6 +14,7 @@ import com.tarmiz.SIRH_backend.model.DTO.EmployeesListDTO;
 import com.tarmiz.SIRH_backend.model.entity.Address;
 import com.tarmiz.SIRH_backend.model.entity.Department;
 import com.tarmiz.SIRH_backend.model.entity.Employee;
+import com.tarmiz.SIRH_backend.model.entity.PersonInCharge;
 import com.tarmiz.SIRH_backend.model.repository.EmployeeRepository;
 import com.tarmiz.SIRH_backend.model.repository.DepartmentRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -111,6 +113,21 @@ public class EmployeeService {
         } catch (DataIntegrityViolationException | TransactionSystemException ex) {
             throw new TechnicalException("Database error while creating employee", 500, ex);
         }
+    }
+
+    // ------------------------- Create EmergencyContact -------------------------
+    @Transactional
+    public EmployeeDetailsDTO addEmergencyContact(Long employeeId, PersonInCharge contact) {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new EmployeeNotFoundException(employeeId));
+
+        // Associate
+        contact.setEmployee(employee);
+        employee.getEmergencyContacts().add(contact);
+
+        Employee saved = employeeRepository.save(employee);
+
+        return employeeDetailsMapper.toResponse(saved);
     }
 
     // ------------------------- PATCH EMPLOYEE -------------------------

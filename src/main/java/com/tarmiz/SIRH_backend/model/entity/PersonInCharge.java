@@ -21,6 +21,7 @@ public class PersonInCharge {
     private String phone;
     @Enumerated(EnumType.STRING)
     private Relationship relationship;
+    @Column(unique = true)
     private String cin;
     private LocalDate birthDate;
 

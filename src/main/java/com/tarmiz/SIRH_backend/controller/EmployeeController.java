@@ -2,6 +2,7 @@ package com.tarmiz.SIRH_backend.controller;
 
 import com.tarmiz.SIRH_backend.model.DTO.EmployeeCreateDTO;
 import com.tarmiz.SIRH_backend.model.DTO.EmployeeDetailsDTO;
+import com.tarmiz.SIRH_backend.model.entity.PersonInCharge;
 import com.tarmiz.SIRH_backend.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -90,13 +91,6 @@ public class EmployeeController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Delete an employee and all associated infos (education , experience ...)")
-    public ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
-        Map<String, Object> response = employeeService.deleteEmployee(id);
-        return ResponseEntity.ok(response);
-    }
-
     @PatchMapping("/{id}")
     @Operation(summary = "Update an employee's infos partially")
     public ResponseEntity<EmployeeDetailsDTO> patchEmployee(
@@ -104,5 +98,13 @@ public class EmployeeController {
             @Valid @RequestBody EmployeeCreateDTO dto) {
         EmployeeDetailsDTO updatedEmployee = employeeService.patchEmployee(id, dto);
         return ResponseEntity.ok(updatedEmployee);
+    }
+
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete an employee and all associated infos (education , experience ...)")
+    public ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
+        Map<String, Object> response = employeeService.deleteEmployee(id);
+        return ResponseEntity.ok(response);
     }
 }

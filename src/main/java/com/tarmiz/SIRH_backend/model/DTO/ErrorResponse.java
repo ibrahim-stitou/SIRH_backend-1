@@ -13,7 +13,7 @@ public class ErrorResponse {
     private int status;
     private String message;
     private LocalDateTime timestamp;
-    private Map<String, String> errors; //for validation errors
+    private Map<String, String> errors;
 
     // Constructor for general errors
     public ErrorResponse(int status, String message) {

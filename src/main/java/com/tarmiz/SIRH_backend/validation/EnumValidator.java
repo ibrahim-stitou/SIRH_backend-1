@@ -25,7 +25,7 @@ public class EnumValidator implements ConstraintValidator<ValidEnum, String> {
     public boolean isValid(String value, ConstraintValidatorContext context) {
 
         if (value == null) {
-            return true; // let @NotNull handle nullability
+            return true;
         }
 
         boolean valid = ignoreCase

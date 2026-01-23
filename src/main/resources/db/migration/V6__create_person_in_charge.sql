@@ -4,7 +4,7 @@ CREATE TABLE person_in_charge (
                                   name VARCHAR(255),
                                   phone VARCHAR(50),
                                   relationship VARCHAR(100),
-                                  cin VARCHAR(50),
+                                  cin VARCHAR(50) UNIQUE ,
                                   birth_date DATE,
 
                                   employee_id BIGINT NOT NULL,

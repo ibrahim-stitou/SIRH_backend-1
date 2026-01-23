@@ -1,5 +1,6 @@
 package com.tarmiz.SIRH_backend.model.DTO;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,22 +20,52 @@ public class EmployeeDetailsDTO {
     public String email;
     public String phone;
 
+    @Schema(
+            description = "Employment status of the employee",
+            example = "ACTIF",
+            allowableValues = {"ACTIF", "SUSPENDU", "PARTI"}
+    )
     public String status;
     public String matricule;
     public String cin;
 
+    @Schema(
+            description = "Gender of the employee",
+            example = "Male",
+            allowableValues = {"Male", "Female"}
+    )
     public String gender;
+    @Schema(
+            description = "Nationality of the employee",
+            example = "MAROCAIN",
+            allowableValues = {"MAROCAIN", "ETRANGER"}
+    )
     public String nationality;
 
     public LocalDate birthDate;
     public String birthPlace;
 
+    @Schema(
+            description = "Marital status of the employee",
+            example = "MARIE",
+            allowableValues = {"CELIBATAIRE", "MARIE", "DIVORCE", "VEUF_VEUVE"}
+    )
     public String maritalStatus;
     public Integer numberOfChildren;
 
     public String bankName;
     public String rib;
 
+    @Schema(
+            description = "Medical aptitude of the employee",
+            example = "APTE",
+            allowableValues = {
+                    "APTE",
+                    "APTE_AVEC_RESTRICTIONS",
+                    "INAPTE_TEMPORAIRE",
+                    "INAPTE_DEFINITIVE"
+            }
+    )
     public String aptitudeMedical;
 
     public DepartmentDTO department;
