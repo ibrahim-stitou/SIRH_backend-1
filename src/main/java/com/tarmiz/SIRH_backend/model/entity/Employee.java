@@ -68,8 +68,8 @@ public class Employee {
     @Column(nullable = false)
     private String email;
 
-
-    private String aptitudeMedical;
+    @Enumerated(EnumType.STRING)
+    private AptitudeMedical aptitudeMedical;
 
     private String bankName;
     private String rib;

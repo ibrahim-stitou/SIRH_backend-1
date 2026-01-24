@@ -1,7 +1,5 @@
 package com.tarmiz.SIRH_backend.enums;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
 public enum Relationship {
     PERE("Père"),
     MERE("Mère"),

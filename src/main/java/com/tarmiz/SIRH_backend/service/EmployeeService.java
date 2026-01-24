@@ -30,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -91,18 +90,15 @@ public class EmployeeService {
         employee.setDepartment(department);
         employee.setCreatedAt(LocalDateTime.now());
 
-        // Set Address if exists
         if (employee.getAddress() != null) {
             employee.getAddress().setEmployee(employee);
         }
 
-        // Set status
         employee.setStatus(dto.getIsActive() != null && dto.getIsActive() ? EmployeeStatus.ACTIF : EmployeeStatus.SUSPENDU);
 
         try {
             Employee saved = employeeRepository.save(employee);
 
-            // Map saved entity to DTO response
             EmployeeCreateDTO response = mapEmployeeToDTO(saved);
 
             return Map.of(
@@ -121,7 +117,6 @@ public class EmployeeService {
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new EmployeeNotFoundException(employeeId));
 
-        // Associate
         contact.setEmployee(employee);
         employee.getEmergencyContacts().add(contact);
 
