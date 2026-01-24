@@ -25,7 +25,7 @@ import java.util.List;
                 @UniqueConstraint(columnNames = "cin")
         }
 )
-public class Employee {
+public class Employee extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,0 +1,550 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class Address {
+  - employee: Employee
+  - city: String
+  - country: String
+  - id: Long
+  - street: String
+  - postalCode: String
+   city: String
+   street: String
+   postalCode: String
+   id: Long
+   country: String
+   employee: Employee
+}
+enum AptitudeMedical << enumeration >> {
+  + values(): AptitudeMedical[]
+  + valueOf(String): AptitudeMedical
+}
+class BusinessException
+class Certification {
+  - id: Long
+  - expirationDate: LocalDate
+  - issuer: String
+  - name: String
+  - employee: Employee
+  - issueDate: LocalDate
+   name: String
+   issuer: String
+   id: Long
+   issueDate: LocalDate
+   expirationDate: LocalDate
+   employee: Employee
+}
+class Department {
+  - employees: List<Employee>
+  - nameAr: String
+  - name: String
+  - id: Long
+   name: String
+   nameAr: String
+   employees: List<Employee>
+   id: Long
+}
+class DepartmentDTO {
+  - id: Long
+  - name: String
+  - nameAr: String
+   name: String
+   id: Long
+   nameAr: String
+}
+interface DepartmentMapper << interface >> {
+  + toDto(Department): DepartmentDTO
+}
+class DepartmentNotFoundException
+interface DepartmentRepository << interface >> {
+  + findByName(String): Optional<Department>
+}
+class Education {
+  - year: Integer
+  - level: String
+  - institution: String
+  - employee: Employee
+  - id: Long
+  - diploma: String
+   level: String
+   institution: String
+   id: Long
+   diploma: String
+   year: Integer
+   employee: Employee
+}
+class Employee {
+  - birthDate: LocalDate
+  - status: EmployeeStatus
+  - department: Department
+  - address: Address
+  - firstNameAr: String
+  - maritalStatus: MaritalStatus
+  - lastNameAr: String
+  - numberOfChildren: Integer
+  - id: Long
+  - skills: List<Skill>
+  - emergencyContacts: List<PersonInCharge>
+  - email: String
+  - bankName: String
+  - rib: String
+  - lastName: String
+  - nationality: String
+  - cin: String
+  - phone: String
+  - certifications: List<Certification>
+  - educationList: List<Education>
+  - aptitudeMedical: AptitudeMedical
+  - createdAt: LocalDateTime
+  - experiences: List<Experience>
+  - gender: Gender
+  - birthPlace: String
+  - updatedAt: LocalDateTime
+  - matricule: String
+  - firstName: String
+   cin: String
+   createdAt: LocalDateTime
+   id: Long
+   phone: String
+   address: Address
+   experiences: List<Experience>
+   maritalStatus: MaritalStatus
+   bankName: String
+   updatedAt: LocalDateTime
+   lastName: String
+   certifications: List<Certification>
+   email: String
+   educationList: List<Education>
+   emergencyContacts: List<PersonInCharge>
+   firstName: String
+   skills: List<Skill>
+   firstNameAr: String
+   gender: Gender
+   rib: String
+   aptitudeMedical: AptitudeMedical
+   birthDate: LocalDate
+   status: EmployeeStatus
+   lastNameAr: String
+   birthPlace: String
+   department: Department
+   nationality: String
+   matricule: String
+   numberOfChildren: Integer
+}
+class EmployeeController {
+  + deleteEmployee(Long): ResponseEntity<?>
+  + patchEmployee(Long, EmployeeCreateDTO): ResponseEntity<EmployeeDetailsDTO>
+  + getEmployeeDetails(Long): ResponseEntity<EmployeeDetailsDTO>
+  + createEmployee(EmployeeCreateDTO): ResponseEntity<?>
+  + getEmployeesList(int, int, String, String): ResponseEntity<Map<String, Object>>
+}
+class EmployeeCreateDTO {
+  - lastNameAr: String
+  - email: String
+  - birthDate: LocalDate
+  - country: String
+  - numero_cnss: String
+  - hireDate: LocalDate
+  - nationality: String
+  - departmentId: Long
+  - isActive: Boolean
+  - address: String
+  - cin: String
+  - gender: String
+  - birthPlace: String
+  - postalCode: String
+  - numberOfChildren: Integer
+  - professionalCategory: String
+  - matricule: String
+  - maritalStatus: String
+  - firstName: String
+  - city: String
+  - firstNameAr: String
+  - phone: String
+  - status: String
+  - lastName: String
+   firstNameAr: String
+   cin: String
+   gender: String
+   phone: String
+   address: String
+   postalCode: String
+   birthDate: LocalDate
+   lastName: String
+   email: String
+   numero_cnss: String
+   lastNameAr: String
+   country: String
+   professionalCategory: String
+   city: String
+   status: String
+   firstName: String
+   birthPlace: String
+   maritalStatus: String
+   nationality: String
+   matricule: String
+   isActive: Boolean
+   hireDate: LocalDate
+   departmentId: Long
+   numberOfChildren: Integer
+}
+interface EmployeeCreateMapper << interface >> {
+  + toEntity(EmployeeCreateDTO): Employee
+  + toAddress(EmployeeCreateDTO): Address
+}
+class EmployeeDeletionNotAllowedException
+class EmployeeDetailsDTO {
+  + peopleInCharge: List<PersonInChargeDTO>
+  + aptitudeMedical: String
+  + firstNameAr: String
+  + department: DepartmentDTO
+  + education: List<EducationDTO>
+  + phone: String
+  + birthDate: LocalDate
+  + cin: String
+  + status: String
+  + address: AddressDTO
+  + email: String
+  + lastNameAr: String
+  + lastName: String
+  + experiences: List<ExperienceDTO>
+  + id: Long
+  + maritalStatus: String
+  + rib: String
+  + skills: List<SkillDTO>
+  + firstName: String
+  + gender: String
+  + certifications: List<CertificationDTO>
+  + birthPlace: String
+  + bankName: String
+  + nationality: String
+  + numberOfChildren: Integer
+  + matricule: String
+   cin: String
+   id: Long
+   phone: String
+   experiences: List<ExperienceDTO>
+   bankName: String
+   lastName: String
+   certifications: List<CertificationDTO>
+   email: String
+   status: String
+   firstName: String
+   aptitudeMedical: String
+   skills: List<SkillDTO>
+   department: DepartmentDTO
+   firstNameAr: String
+   gender: String
+   rib: String
+   address: AddressDTO
+   birthDate: LocalDate
+   education: List<EducationDTO>
+   lastNameAr: String
+   birthPlace: String
+   maritalStatus: String
+   nationality: String
+   peopleInCharge: List<PersonInChargeDTO>
+   matricule: String
+   numberOfChildren: Integer
+}
+interface EmployeeDetailsMapper << interface >> {
+  + toResponse(Employee): EmployeeDetailsDTO
+}
+class EmployeeNotFoundException
+interface EmployeeRepository << interface >> {
+  + deleteById(Long): void
+  + findById(Long): Optional<Employee>
+  + findAll(Pageable): Page<Employee>
+}
+class EmployeeService {
+  + getEmployeeDetails(Long): EmployeeDetailsDTO
+  - updateEmployeeFields(Employee, EmployeeCreateDTO): void
+  + getEmployeesList(int, int, String, String): Map<String, Object>
+  - mapEmployeeToDTO(Employee): EmployeeCreateDTO
+  + createEmployee(EmployeeCreateDTO): Map<String, Object>
+  + addEmergencyContact(Long, PersonInCharge): EmployeeDetailsDTO
+  + deleteEmployee(Long): Map<String, Object>
+  + patchEmployee(Long, EmployeeCreateDTO): EmployeeDetailsDTO
+}
+enum EmployeeStatus << enumeration >> {
+  - label: String
+  + values(): EmployeeStatus[]
+  + valueOf(String): EmployeeStatus
+   label: String
+}
+interface EmployeeSubResourceMapper << interface >> {
+  + toDto(Certification): CertificationDTO
+  + toDto(Address): AddressDTO
+  + toDto(Experience): ExperienceDTO
+  + toDto(PersonInCharge): PersonInChargeDTO
+  + toDto(Education): EducationDTO
+  + toDto(Skill): SkillDTO
+}
+class EmployeeSubResourcesController {
+  + addPersonInCharge(Long, PersonInChargeDTO): ResponseEntity<EmployeeDetailsDTO>
+  + deleteEducation(Long, Long): ResponseEntity<EmployeeDetailsDTO>
+  + deleteCertification(Long, Long): ResponseEntity<EmployeeDetailsDTO>
+  + addEducation(Long, EducationDTO): ResponseEntity<EmployeeDetailsDTO>
+  + addSkill(Long, SkillDTO): ResponseEntity<EmployeeDetailsDTO>
+  + deleteSkill(Long, Long): ResponseEntity<EmployeeDetailsDTO>
+  + addCertification(Long, CertificationDTO): ResponseEntity<EmployeeDetailsDTO>
+  + deletePersonInCharge(Long, Long): ResponseEntity<EmployeeDetailsDTO>
+  + updatePersonInCharge(Long, Long, PersonInChargeDTO): ResponseEntity<EmployeeDetailsDTO>
+  + updateExperience(Long, Long, ExperienceDTO): ResponseEntity<EmployeeDetailsDTO>
+  + updateSkill(Long, Long, SkillDTO): ResponseEntity<EmployeeDetailsDTO>
+  + addExperience(Long, ExperienceDTO): ResponseEntity<EmployeeDetailsDTO>
+  + deleteExperience(Long, Long): ResponseEntity<EmployeeDetailsDTO>
+  + updateEducation(Long, Long, EducationDTO): ResponseEntity<EmployeeDetailsDTO>
+  + updateCertification(Long, Long, CertificationDTO): ResponseEntity<EmployeeDetailsDTO>
+}
+class EmployeeSubResourcesDTO
+class EmployeeSubResourcesService {
+  + updateSubResource(Long, Long, D, Function<Employee, List<E>>, BiConsumer<E, D>, Function<E, Long>, String): Employee
+  + deleteSubResource(Long, Long, Function<Employee, List<T>>, String): Employee
+  + addSubResource(Long, T, Function<Employee, List<T>>, BiConsumer<T, Employee>): Employee
+}
+class EmployeeSubRessourcesNotFoundException
+class EmployeesListDTO {
+  - actions: Integer
+  - email: String
+  - matricule: String
+  - status: String
+  - hireDate: String
+  - id: Long
+  - professionalCategory: String
+  - contractType: String
+  - fullName: String
+   hireDate: String
+   contractType: String
+   id: Long
+   email: String
+   professionalCategory: String
+   actions: Integer
+   status: String
+   fullName: String
+   matricule: String
+}
+interface EmployeesListMapper << interface >> {
+  + toListItem(Employee): EmployeesListDTO
+}
+enum EntityType << enumeration >> {
+  + valueOf(String): EntityType
+  + values(): EntityType[]
+}
+class EnumValidator {
+  + initialize(ValidEnum): void
+  + isValid(String, ConstraintValidatorContext): boolean
+}
+class ErrorResponse {
+  - message: String
+  - status: int
+  - errors: Map<String, String>
+  - timestamp: LocalDateTime
+   errors: Map<String, String>
+   timestamp: LocalDateTime
+   status: int
+   message: String
+}
+class Experience {
+  - company: String
+  - endDate: LocalDate
+  - description: String
+  - employee: Employee
+  - id: Long
+  - startDate: LocalDate
+  - title: String
+   description: String
+   startDate: LocalDate
+   title: String
+   id: Long
+   employee: Employee
+   endDate: LocalDate
+   company: String
+}
+class File {
+  - uploadedBy: String
+  - entityId: Long
+  - title: String
+  - deletedAt: LocalDateTime
+  - purpose: FilePurpose
+  - description: String
+  - id: Long
+  - entityType: EntityType
+  - storagePath: String
+  - fileName: String
+  - mimeType: String
+  - uploadedAt: LocalDateTime
+   deletedAt: LocalDateTime
+   description: String
+   entityId: Long
+   mimeType: String
+   purpose: FilePurpose
+   title: String
+   id: Long
+   fileName: String
+   entityType: EntityType
+   uploadedBy: String
+   storagePath: String
+   uploadedAt: LocalDateTime
+}
+class FileController {
+  + delete(Long): void
+  + upload(MultipartFile, EntityType, Long, FilePurpose, String, String): File
+  + list(EntityType, Long, FilePurpose): List<File>
+  + download(Long): ResponseEntity<Resource>
+}
+enum FilePurpose << enumeration >> {
+  + values(): FilePurpose[]
+  + valueOf(String): FilePurpose
+}
+interface FileRepository << interface >> {
+  + findByIdAndDeletedAtIsNull(Long): Optional<File>
+  + findByEntityTypeAndEntityIdAndDeletedAtIsNull(EntityType, Long): List<File>
+  + findByEntityTypeAndEntityIdAndPurposeAndDeletedAtIsNull(EntityType, Long, FilePurpose): List<File>
+}
+class FileService {
+  + getMetadata(Long): File
+  + findByEntity(EntityType, Long): List<File>
+  + delete(Long): void
+  + findByEntityAndPurpose(EntityType, Long, FilePurpose): List<File>
+  + upload(MultipartFile, EntityType, Long, FilePurpose, String, String): File
+  + download(Long): Resource
+}
+class FileStorageProperties {
+  - basePath: String
+   basePath: String
+}
+class FileStorageService {
+  + store(MultipartFile, String): String
+  + loadAsResource(String): UrlResource
+  + delete(String): void
+}
+enum Gender << enumeration >> {
+  + values(): Gender[]
+  + valueOf(String): Gender
+}
+class GlobalExceptionHandler {
+  + handleBusinessException(BusinessException): ResponseEntity<ErrorResponse>
+  + handleServerErrors(Exception): ResponseEntity<ErrorResponse>
+  + handleConstraintViolation(ConstraintViolationException): ResponseEntity<ErrorResponse>
+  + handleAllOtherExceptions(Exception): ResponseEntity<ErrorResponse>
+  + handleValidationExceptions(MethodArgumentNotValidException): ResponseEntity<ErrorResponse>
+  + handleIllegalArgument(IllegalArgumentException): ResponseEntity<ErrorResponse>
+}
+enum MaritalStatus << enumeration >> {
+  + values(): MaritalStatus[]
+  + valueOf(String): MaritalStatus
+}
+enum Nationality << enumeration >> {
+  - label: String
+  + values(): Nationality[]
+  + valueOf(String): Nationality
+   label: String
+}
+class PersonInCharge {
+  - id: Long
+  - phone: String
+  - name: String
+  - employee: Employee
+  - birthDate: LocalDate
+  - relationship: Relationship
+  - cin: String
+   name: String
+   cin: String
+   id: Long
+   phone: String
+   employee: Employee
+   relationship: Relationship
+   birthDate: LocalDate
+}
+enum Relationship << enumeration >> {
+  - label: String
+  + values(): Relationship[]
+  + valueOf(String): Relationship
+   label: String
+}
+class SirhBackendApplication {
+  + main(String[]): void
+}
+class Skill {
+  - id: Long
+  - skillLevel: int
+  - employee: Employee
+  - skillName: String
+   id: Long
+   skillLevel: int
+   skillName: String
+   employee: Employee
+}
+class TechnicalException {
+  - httpStatus: int
+   httpStatus: int
+}
+annotation ValidEnum << annotation >> {
+  + enumClass(): Class<Enum<?>>
+  + ignoreCase(): boolean
+  + message(): String
+  + payload(): Class<Payload>[]
+  + groups(): Class<?>[]
+}
+
+Address                                "1" *-[#595959,plain]-> "employee\n1" Employee                               
+Certification                          "1" *-[#595959,plain]-> "employee\n1" Employee                               
+Department                             "1" *-[#595959,plain]-> "employees\n*" Employee                               
+DepartmentNotFoundException             -[#000082,plain]-^  BusinessException                      
+Education                              "1" *-[#595959,plain]-> "employee\n1" Employee                               
+Employee                               "1" *-[#595959,plain]-> "address\n1" Address                                
+Employee                               "1" *-[#595959,plain]-> "aptitudeMedical\n1" AptitudeMedical                        
+Employee                               "1" *-[#595959,plain]-> "certifications\n*" Certification                          
+Employee                               "1" *-[#595959,plain]-> "department\n1" Department                             
+Employee                               "1" *-[#595959,plain]-> "educationList\n*" Education                              
+Employee                               "1" *-[#595959,plain]-> "status\n1" EmployeeStatus                         
+Employee                               "1" *-[#595959,plain]-> "experiences\n*" Experience                             
+Employee                               "1" *-[#595959,plain]-> "gender\n1" Gender                                 
+Employee                               "1" *-[#595959,plain]-> "maritalStatus\n1" MaritalStatus                          
+Employee                               "1" *-[#595959,plain]-> "emergencyContacts\n*" PersonInCharge                         
+Employee                               "1" *-[#595959,plain]-> "skills\n*" Skill                                  
+EmployeeController                     "1" *-[#595959,plain]-> "employeeService\n1" EmployeeService                        
+EmployeeCreateMapper                    -[#595959,dashed]->  Address                                : "«create»"
+EmployeeDeletionNotAllowedException     -[#000082,plain]-^  BusinessException                      
+EmployeeDetailsDTO                     "1" *-[#595959,plain]-> "department\n1" DepartmentDTO                          
+EmployeeNotFoundException               -[#000082,plain]-^  BusinessException                      
+EmployeeService                         -[#595959,dashed]->  Address                                : "«create»"
+EmployeeService                         -[#595959,dashed]->  Department                             : "«create»"
+EmployeeService                         -[#595959,dashed]->  DepartmentNotFoundException            : "«create»"
+EmployeeService                        "1" *-[#595959,plain]-> "departmentRepository\n1" DepartmentRepository                   
+EmployeeService                         -[#595959,dashed]->  EmployeeCreateDTO                      : "«create»"
+EmployeeService                        "1" *-[#595959,plain]-> "employeeCreateMapper\n1" EmployeeCreateMapper                   
+EmployeeService                         -[#595959,dashed]->  EmployeeDeletionNotAllowedException    : "«create»"
+EmployeeService                        "1" *-[#595959,plain]-> "employeeDetailsMapper\n1" EmployeeDetailsMapper                  
+EmployeeService                         -[#595959,dashed]->  EmployeeNotFoundException              : "«create»"
+EmployeeService                        "1" *-[#595959,plain]-> "employeeRepository\n1" EmployeeRepository                     
+EmployeeService                        "1" *-[#595959,plain]-> "employeesListMapper\n1" EmployeesListMapper                    
+EmployeeService                         -[#595959,dashed]->  TechnicalException                     : "«create»"
+EmployeeSubResourcesController          -[#595959,dashed]->  Certification                          : "«create»"
+EmployeeSubResourcesController          -[#595959,dashed]->  Education                              : "«create»"
+EmployeeSubResourcesController         "1" *-[#595959,plain]-> "employeeDetailsMapper\n1" EmployeeDetailsMapper                  
+EmployeeSubResourcesController         "1" *-[#595959,plain]-> "subResourcesService\n1" EmployeeSubResourcesService            
+EmployeeSubResourcesController          -[#595959,dashed]->  Experience                             : "«create»"
+EmployeeSubResourcesController          -[#595959,dashed]->  PersonInCharge                         : "«create»"
+EmployeeSubResourcesController          -[#595959,dashed]->  Skill                                  : "«create»"
+EmployeeSubResourcesService             -[#595959,dashed]->  EmployeeNotFoundException              : "«create»"
+EmployeeSubResourcesService            "1" *-[#595959,plain]-> "employeeRepository\n1" EmployeeRepository                     
+EmployeeSubResourcesService             -[#595959,dashed]->  EmployeeSubRessourcesNotFoundException : "«create»"
+EmployeeSubRessourcesNotFoundException  -[#000082,plain]-^  BusinessException                      
+Experience                             "1" *-[#595959,plain]-> "employee\n1" Employee                               
+File                                   "1" *-[#595959,plain]-> "entityType\n1" EntityType                             
+File                                   "1" *-[#595959,plain]-> "purpose\n1" FilePurpose                            
+FileController                         "1" *-[#595959,plain]-> "fileService\n1" FileService                            
+FileService                             -[#595959,dashed]->  File                                   : "«create»"
+FileService                            "1" *-[#595959,plain]-> "fileRepository\n1" FileRepository                         
+FileService                            "1" *-[#595959,plain]-> "storageService\n1" FileStorageService                     
+GlobalExceptionHandler                  -[#595959,dashed]->  ErrorResponse                          : "«create»"
+GlobalExceptionHandler                  -[#595959,dashed]->  TechnicalException                     : "«create»"
+PersonInCharge                         "1" *-[#595959,plain]-> "employee\n1" Employee                               
+PersonInCharge                         "1" *-[#595959,plain]-> "relationship\n1" Relationship                           
+Skill                                  "1" *-[#595959,plain]-> "employee\n1" Employee                               
+@enduml

@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Table(name = "files")
-public class File {
+public class File extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
