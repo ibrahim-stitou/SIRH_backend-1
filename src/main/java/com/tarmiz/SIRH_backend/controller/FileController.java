@@ -5,6 +5,7 @@ import com.tarmiz.SIRH_backend.enums.FilePurpose;
 import com.tarmiz.SIRH_backend.model.entity.File;
 import com.tarmiz.SIRH_backend.service.FileService;
 import com.tarmiz.SIRH_backend.validation.ValidEnum;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@Tag(
+        name = "Files",
+        description = "Gestion des fichiers"
+)
 @RestController
 @RequestMapping("/files")
 public class FileController {

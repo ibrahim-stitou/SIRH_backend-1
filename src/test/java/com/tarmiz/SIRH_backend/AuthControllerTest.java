@@ -44,7 +44,6 @@ public class AuthControllerTest {
         user.setPasswordHash(passwordEncoder.encode("password123"));
         user.setRole("ADMIN");
         user.setStatus("ACTIVE");
-        user.setCreatedAt(LocalDateTime.now());
 
         userRepository.save(user);
     }

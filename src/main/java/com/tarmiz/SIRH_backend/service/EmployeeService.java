@@ -88,7 +88,6 @@ public class EmployeeService {
                 .orElseThrow(() -> new DepartmentNotFoundException(dto.getDepartmentId() != null ? dto.getDepartmentId() : 1L));
 
         employee.setDepartment(department);
-        employee.setCreatedAt(LocalDateTime.now());
 
         if (employee.getAddress() != null) {
             employee.getAddress().setEmployee(employee);
@@ -133,7 +132,6 @@ public class EmployeeService {
 
         try {
             updateEmployeeFields(employee, dto);
-            employee.setUpdatedAt(LocalDateTime.now());
 
             Employee updated = employeeRepository.save(employee);
 

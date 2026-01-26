@@ -74,12 +74,6 @@ public class Employee extends Auditable {
     private String bankName;
     private String rib;
 
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at", updatable = false)
-    private LocalDateTime updatedAt;
-
     /* ================= Relations ================= */
 
     @ManyToOne

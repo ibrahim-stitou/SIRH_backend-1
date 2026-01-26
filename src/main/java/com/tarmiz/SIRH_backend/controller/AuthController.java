@@ -4,9 +4,13 @@ import com.tarmiz.SIRH_backend.model.DTO.LoginRequestDTO;
 import com.tarmiz.SIRH_backend.model.DTO.LoginResponseDTO;
 import com.tarmiz.SIRH_backend.service.AuthService;
 import com.tarmiz.SIRH_backend.service.TokenBlacklistService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(
+        name = "Authentification"
+)
 @RestController
 @RequestMapping("/auth")
 public class AuthController {

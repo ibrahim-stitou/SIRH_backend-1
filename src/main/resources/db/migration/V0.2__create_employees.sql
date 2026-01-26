@@ -22,8 +22,10 @@ CREATE TABLE employees (
 
                            department_id BIGINT NOT NULL,
 
-                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                           created_by VARCHAR(255) NOT NULL,
+                           created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                           last_modified_by VARCHAR(255),
+                           last_modified_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
                            CONSTRAINT fk_employee_department FOREIGN KEY (department_id)
                            REFERENCES departments(id)

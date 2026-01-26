@@ -27,7 +27,4 @@ public class User extends Auditable {
 
     @Column(nullable = false)
     private String status = "ACTIVE"; // ACTIVE, INACTIVE, SUSPENDED
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
 }

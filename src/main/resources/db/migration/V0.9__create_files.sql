@@ -10,7 +10,11 @@ CREATE TABLE files (
                       uploaded_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                       uploaded_by VARCHAR(100) NOT NULL,
                       description TEXT,
-                      deleted_at TIMESTAMP
+                      deleted_at TIMESTAMP,
+                      created_by VARCHAR(255) NOT NULL,
+                      created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                      last_modified_by VARCHAR(255),
+                      last_modified_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX idx_files_entity
