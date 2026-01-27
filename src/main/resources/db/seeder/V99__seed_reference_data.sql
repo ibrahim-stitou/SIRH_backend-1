@@ -1,78 +1,74 @@
 -- =========================================
+-- Seed Company
+-- =========================================
+INSERT INTO company (name, name_ar, phone, email, created_at, updated_at)
+VALUES
+    ('TechCorp', 'تك كورب', '+212 530000000', 'contact@techcorp.com', NOW(), NOW());
+
+
+-- =========================================
+-- Seed Sieges (Headquarters)
+-- =========================================
+INSERT INTO sieges (name, code, company_id, phone, created_at, updated_at)
+VALUES
+    ('Siège Central', 'HQ-CENTRAL', 1, '+212530000001', NOW(), NOW()),
+    ('Siège Sud', 'HQ-SUD', 1, '+212530000002', NOW(), NOW());
+
+
+-- =========================================
 -- Seed Departments
 -- =========================================
-INSERT INTO departments (id, name, name_ar)
+INSERT INTO departments (id, name, name_ar, description, company_id, created_at, updated_at)
 VALUES
-    (1, 'IT', 'تقنية المعلومات'),
-    (2, 'RH', 'الموارد البشرية'),
-    (3, 'Finance', 'المالية'),
-    (4, 'Production', 'الإنتاج'),
-    (5, 'Marketing', 'التسويق'),
-    (6, 'Logistique', 'اللوجستيك');
+    (1,'IT','تقنية المعلومات','Département IT',1,NOW(),NOW()),
+    (2,'RH','الموارد البشرية','Département RH',1,NOW(),NOW()),
+    (3,'Finance','المالية','Département Finance',1,NOW(),NOW()),
+    (4,'Marketing','التسويق','Département Marketing',1,NOW(),NOW());
+
+-- =========================================
+-- Seed Groups (with manager_id pointing to employee)
+-- =========================================
+INSERT INTO groups (id, name, code, siege_id, description, manager_id)
+VALUES
+    ('GRP-FIN','Groupe Finance','FIN',1,'Groupe Finance', NULL),
+    ('GRP-RH','Groupe RH','HR',1,'Groupe RH', NULL);
 
 -- =========================================
 -- Seed Employees
 -- =========================================
-INSERT INTO employees (
-    matricule,
-    first_name,
-    last_name,
-    first_name_ar,
-    last_name_ar,
-    status,
-    cin,
-    birth_date,
-    birth_place,
-    gender,
-    nationality,
-    marital_status,
-    number_of_children,
-    phone,
-    email,
-    aptitude_medical,
-    bank_name,
-    rib,
-    department_id,
-    created_by
-)
+INSERT INTO employees (id, matricule, first_name, last_name, first_name_ar, last_name_ar, status, cin, birth_date, birth_place, gender, nationality, marital_status, number_of_children, phone, email, aptitude_medical, bank_name, rib, department_id, group_id, created_by)
 VALUES
-    ('EMP001', 'Ahmed', 'El Amrani', 'أحمد', 'الأمراني', 'ACTIF', 'CIN001', '1985-03-15', 'Casablanca', 'Male', 'Marocaine', 'MARIE', 2, '0600000001', 'ahmed.elamrani@example.com', 'APTE', 'Attijariwafa Bank', 'RIB001', 1, 'SYSTEM'),
+    (1,'EMP001','Ahmed','El Amrani','أحمد','الأمراني','ACTIF','CIN001','1985-03-15','Casablanca','Male','Marocaine','MARIE',2,'0600000001','ahmed.elamrani@example.com','APTE','Attijariwafa Bank','RIB001',1,'GRP-FIN','SYSTEM'),
+    (2,'EMP002','Fatima','El Fassi','فاطمة','الفاسي','ACTIF','CIN002','1990-06-22','Rabat','Female','Marocaine','CELIBATAIRE',0,'0600000002','fatima.elfassi@example.com','APTE','BMCE Bank','RIB002',2,'GRP-RH','SYSTEM'),
+    (3,'EMP003','Mohamed','Benjelloun','محمد','بنجلون','SUSPENDU','CIN003','1982-11-05','Marrakech','Male','Marocaine','MARIE',3,'0600000003','mohamed.benjelloun@example.com','APTE','CIH Bank','RIB003',3,'GRP-FIN','SYSTEM'),
+    (4,'EMP004','Salma','Bennani','سلمى','بناني','ACTIF','CIN004','1995-01-18','Fès','Female','Marocaine','CELIBATAIRE',0,'0600000004','salma.bennani@example.com','APTE','Attijariwafa Bank','RIB004',3,'GRP-RH','SYSTEM'),
+    (5,'EMP005','Youssef','El Idrissi','يوسف','الإدريسي','PARTI','CIN005','1988-08-30','Tanger','Male','Marocaine','DIVORCE',1,'0600000005','youssef.elidrissi@example.com','APTE','BMCE Bank','RIB005',4,'GRP-FIN','SYSTEM'),
+    (6,'EMP006','Khadija','El Khattabi','خديجة','الخطابي','ACTIF','CIN006','1992-12-12','Casablanca','Female','Marocaine','MARIE',2,'0600000006','khadija.elkhattabi@example.com','APTE','CIH Bank','RIB006',2,'GRP-RH','SYSTEM'),
+    (7,'EMP007','Omar','El Fadli','عمر','الفاضلي','ACTIF','CIN007','1987-05-20','Rabat','Male','Marocaine','MARIE',3,'0600000007','omar.elfadli@example.com','APTE','Attijariwafa Bank','RIB007',1,'GRP-FIN','SYSTEM'),
+    (8,'EMP008','Imane','El Youssoufi','إيمان','اليوسفي','ACTIF','CIN008','1993-07-07','Marrakech','Female','Marocaine','CELIBATAIRE',0,'0600000008','imane.elyoussoufi@example.com','APTE','BMCE Bank','RIB008',2,'GRP-RH','SYSTEM'),
+    (9,'EMP009','Hassan','El Ouazzani','حسن','الوزاني','SUSPENDU','CIN009','1984-09-11','Fès','Male','Marocaine','MARIE',4,'0600000009','hassan.elouazzani@example.com','APTE','CIH Bank','RIB009',3,'GRP-FIN','SYSTEM'),
+    (10,'EMP010','Sara','El Malki','سارة','المكي','ACTIF','CIN010','1991-04-25','Tanger','Female','Marocaine','CELIBATAIRE',0,'0600000010','sara.elmalki@example.com','APTE','Attijariwafa Bank','RIB010',4,'GRP-RH','SYSTEM');
 
-    ('EMP002', 'Fatima', 'El Fassi', 'فاطمة', 'الفاسي', 'ACTIF', 'CIN002', '1990-06-22', 'Rabat', 'Female', 'Marocaine', 'CELIBATAIRE', 0, '0600000002', 'fatima.elfassi@example.com', 'APTE', 'BMCE Bank', 'RIB002', 2, 'SYSTEM'),
 
-    ('EMP003', 'Mohamed', 'Benjelloun', 'محمد', 'بنجلون', 'SUSPENDU', 'CIN003', '1982-11-05', 'Marrakech', 'Male', 'Marocaine', 'MARIE', 3, '0600000003', 'mohamed.benjelloun@example.com', 'APTE', 'CIH Bank', 'RIB003', 1, 'SYSTEM'),
-
-    ('EMP004', 'Salma', 'Bennani', 'سلمى', 'بناني', 'ACTIF', 'CIN004', '1995-01-18', 'Fès', 'Female', 'Marocaine', 'CELIBATAIRE', 0, '0600000004', 'salma.bennani@example.com', 'APTE', 'Attijariwafa Bank', 'RIB004', 3, 'SYSTEM'),
-
-    ('EMP005', 'Youssef', 'El Idrissi', 'يوسف', 'الإدريسي', 'PARTI', 'CIN005', '1988-08-30', 'Tanger', 'Male', 'Marocaine', 'DIVORCE', 1, '0600000005', 'youssef.elidrissi@example.com', 'APTE', 'BMCE Bank', 'RIB005', 4, 'SYSTEM'),
-
-    ('EMP006', 'Khadija', 'El Khattabi', 'خديجة', 'الخطابي', 'ACTIF', 'CIN006', '1992-12-12', 'Casablanca', 'Female', 'Marocaine', 'MARIE', 2, '0600000006', 'khadija.elkhattabi@example.com', 'APTE', 'CIH Bank', 'RIB006', 2, 'SYSTEM'),
-
-    ('EMP007', 'Omar', 'El Fadli', 'عمر', 'الفاضلي', 'ACTIF', 'CIN007', '1987-05-20', 'Rabat', 'Male', 'Marocaine', 'MARIE', 3, '0600000007', 'omar.elfadli@example.com', 'APTE', 'Attijariwafa Bank', 'RIB007', 1, 'SYSTEM'),
-
-    ('EMP008', 'Imane', 'El Youssoufi', 'إيمان', 'اليوسفي', 'ACTIF', 'CIN008', '1993-07-07', 'Marrakech', 'Female', 'Marocaine', 'CELIBATAIRE', 0, '0600000008', 'imane.elyoussoufi@example.com', 'APTE', 'BMCE Bank', 'RIB008', 5, 'SYSTEM'),
-
-    ('EMP009', 'Hassan', 'El Ouazzani', 'حسن', 'الوزاني', 'SUSPENDU', 'CIN009', '1984-09-11', 'Fès', 'Male', 'Marocaine', 'MARIE', 4, '0600000009', 'hassan.elouazzani@example.com', 'APTE', 'CIH Bank', 'RIB009', 3, 'SYSTEM'),
-
-    ('EMP010', 'Sara', 'El Malki', 'سارة', 'المكي', 'ACTIF', 'CIN010', '1991-04-25', 'Tanger', 'Female', 'Marocaine', 'CELIBATAIRE', 0, '0600000010', 'sara.elmalki@example.com', 'APTE', 'Attijariwafa Bank', 'RIB010', 4, 'SYSTEM');
-
+UPDATE groups SET manager_id = 1 WHERE id = 'GRP-FIN';
+UPDATE groups SET manager_id = 2 WHERE id = 'GRP-RH';
 
 -- =========================================
--- Seed Addresses (1 per employee)
+-- Seed Addresses for Employees
 -- =========================================
-INSERT INTO addresses (id, street, city, postal_code, country, employee_id)
+INSERT INTO addresses (street, city, postal_code, country, employee_id)
 VALUES
-    (1, '123 Avenue Hassan II', 'Casablanca', '20000', 'Maroc', 1),
-    (2, '45 Rue Oued Fes', 'Rabat', '10000', 'Maroc', 2),
-    (3, '12 Boulevard Mohamed V', 'Marrakech', '40000', 'Maroc', 3),
-    (4, '8 Rue Talaa Sghira', 'Fès', '30000', 'Maroc', 4),
-    (5, '22 Avenue Mohammed VI', 'Tanger', '90000', 'Maroc', 5),
-    (6, '77 Boulevard Zerktouni', 'Casablanca', '20000', 'Maroc', 6),
-    (7, '5 Rue des Almohades', 'Rabat', '10000', 'Maroc', 7),
-    (8, '18 Avenue Abdelkrim', 'Marrakech', '40000', 'Maroc', 8),
-    (9, '30 Rue Nejjarine', 'Fès', '30000', 'Maroc', 9),
-    (10, '2 Boulevard Moulay Ismail', 'Tanger', '90000', 'Maroc', 10);
+    ('123 Avenue Hassan II','Casablanca','20000','Maroc',1),
+    ('45 Rue Oued Fes','Rabat','10000','Maroc',2),
+    ('12 Boulevard Mohamed V','Marrakech','40000','Maroc',3);
 
+-- =========================================
+-- Seed Addresses for Sieges
+-- =========================================
+INSERT INTO addresses (street, city, postal_code, country, siege_id)
+VALUES
+    ('123 Avenue Mohamed V','Rabat','10000','Maroc',1),
+    ('77 Boulevard Zerktouni','Casablanca','20000','Maroc',2);
 
 -- =========================================
 -- Seed Educations

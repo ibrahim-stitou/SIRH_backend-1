@@ -6,12 +6,16 @@ CREATE TABLE addresses (
                            postal_code VARCHAR(50),
                            country VARCHAR(255) NOT NULL,
 
-                           employee_id BIGINT NOT NULL UNIQUE,
+                           employee_id BIGINT UNIQUE,
+                           siege_id BIGINT UNIQUE,
 
                            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
                            CONSTRAINT fk_addresses_employee FOREIGN KEY (employee_id)
                                REFERENCES employees(id)
+                               ON DELETE CASCADE,
+                           CONSTRAINT fk_addresses_hq FOREIGN KEY (siege_id)
+                               REFERENCES sieges(id)
                                ON DELETE CASCADE
 );
