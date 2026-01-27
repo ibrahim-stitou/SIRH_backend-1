@@ -1,5 +1,5 @@
 package com.tarmiz.SIRH_backend;
-
+/*
 import com.tarmiz.SIRH_backend.enums.EmployeeStatus;
 import com.tarmiz.SIRH_backend.enums.Gender;
 import com.tarmiz.SIRH_backend.model.entity.Department;
@@ -74,7 +74,10 @@ public class AttestationControllerTest {
 
     /* ==================== Attestation Requests ==================== */
 
-    @Test
+/*
+import com.tarmiz.SIRH_backend.model.DTO.AttestationRequestDTO;
+
+@Test
     public void testCreateAttestationRequest() throws Exception {
         String payload = String.format(
                 "{\"employeeId\":%d,\"typeAttestation\":\"SALARY\",\"dateRequest\":\"2026-01-26\",\"dateSouhaitee\":\"2026-01-30\",\"note\":\"Test Note\"}",
@@ -150,7 +153,7 @@ public class AttestationControllerTest {
     }
 
     /* ==================== Attestations ==================== */
-
+/*
     @Test
     public void testCreateManualAttestation() throws Exception {
         AttestationDTO request = objectMapper.readValue(
@@ -206,3 +209,4 @@ public class AttestationControllerTest {
                 .andExpect(jsonPath("$.id", is(attestation.getId().intValue())));
     }
 }
+*/

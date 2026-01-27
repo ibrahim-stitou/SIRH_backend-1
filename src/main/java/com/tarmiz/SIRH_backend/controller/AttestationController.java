@@ -1,8 +1,6 @@
 package com.tarmiz.SIRH_backend.controller;
 
-import com.tarmiz.SIRH_backend.model.DTO.ApiListResponse;
-import com.tarmiz.SIRH_backend.model.DTO.AttestationDTO;
-import com.tarmiz.SIRH_backend.model.DTO.AttestationRequestDTO;
+import com.tarmiz.SIRH_backend.model.DTO.*;
 import com.tarmiz.SIRH_backend.enums.AttestationDemandStatus;
 import com.tarmiz.SIRH_backend.enums.AttestationType;
 import com.tarmiz.SIRH_backend.service.AttestationService;
@@ -11,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Tag(
@@ -24,6 +21,9 @@ public class AttestationController {
 
     @Autowired
     private AttestationService service;
+
+    @Autowired
+    private AttestationService attestationService;
 
     /* ================== Attestation Requests ================== */
 
@@ -43,13 +43,14 @@ public class AttestationController {
     @PostMapping("/attestationRequests")
     @Operation(summary = "Create a new attestation request")
     public AttestationDTO createRequest(
-            @RequestParam Long employeeId,
-            @RequestParam AttestationType type,
-            @RequestParam LocalDate dateRequest,
-            @RequestParam LocalDate dateSouhaitee,
-            @RequestParam(required = false) String note
+            @RequestBody AttestationRequestCreationDTO request
     ) {
-        return service.createRequest(employeeId, type, dateRequest, dateSouhaitee, note);
+        return service.createRequest(
+                request.getEmployeeId(),
+                request.getType(),
+                request.getDateSouhaitee(),
+                request.getNote()
+        );
     }
 
     @GetMapping("/attestationRequests/{id}")
@@ -66,8 +67,9 @@ public class AttestationController {
 
     @DeleteMapping("/attestationRequests/{id}")
     @Operation(summary = "Cancel attestation request (soft delete)")
-    public void cancelRequest(@PathVariable Long id) {
+    public ApiResponse cancelRequest(@PathVariable Long id) {
         service.cancelRequest(id);
+        return ApiResponse.success("Attestation request canceled successfully");
     }
 
     /* ================== Attestations ================== */
@@ -91,16 +93,14 @@ public class AttestationController {
         return service.getAttestation(id);
     }
 
-    @PostMapping("/attestations")
-    @Operation(summary = "Manually create attestation")
-    public AttestationRequestDTO createManualAttestation(
-            @RequestParam Long requestId,
-            @RequestParam AttestationType type,
-            @RequestParam String numero,
-            @RequestParam LocalDateTime dateGeneration,
-            @RequestParam(required = false) String notes
+    @PostMapping("/attestations/{requestId}")
+    @Operation(summary = "Generate PDF for an attestation from template")
+    public ApiResponse generateAttestationPdf(
+            @PathVariable Long requestId
     ) {
-        return service.createManualAttestation(requestId, type, numero, dateGeneration, notes);
+        attestationService.generateAttestation(requestId);
+
+        return ApiResponse.success("Attestation generated successfully");
     }
 
     @PutMapping("/attestations/{id}")

@@ -1,5 +1,6 @@
 package com.tarmiz.SIRH_backend.service;
 
+import com.tarmiz.SIRH_backend.enums.EntityType;
 import com.tarmiz.SIRH_backend.mapper.AttestationMapper;
 import com.tarmiz.SIRH_backend.model.DTO.ApiListResponse;
 import com.tarmiz.SIRH_backend.model.DTO.AttestationDTO;
@@ -13,13 +14,19 @@ import com.tarmiz.SIRH_backend.model.repository.EmployeeRepository;
 import com.tarmiz.SIRH_backend.enums.AttestationDemandStatus;
 import com.tarmiz.SIRH_backend.enums.AttestationType;
 import com.tarmiz.SIRH_backend.exception.BusinessException.BusinessException;
+import com.tarmiz.SIRH_backend.service.document.PdfGeneratorService;
+import com.tarmiz.SIRH_backend.util.PdfTemplateUtils;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AttestationService {
@@ -34,7 +41,27 @@ public class AttestationService {
     private EmployeeRepository employeeRepo;
 
     @Autowired
-    private AttestationMapper mapper;
+    PdfGeneratorService pdfGeneratorService ;
+
+    @Autowired
+    FileService fileService;
+
+    @Autowired
+    PdfTemplateUtils helper;
+
+    @Autowired
+    AttestationMapper mapper;
+
+
+    public String generateNumeroAttestation() {
+        int currentYear = LocalDate.now().getYear();
+
+        int count = attestationRepo.countByYear(currentYear);
+
+        int nextNumber = count + 1;
+
+        return String.format("ATT-%d-%03d", currentYear, nextNumber);
+    }
 
     /* ================== Attestation Requests ================== */
 
@@ -77,14 +104,14 @@ public class AttestationService {
         );
     }
 
-    public AttestationDTO createRequest(Long employeeId, AttestationType type, LocalDate dateRequest, LocalDate dateSouhaitee, String note) {
+    public AttestationDTO createRequest(Long employeeId, AttestationType type, LocalDate dateSouhaitee, String note) {
         Employee employee = employeeRepo.findById(employeeId)
                 .orElseThrow(() -> new BusinessException("Employee not found: " + employeeId));
 
         DemandeAttestation request = new DemandeAttestation();
         request.setEmployee(employee);
         request.setTypeAttestation(type);
-        request.setDateRequest(dateRequest);
+        request.setDateRequest(LocalDate.now());
         request.setDateSouhaitee(dateSouhaitee);
         request.setStatus(AttestationDemandStatus.PENDING);
         request.setNote(note);
@@ -176,21 +203,48 @@ public class AttestationService {
         return mapper.toRequestDTO(attestation);
     }
 
-    public AttestationRequestDTO createManualAttestation(Long requestId, AttestationType type, String numero, LocalDateTime dateGeneration, String notes) {
-        DemandeAttestation request = demandeRepo.findById(requestId)
-                .orElseThrow(() -> new BusinessException("Attestation request not found: " + requestId));
+    @Transactional
+    public void generateAttestation(
+            Long requestId) {
 
+        DemandeAttestation request = demandeRepo.findById(requestId)
+                .orElseThrow(() -> new BusinessException("Request not found"));
+
+        if (request.getStatus() != AttestationDemandStatus.APPROVED) {
+            throw new BusinessException("Request must be APPROVED");
+        }
+
+        // 1️⃣ Create Attestation entity
         Attestation attestation = new Attestation();
         attestation.setDemandeAttestation(request);
-        attestation.setTypeAttestation(type);
-        attestation.setNumeroAttestation(numero);
-        attestation.setDateGeneration(dateGeneration);
-        attestation.setNotes(notes);
+        attestation.setTypeAttestation(request.getTypeAttestation());
+        attestation.setNumeroAttestation(generateNumeroAttestation());
+        attestation.setDateGeneration(LocalDateTime.now());
         attestation.setCreatedAt(LocalDateTime.now());
         attestation.setUpdatedAt(LocalDateTime.now());
 
         Attestation saved = attestationRepo.save(attestation);
-        return mapper.toRequestDTO(saved);
+
+        // 2️⃣ Prepare placeholders (minimal for now)
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("companyName", "Tarmiz");
+        placeholders.put("companyAddress", "Catilla Business Tower Castilla Tanger");
+        placeholders.put("city", "Tanger");
+        placeholders.put("date", LocalDate.now().toString());
+
+        // others intentionally left empty
+        placeholders.put("employeeName", "");
+        placeholders.put("employeePosition", "");
+
+        // 3️⃣ Generate & store PDF
+        pdfGeneratorService.generateAndStore(
+                EntityType.ATTESTATION,
+                saved.getId(),
+                helper.mapPurpose(request.getTypeAttestation()),
+                placeholders,
+                "Attestation " + request.getTypeAttestation(),
+                "Generated automatically"
+        );
     }
 
     public AttestationRequestDTO updateAttestation(Long id, AttestationType type, String numero, LocalDateTime dateGeneration, String notes) {

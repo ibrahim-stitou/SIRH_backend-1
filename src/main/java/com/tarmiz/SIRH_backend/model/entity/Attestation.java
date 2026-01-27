@@ -37,7 +37,7 @@ public class Attestation {
     private AttestationType typeAttestation;
 
     @NotBlank
-    @Column(unique = true)
+    @Column(name = "numero_attestation", nullable = false)
     private String numeroAttestation;
 
     private LocalDateTime dateGeneration;

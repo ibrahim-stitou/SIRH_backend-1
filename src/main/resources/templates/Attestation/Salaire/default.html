@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Attestation de Salaire</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 50px;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 40px 50px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .company-name {
+            font-size: 22px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .company-address {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .title {
+            font-size: 26px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: underline;
+            color: #34495e;
+            margin-bottom: 30px;
+        }
+
+        .content {
+            margin: 20px 0;
+            font-size: 15px;
+        }
+
+        .content strong {
+            color: #2c3e50;
+        }
+
+        .footer {
+            margin-top: 50px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .signature {
+            margin-top: 60px;
+            text-align: left;
+        }
+
+        .signature-line {
+            margin-top: 60px;
+            border-top: 1px solid #7f8c8d;
+            width: 250px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="company-name">${companyName}</div>
+        <div class="company-address">${companyAddress}</div>
+    </div>
+
+    <div class="title">Attestation de Salaire</div>
+
+    <div class="content">
+        Je soussigné(e), <strong>Maroua Sghiri</strong>, agissant en qualité de <strong>Directeur RH</strong> au sein de <strong>${companyName}</strong>, atteste par la présente que :
+    </div>
+
+    <div class="content">
+        <strong>Ahmed El Amrani</strong>, né(e) le <strong>01/01/1990</strong>, occupe le poste de <strong>Developpeur Fullstack</strong> dans notre entreprise depuis le <strong>01/03/2015</strong>.
+    </div>
+
+    <div class="content">
+        Son salaire mensuel brut est de <strong>10,000 MAD</strong>.
+    </div>
+
+    <div class="content">
+        Fait pour servir et valoir ce que de droit.
+    </div>
+
+    <div class="footer">
+        Fait à ${city}, le ${date}.
+    </div>
+
+    <div class="signature">
+        Signature et cachet de l'entreprise
+        <div class="signature-line"></div>
+    </div>
+</div>
+</body>
+</html>

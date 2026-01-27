@@ -4,6 +4,7 @@ public enum AttestationDemandStatus {
     PENDING("En attente"),
     APPROVED("Approuvée"),
     REJECTED("Rejetée"),
+    GENERATED("Générée"),
     CANCELED("Annulée");
 
     private final String Label;

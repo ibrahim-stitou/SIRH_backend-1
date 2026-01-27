@@ -163,3 +163,59 @@ VALUES
     (8, 'Rachid El Youssoufi', '0610000008', 'PERE', 'CINPC008', '1960-07-07', 8),
     (9, 'Saadia El Ouazzani', '0610000009', 'MERE', 'CINPC009', '1959-09-11', 9),
     (10, 'Mohammed El Malki', '0610000010', 'CONJOINT', 'CINPC010', '1987-04-25', 10);
+
+
+-- Seed DocumentTemplate table
+
+INSERT INTO document_templates (name, purpose, file_path, active, created_at, created_by)
+VALUES
+    -- Attestation / Salaire
+    ('default', 'SALAIRE', '/templates/Attestation/Salaire/default.html', TRUE, NOW(), 'system'),
+
+    -- Attestation / Stage
+    ('default', 'STAGE', '/templates/Attestation/Stage/default.html', TRUE, NOW(), 'system'),
+
+    -- Attestation / Travail
+    ('default', 'TRAVAIL', '/templates/Attestation/Travail/default.html', TRUE, NOW(), 'system'),
+
+    -- Bulletin de paie
+    ('default', 'SALAIRE', '/templates/Bulletin de paie/default.html', TRUE, NOW(), 'system'),
+
+    -- Contrat
+    ('default', 'TRAVAIL', '/templates/Contrat/default.html', TRUE, NOW(), 'system');
+
+
+-- Seed demande_attestation
+
+INSERT INTO demande_attestation
+(employee_id, type_attestation, date_request, date_souhaitee, status, note, date_validation, created_at, updated_at)
+VALUES
+-- Exemple 1
+(1, 'SALARY', CURRENT_DATE, CURRENT_DATE + INTERVAL '7 days', 'PENDING', 'Demande de salaire', NULL, NOW(), NOW()),
+
+-- Exemple 2
+(2, 'EMPLOYMENT', CURRENT_DATE, CURRENT_DATE + INTERVAL '10 days', 'PENDING', 'Demande emploi', NULL, NOW(), NOW()),
+
+-- Exemple 3
+(3, 'EXPERIENCE', CURRENT_DATE, CURRENT_DATE + INTERVAL '5 days', 'PENDING', 'Demande expérience', NULL, NOW(), NOW()),
+
+-- Exemple 4
+(4, 'INTERNSHIP', CURRENT_DATE, CURRENT_DATE + INTERVAL '14 days', 'PENDING', 'Demande stage', NULL, NOW(), NOW()),
+
+-- Exemple 5
+(5, 'OTHER', CURRENT_DATE, CURRENT_DATE + INTERVAL '3 days', 'PENDING', 'Autre demande', NULL, NOW(), NOW()),
+
+-- Exemple 6
+(6, 'SALARY', CURRENT_DATE, CURRENT_DATE + INTERVAL '7 days', 'PENDING', 'Demande salaire', NULL, NOW(), NOW()),
+
+-- Exemple 7
+(7, 'EMPLOYMENT', CURRENT_DATE, CURRENT_DATE + INTERVAL '10 days', 'PENDING', 'Demande emploi', NULL, NOW(), NOW()),
+
+-- Exemple 8
+(8, 'EXPERIENCE', CURRENT_DATE, CURRENT_DATE + INTERVAL '5 days', 'PENDING', 'Demande expérience', NULL, NOW(), NOW()),
+
+-- Exemple 9
+(9, 'INTERNSHIP', CURRENT_DATE, CURRENT_DATE + INTERVAL '14 days', 'PENDING', 'Demande stage', NULL, NOW(), NOW()),
+
+-- Exemple 10
+(10, 'OTHER', CURRENT_DATE, CURRENT_DATE + INTERVAL '3 days', 'PENDING', 'Autre demande', NULL, NOW(), NOW());

@@ -7,11 +7,21 @@ import com.tarmiz.SIRH_backend.enums.AttestationType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 @Repository
 public interface AttestationRepository extends JpaRepository<Attestation, Long> {
+
+    @Query("""
+    SELECT COUNT(a)
+    FROM Attestation a
+    WHERE EXTRACT(YEAR FROM a.dateGeneration) = :year
+""")
+    int countByYear(@Param("year") int year);
 
     Page<Attestation> findAllByDemandeAttestation_Employee_IdAndTypeAttestationAndNumeroAttestationContaining(
             Long employeeId,

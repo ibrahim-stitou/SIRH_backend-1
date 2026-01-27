@@ -2,7 +2,7 @@ CREATE TABLE attestations (
                              id BIGSERIAL PRIMARY KEY,
                              request_id BIGINT UNIQUE NOT NULL,
                              type_attestation VARCHAR(50) NOT NULL,
-                             numero_attestation VARCHAR(100) UNIQUE NOT NULL,
+                             numero_attestation VARCHAR(100) NOT NULL,
                              date_generation DATE,
                              notes TEXT,
                              created_at TIMESTAMP,
