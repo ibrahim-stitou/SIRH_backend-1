@@ -21,7 +21,7 @@ CREATE TABLE employees (
                            rib VARCHAR(255) UNIQUE,
 
                            department_id BIGINT NOT NULL,
-                           group_id VARCHAR(50) NOT NULL ,
+                           group_id BIGINT ,
 
                            created_by VARCHAR(255) NOT NULL,
                            created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

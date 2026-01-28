@@ -2,6 +2,7 @@ package com.tarmiz.SIRH_backend.model.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class ApiListResponse<T> {
     private String status;            // e.g., "success" or "error"
     private String message;           // human-readable message

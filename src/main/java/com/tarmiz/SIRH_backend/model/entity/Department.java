@@ -24,6 +24,13 @@ public class Department {
 
     private String nameAr;
 
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "company_id", nullable = false)
+    private Company company;
+
     @OneToMany(mappedBy = "department")
     private List<Employee> employees = new ArrayList<>();
 }

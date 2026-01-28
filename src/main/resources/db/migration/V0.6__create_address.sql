@@ -19,3 +19,6 @@ CREATE TABLE addresses (
                                REFERENCES sieges(id)
                                ON DELETE CASCADE
 );
+
+CREATE INDEX idx_address_city_trgm ON addresses USING gin (lower(city) gin_trgm_ops);
+CREATE INDEX idx_address_country_trgm ON addresses USING gin (lower(country) gin_trgm_ops);

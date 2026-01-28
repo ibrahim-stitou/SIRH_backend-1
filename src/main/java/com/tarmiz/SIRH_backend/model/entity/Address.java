@@ -7,7 +7,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "addresses")
+@Table(name = "addresses",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "employee_id"),
+                @UniqueConstraint(columnNames = "siege_id")
+        })
 public class Address {
 
     @Id
@@ -20,6 +24,10 @@ public class Address {
     private String country;
 
     @OneToOne
-    @JoinColumn(name = "employee_id", nullable = false, unique = true)
+    @JoinColumn(name = "employee_id", unique = true)
     private Employee employee;
+
+    @OneToOne
+    @JoinColumn(name = "siege_id", unique = true)
+    private Siege siege;
 }

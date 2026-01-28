@@ -1,5 +1,5 @@
 CREATE TABLE groups (
-                            id VARCHAR(50) PRIMARY KEY,
+                            id BIGSERIAL PRIMARY KEY,
                             name VARCHAR(255) NOT NULL,
                             name_ar VARCHAR(255),
                             manager_id BIGINT UNIQUE,
@@ -16,4 +16,9 @@ CREATE TABLE groups (
                             CONSTRAINT fk_group_hq FOREIGN KEY (siege_id)
                                 REFERENCES sieges(id)
                                 ON DELETE CASCADE
+
 );
+
+CREATE INDEX idx_groups_name ON groups(name);
+CREATE INDEX idx_groups_code ON groups(code);
+CREATE INDEX idx_groups_full_filter ON groups(name, code);

@@ -5,6 +5,7 @@ CREATE TABLE sieges (
                         company_id BIGINT NOT NULL,
                         address_id BIGINT,
                         phone VARCHAR(50),
+                        email VARCHAR(255) UNIQUE,
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -12,3 +13,8 @@ CREATE TABLE sieges (
                             REFERENCES company(id)
                             ON DELETE CASCADE
 );
+
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
+CREATE INDEX idx_siege_name_trgm ON sieges USING gin (lower(name) gin_trgm_ops);
+CREATE INDEX idx_sieges_code ON sieges(code);

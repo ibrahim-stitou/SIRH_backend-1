@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,6 +81,10 @@ public class Employee extends Auditable {
 
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private Address address;
+
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    private Group group;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PersonInCharge> emergencyContacts = new ArrayList<>();
