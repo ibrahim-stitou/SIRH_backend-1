@@ -1,7 +1,8 @@
-package com.tarmiz.SIRH_backend.model.entity;
+package com.tarmiz.SIRH_backend.model.entity.Attestation;
 
 import com.tarmiz.SIRH_backend.enums.AttestationDemandStatus;
 import com.tarmiz.SIRH_backend.enums.AttestationType;
+import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Employee;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import io.swagger.v3.oas.annotations.media.Schema;

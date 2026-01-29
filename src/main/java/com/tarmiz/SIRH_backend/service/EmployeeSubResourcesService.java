@@ -2,7 +2,7 @@ package com.tarmiz.SIRH_backend.service;
 
 import com.tarmiz.SIRH_backend.exception.BusinessException.EmployeeNotFoundException;
 import com.tarmiz.SIRH_backend.exception.BusinessException.EmployeeSubRessourcesNotFoundException;
-import com.tarmiz.SIRH_backend.model.entity.Employee;
+import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Employee;
 import com.tarmiz.SIRH_backend.model.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

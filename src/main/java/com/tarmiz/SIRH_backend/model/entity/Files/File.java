@@ -1,7 +1,8 @@
-package com.tarmiz.SIRH_backend.model.entity;
+package com.tarmiz.SIRH_backend.model.entity.Files;
 
 import com.tarmiz.SIRH_backend.enums.EntityType;
 import com.tarmiz.SIRH_backend.enums.FilePurpose;
+import com.tarmiz.SIRH_backend.model.entity.Auditable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Getter;

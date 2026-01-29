@@ -1,5 +1,6 @@
-package com.tarmiz.SIRH_backend.model.entity;
+package com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy;
 
+import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Address;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -7,7 +8,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter

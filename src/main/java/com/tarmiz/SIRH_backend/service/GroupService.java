@@ -1,7 +1,6 @@
 package com.tarmiz.SIRH_backend.service;
 
 import com.tarmiz.SIRH_backend.exception.BusinessException.BusinessException;
-import com.tarmiz.SIRH_backend.exception.BusinessException.BusinessException.*;
 import com.tarmiz.SIRH_backend.exception.BusinessException.GroupNotEmptyException;
 import com.tarmiz.SIRH_backend.mapper.GroupDetailsMapper;
 import com.tarmiz.SIRH_backend.mapper.GroupMapper;
@@ -9,9 +8,9 @@ import com.tarmiz.SIRH_backend.model.DTO.ApiListResponse;
 import com.tarmiz.SIRH_backend.model.DTO.GroupDetailsDTO;
 import com.tarmiz.SIRH_backend.model.DTO.GroupListDTO;
 import com.tarmiz.SIRH_backend.model.DTO.GroupMembersDTO;
-import com.tarmiz.SIRH_backend.model.entity.Employee;
-import com.tarmiz.SIRH_backend.model.entity.Group;
-import com.tarmiz.SIRH_backend.model.entity.Siege;
+import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Employee;
+import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Group;
+import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Siege;
 import com.tarmiz.SIRH_backend.model.repository.EmployeeRepository;
 import com.tarmiz.SIRH_backend.model.repository.GroupRepository;
 import com.tarmiz.SIRH_backend.model.repository.SiegeRepository;
@@ -23,7 +22,6 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 

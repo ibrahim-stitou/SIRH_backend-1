@@ -2,7 +2,7 @@ package com.tarmiz.SIRH_backend.service;
 
 import com.tarmiz.SIRH_backend.enums.EntityType;
 import com.tarmiz.SIRH_backend.enums.FilePurpose;
-import com.tarmiz.SIRH_backend.model.entity.File;
+import com.tarmiz.SIRH_backend.model.entity.Files.File;
 import com.tarmiz.SIRH_backend.model.repository.FileRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.core.io.Resource;

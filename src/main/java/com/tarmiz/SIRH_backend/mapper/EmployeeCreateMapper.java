@@ -1,11 +1,8 @@
 package com.tarmiz.SIRH_backend.mapper;
 
 import com.tarmiz.SIRH_backend.model.DTO.EmployeeCreateDTO;
-import com.tarmiz.SIRH_backend.model.entity.Address;
-import com.tarmiz.SIRH_backend.model.entity.Employee;
-import com.tarmiz.SIRH_backend.enums.EmployeeStatus;
-import com.tarmiz.SIRH_backend.enums.Gender;
-import com.tarmiz.SIRH_backend.enums.MaritalStatus;
+import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Address;
+import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Employee;
 import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")

@@ -5,8 +5,8 @@ import com.tarmiz.SIRH_backend.mapper.SiegeMapper;
 import com.tarmiz.SIRH_backend.model.DTO.ApiListResponse;
 import com.tarmiz.SIRH_backend.model.DTO.SiegeCreateDTO;
 import com.tarmiz.SIRH_backend.model.DTO.SiegeListDTO;
-import com.tarmiz.SIRH_backend.model.entity.Company;
-import com.tarmiz.SIRH_backend.model.entity.Siege;
+import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Company;
+import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Siege;
 import com.tarmiz.SIRH_backend.model.repository.CompanyRepository;
 import com.tarmiz.SIRH_backend.model.repository.GroupRepository;
 import com.tarmiz.SIRH_backend.model.repository.SiegeRepository;
@@ -18,9 +18,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 public class SiegeService {

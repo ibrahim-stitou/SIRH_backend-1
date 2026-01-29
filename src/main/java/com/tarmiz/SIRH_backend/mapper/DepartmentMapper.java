@@ -1,7 +1,7 @@
 package com.tarmiz.SIRH_backend.mapper;
 
 import com.tarmiz.SIRH_backend.model.DTO.DepartmentDTO;
-import com.tarmiz.SIRH_backend.model.entity.Department;
+import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Department;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

@@ -2,7 +2,7 @@ package com.tarmiz.SIRH_backend.controller;
 
 import com.tarmiz.SIRH_backend.enums.EntityType;
 import com.tarmiz.SIRH_backend.enums.FilePurpose;
-import com.tarmiz.SIRH_backend.model.entity.File;
+import com.tarmiz.SIRH_backend.model.entity.Files.File;
 import com.tarmiz.SIRH_backend.service.FileService;
 import com.tarmiz.SIRH_backend.validation.ValidEnum;
 import io.swagger.v3.oas.annotations.Operation;

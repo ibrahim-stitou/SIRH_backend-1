@@ -2,12 +2,12 @@ package com.tarmiz.SIRH_backend;
 /*
 import com.tarmiz.SIRH_backend.enums.EmployeeStatus;
 import com.tarmiz.SIRH_backend.enums.Gender;
-import com.tarmiz.SIRH_backend.model.entity.Department;
+import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Department;
 import com.tarmiz.SIRH_backend.model.repository.DepartmentRepository;
 import tools.jackson.databind.ObjectMapper;
 import com.tarmiz.SIRH_backend.model.DTO.AttestationDTO;
 import com.tarmiz.SIRH_backend.model.DTO.AttestationRequestDTO;
-import com.tarmiz.SIRH_backend.model.entity.Employee;
+import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Employee;
 import com.tarmiz.SIRH_backend.model.repository.EmployeeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

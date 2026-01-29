@@ -4,8 +4,7 @@ import com.tarmiz.SIRH_backend.enums.Relationship;
 import com.tarmiz.SIRH_backend.mapper.EmployeeDetailsMapper;
 import com.tarmiz.SIRH_backend.model.DTO.EmployeeDetailsDTO;
 import com.tarmiz.SIRH_backend.model.DTO.EmployeeSubResourcesDTO;
-import com.tarmiz.SIRH_backend.model.entity.Employee;
-import com.tarmiz.SIRH_backend.model.entity.PersonInCharge;
+import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.*;
 import com.tarmiz.SIRH_backend.service.EmployeeSubResourcesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,7 +14,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.tarmiz.SIRH_backend.model.entity.*;
 
 
 @Tag(

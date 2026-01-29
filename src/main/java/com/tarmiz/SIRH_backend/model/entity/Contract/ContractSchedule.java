@@ -1,0 +1,39 @@
+package com.tarmiz.SIRH_backend.model.entity.Contract;
+
+import com.tarmiz.SIRH_backend.enums.Contract.ScheduleTypeEnum;
+import com.tarmiz.SIRH_backend.model.entity.Auditable;
+import jakarta.persistence.*;
+import java.time.LocalTime;
+
+@Entity
+@Table(name = "contract_schedules")
+public class ContractSchedule extends Auditable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @OneToOne
+    @JoinColumn(name = "contract_id", nullable = false)
+    private Contract contract;
+
+    @Enumerated(EnumType.STRING)
+    private ScheduleTypeEnum scheduleType;
+
+    private Boolean shiftWork = false;
+    private Integer hoursPerDay;
+    private Integer daysPerWeek;
+    private Integer hoursPerWeek;
+
+    private LocalTime startTime;
+    private LocalTime endTime;
+
+    private Integer breakDuration;
+    private Integer annualLeaveDays;
+
+    @Column(columnDefinition = "TEXT")
+    private String otherLeaves;
+
+    // Getters and setters
+}
+

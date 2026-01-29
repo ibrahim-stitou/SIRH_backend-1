@@ -1,16 +1,18 @@
-package com.tarmiz.SIRH_backend.model.entity;
+package com.tarmiz.SIRH_backend.model.entity.EmployeeInfos;
 
 import com.tarmiz.SIRH_backend.enums.AptitudeMedical;
 import com.tarmiz.SIRH_backend.enums.EmployeeStatus;
 import com.tarmiz.SIRH_backend.enums.Gender;
 import com.tarmiz.SIRH_backend.enums.MaritalStatus;
+import com.tarmiz.SIRH_backend.model.entity.*;
+import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Department;
+import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Group;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 

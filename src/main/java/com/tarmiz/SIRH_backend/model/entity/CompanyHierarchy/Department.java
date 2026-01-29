@@ -1,5 +1,6 @@
-package com.tarmiz.SIRH_backend.model.entity;
+package com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy;
 
+import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Employee;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

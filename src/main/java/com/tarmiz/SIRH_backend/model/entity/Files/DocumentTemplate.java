@@ -1,6 +1,5 @@
-package com.tarmiz.SIRH_backend.model.entity;
+package com.tarmiz.SIRH_backend.model.entity.Files;
 
-import com.tarmiz.SIRH_backend.enums.AttestationType;
 import com.tarmiz.SIRH_backend.enums.FilePurpose;
 import jakarta.persistence.*;
 import lombok.Getter;

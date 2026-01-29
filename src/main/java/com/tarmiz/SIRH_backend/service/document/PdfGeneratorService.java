@@ -1,12 +1,9 @@
 package com.tarmiz.SIRH_backend.service.document;
 
-import com.lowagie.text.DocumentException;
 import com.tarmiz.SIRH_backend.enums.EntityType;
 import com.tarmiz.SIRH_backend.enums.FilePurpose;
-import com.tarmiz.SIRH_backend.model.entity.DemandeAttestation;
-import com.tarmiz.SIRH_backend.model.entity.File;
+import com.tarmiz.SIRH_backend.model.entity.Files.File;
 
-import java.io.IOException;
 import java.util.Map;
 
 public interface PdfGeneratorService {

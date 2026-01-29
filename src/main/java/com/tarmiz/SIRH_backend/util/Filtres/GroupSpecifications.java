@@ -1,6 +1,6 @@
 package com.tarmiz.SIRH_backend.util.Filtres;
 
-import com.tarmiz.SIRH_backend.model.entity.Group;
+import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Group;
 import org.springframework.data.jpa.domain.Specification;
 
 public class GroupSpecifications {

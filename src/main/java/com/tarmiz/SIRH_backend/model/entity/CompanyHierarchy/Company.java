@@ -1,4 +1,4 @@
-package com.tarmiz.SIRH_backend.model.entity;
+package com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;

@@ -1,13 +1,11 @@
 package com.tarmiz.SIRH_backend.model.repository;
 
-import com.tarmiz.SIRH_backend.model.entity.Attestation;
-import com.tarmiz.SIRH_backend.model.entity.DemandeAttestation;
+import com.tarmiz.SIRH_backend.model.entity.Attestation.DemandeAttestation;
 import com.tarmiz.SIRH_backend.enums.AttestationDemandStatus;
 import com.tarmiz.SIRH_backend.enums.AttestationType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

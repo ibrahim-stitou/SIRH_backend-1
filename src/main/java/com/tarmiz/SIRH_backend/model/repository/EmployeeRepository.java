@@ -1,6 +1,6 @@
 package com.tarmiz.SIRH_backend.model.repository;
 
-import com.tarmiz.SIRH_backend.model.entity.Employee;
+import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Employee;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;

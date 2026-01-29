@@ -1,6 +1,6 @@
 package com.tarmiz.SIRH_backend.util.Filtres;
 
-import com.tarmiz.SIRH_backend.model.entity.Siege;
+import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Siege;
 import org.springframework.data.jpa.domain.Specification;
 
 public class SiegeSpecification {
