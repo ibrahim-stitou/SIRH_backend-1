@@ -44,9 +44,6 @@ public class AttestationService {
     PdfGeneratorService pdfGeneratorService ;
 
     @Autowired
-    FileService fileService;
-
-    @Autowired
     PdfTemplateUtils helper;
 
     @Autowired
@@ -162,13 +159,11 @@ public class AttestationService {
         return mapper.toAttestationDTO(request);
     }
 
-    public void cancelRequest(Long id) {
+    public void deleteRequest(Long id) {
         DemandeAttestation request = demandeRepo.findById(id)
                 .orElseThrow(() -> new BusinessException("Attestation request not found: " + id));
 
-        request.setStatus(AttestationDemandStatus.CANCELED);
-        request.setUpdatedAt(LocalDateTime.now());
-        demandeRepo.save(request);
+        demandeRepo.delete(request);
     }
 
     /* ================== Attestations ================== */

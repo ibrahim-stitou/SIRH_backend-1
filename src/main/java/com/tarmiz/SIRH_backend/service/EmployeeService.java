@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -54,7 +53,7 @@ public class EmployeeService {
     public Map<String, Object> getEmployeesList(int start, int length, String sortBy, String sortDir) {
         int page = start / length;
         Sort.Direction direction = "desc".equalsIgnoreCase(sortDir) ? Sort.Direction.DESC : Sort.Direction.ASC;
-        sortBy = (sortBy == null || sortBy.isEmpty()) ? "createdAt" : sortBy;
+        sortBy = (sortBy == null || sortBy.isEmpty()) ? "createdDate" : sortBy;
 
         PageRequest pageRequest = PageRequest.of(page, length, direction, sortBy);
         Page<Employee> pageResult;

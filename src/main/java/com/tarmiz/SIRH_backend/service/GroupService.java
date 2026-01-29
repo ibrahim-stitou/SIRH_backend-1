@@ -1,6 +1,8 @@
 package com.tarmiz.SIRH_backend.service;
 
 import com.tarmiz.SIRH_backend.exception.BusinessException.BusinessException;
+import com.tarmiz.SIRH_backend.exception.BusinessException.BusinessException.*;
+import com.tarmiz.SIRH_backend.exception.BusinessException.GroupNotEmptyException;
 import com.tarmiz.SIRH_backend.mapper.GroupDetailsMapper;
 import com.tarmiz.SIRH_backend.mapper.GroupMapper;
 import com.tarmiz.SIRH_backend.model.DTO.ApiListResponse;
@@ -21,6 +23,7 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -159,16 +162,17 @@ public class GroupService {
     }
 
     /* ================= Delete Group ================= */
+    @Transactional
     public void deleteGroup(Long groupId) {
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new NoSuchElementException("Group not found"));
-        if (group.getEmployees() != null) {
-            for (Employee e : group.getEmployees()) {
-                e.setGroup(null);
-            }
+        Group group = groupRepository.findById(groupId).orElse(null);
+
+        boolean hasEmployees = employeeRepository.existsByGroupId(groupId);
+        if (hasEmployees) {
+            throw new GroupNotEmptyException(groupId);
         }
-        groupRepository.delete(group);
-        log.info("Deleted group {}", groupId);
+
+        //group.setDeletedAt(LocalDateTime.now());
+        groupRepository.save(group);
     }
 
     /* ================= Get Group by Employee ================= */

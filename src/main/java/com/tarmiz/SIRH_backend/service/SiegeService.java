@@ -1,5 +1,6 @@
 package com.tarmiz.SIRH_backend.service;
 
+import com.tarmiz.SIRH_backend.exception.BusinessException.SiegeDeletionForbiddenException;
 import com.tarmiz.SIRH_backend.mapper.SiegeMapper;
 import com.tarmiz.SIRH_backend.model.DTO.ApiListResponse;
 import com.tarmiz.SIRH_backend.model.DTO.SiegeCreateDTO;
@@ -7,15 +8,19 @@ import com.tarmiz.SIRH_backend.model.DTO.SiegeListDTO;
 import com.tarmiz.SIRH_backend.model.entity.Company;
 import com.tarmiz.SIRH_backend.model.entity.Siege;
 import com.tarmiz.SIRH_backend.model.repository.CompanyRepository;
+import com.tarmiz.SIRH_backend.model.repository.GroupRepository;
 import com.tarmiz.SIRH_backend.model.repository.SiegeRepository;
 import com.tarmiz.SIRH_backend.util.Filtres.SiegeSpecification;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class SiegeService {
@@ -25,6 +30,9 @@ public class SiegeService {
 
     @Autowired
     private CompanyRepository companyRepository;
+
+    @Autowired
+    private GroupRepository groupRepository;
 
     @Autowired
     private SiegeMapper siegeMapper;
@@ -72,5 +80,19 @@ public class SiegeService {
         Siege saved = siegeRepository.save(siege);
 
         return siegeMapper.toListDTO(saved);
+    }
+
+    /* ================= Delete Siege ================= */
+    @Transactional
+    public void deleteSiege(Long siegeId) {
+        Siege siege = siegeRepository.findById(siegeId).orElse(null);
+
+        boolean hasActiveGroups = groupRepository.existsBySiegeId(siegeId);
+        if (hasActiveGroups) {
+            throw new SiegeDeletionForbiddenException(siegeId);
+        }
+
+        //siege.setDeletedAt(LocalDateTime.now());
+        siegeRepository.save(siege);
     }
 }

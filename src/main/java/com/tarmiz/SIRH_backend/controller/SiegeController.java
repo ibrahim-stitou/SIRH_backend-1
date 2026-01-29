@@ -7,8 +7,12 @@ import com.tarmiz.SIRH_backend.model.DTO.SiegeListDTO;
 import com.tarmiz.SIRH_backend.service.GroupService;
 import com.tarmiz.SIRH_backend.service.SiegeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/sieges")
@@ -61,4 +65,13 @@ public class SiegeController {
     ) {
         return groupService.getGroupsBySiege(siegeId, name, code);
     }
+
+    /** ================= Soft Delete siege ================= */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> deleteSiege(@PathVariable Long id) {
+        siegeService.deleteSiege(id);
+        Map<String, String> response = Map.of("status", "success", "message", "Siège supprimé avec succès");
+        return ResponseEntity.ok(response);
+    }
+
 }

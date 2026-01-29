@@ -78,17 +78,10 @@ public class GroupsController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteGroup(@PathVariable Long id) {
-        try {
-            groupService.deleteGroup(id);
-            return ResponseEntity.ok(Map.of(
-                    "status", "success",
-                    "message", "Group deleted successfully"
-            ));
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("status", "error", "message", e.getMessage()));
-        }
+    public ResponseEntity<Map<String, String>> deleteGroup(@PathVariable Long id) {
+        groupService.deleteGroup(id);
+        Map<String, String> response = Map.of("status", "success", "message", "Groupe supprimé avec succès");
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/employee/{employeeId}")

@@ -10,4 +10,5 @@ import java.util.List;
 public interface GroupRepository extends JpaRepository<Group, Long>, JpaSpecificationExecutor<Group> {
     List<Group> findBySiege(Siege siege);
     List<Group> findByEmployees_Id(Long employeeId);
+    boolean existsBySiegeId(Long siegeId);
 }

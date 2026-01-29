@@ -2,7 +2,6 @@ package com.tarmiz.SIRH_backend.controller;
 
 import com.tarmiz.SIRH_backend.model.DTO.EmployeeCreateDTO;
 import com.tarmiz.SIRH_backend.model.DTO.EmployeeDetailsDTO;
-import com.tarmiz.SIRH_backend.model.entity.PersonInCharge;
 import com.tarmiz.SIRH_backend.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -57,14 +56,33 @@ public class EmployeeController {
     }
 
 
+    // ------------------------- LIST EMPLOYEES -------------------------
+
     @Operation(
-            summary = "Get paginated employees list",
-            description = "Returns a paginated list of employees with optional sorting"
+            summary = "Get paginated list of employees",
+            description = "Returns a paginated list of employees using offset-based pagination and optional sorting"
     )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Employees list retrieved successfully"
-    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Employees list retrieved successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    description = "Paginated employees response",
+                                    example = """
+                                    {
+                                      "status": "success",
+                                      "message": "Liste des employés récupérée avec succès",
+                                      "data": [],
+                                      "recordsTotal": 25,
+                                      "recordsFiltered": 25
+                                    }
+                                    """
+                            )
+                    )
+            )
+    })
     @GetMapping
     public ResponseEntity<Map<String, Object>> getEmployeesList(
             @RequestParam(defaultValue = "0") int start,
@@ -81,28 +99,104 @@ public class EmployeeController {
             summary = "Create a new employee",
             description = "Creates a new employee with basic information only (no validation or exception handling)"
     )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Employee created successfully"
-    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Employee created successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    example = """
+                                    {
+                                      "status": "success",
+                                      "message": "Création réussie",
+                                      "data": {}
+                                    }
+                                    """
+                            )
+                    )
+            )
+    })
     @PostMapping
-    public ResponseEntity<?> createEmployee(@Valid @RequestBody EmployeeCreateDTO dto) {
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Employee creation payload",
+            required = true,
+            content = @Content(
+                    schema = @Schema(implementation = EmployeeCreateDTO.class)
+            )
+    )
+    public ResponseEntity<Map<String, Object>> createEmployee(
+            @Valid @org.springframework.web.bind.annotation.RequestBody EmployeeCreateDTO dto
+    ) {
         Map<String, Object> response = employeeService.createEmployee(dto);
         return ResponseEntity.ok(response);
     }
 
+    // ------------------------- PATCH EMPLOYEE -------------------------
+
+    @Operation(
+            summary = "Partially update an employee",
+            description = "Updates only the provided fields of an existing employee"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Employee updated successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = EmployeeDetailsDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Employee not found"
+            )
+    })
     @PatchMapping("/{id}")
-    @Operation(summary = "Update an employee's infos partially")
     public ResponseEntity<EmployeeDetailsDTO> patchEmployee(
+            @Parameter(description = "Employee unique identifier", required = true, example = "1")
             @PathVariable Long id,
-            @Valid @RequestBody EmployeeCreateDTO dto) {
+
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Fields to update (partial)",
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(implementation = EmployeeCreateDTO.class)
+                    )
+            )
+            @Valid @org.springframework.web.bind.annotation.RequestBody EmployeeCreateDTO dto
+    ) {
         EmployeeDetailsDTO updatedEmployee = employeeService.patchEmployee(id, dto);
         return ResponseEntity.ok(updatedEmployee);
     }
 
-
+    // ------------------------- DELETE EMPLOYEE -------------------------
+    @Operation(
+            summary = "Delete an employee",
+            description = "Deletes an employee and all associated information (education, experience, etc.)"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Employee deleted successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    example = """
+                                    {
+                                      "status": "success",
+                                      "message": "Suppression réussie"
+                                    }
+                                    """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Employee not found"
+            )
+    })
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete an employee and all associated infos (education , experience ...)")
     public ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
         Map<String, Object> response = employeeService.deleteEmployee(id);
         return ResponseEntity.ok(response);
