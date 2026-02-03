@@ -8,9 +8,10 @@ import com.tarmiz.SIRH_backend.exception.TechnicalException.TechnicalException;
 import com.tarmiz.SIRH_backend.mapper.EmployeeCreateMapper;
 import com.tarmiz.SIRH_backend.mapper.EmployeeDetailsMapper;
 import com.tarmiz.SIRH_backend.mapper.EmployeesListMapper;
-import com.tarmiz.SIRH_backend.model.DTO.EmployeeCreateDTO;
-import com.tarmiz.SIRH_backend.model.DTO.EmployeeDetailsDTO;
-import com.tarmiz.SIRH_backend.model.DTO.EmployeesListDTO;
+import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeCreateDTO;
+import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeDetailsDTO;
+import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeIdNameDTO;
+import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeesListDTO;
 import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Address;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Department;
 import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Employee;
@@ -47,6 +48,17 @@ public class EmployeeService {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EmployeeNotFoundException(id));
         return employeeDetailsMapper.toResponse(employee);
+    }
+
+    @Transactional(readOnly = true)
+    public List<EmployeeIdNameDTO> getEmployeesIdAndFullName() {
+        return employeeRepository.findAll()
+                .stream()
+                .map(emp -> new EmployeeIdNameDTO(
+                        emp.getId(),
+                        emp.getFirstName() + " " + emp.getLastName()
+                ))
+                .toList();
     }
 
     // ------------------------- LIST EMPLOYEES -------------------------

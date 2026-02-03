@@ -2,8 +2,8 @@ package com.tarmiz.SIRH_backend.service;
 
 import com.tarmiz.SIRH_backend.config.JwtTokenProvider;
 import com.tarmiz.SIRH_backend.exception.BusinessException.BusinessException;
-import com.tarmiz.SIRH_backend.model.DTO.LoginRequestDTO;
-import com.tarmiz.SIRH_backend.model.DTO.LoginResponseDTO;
+import com.tarmiz.SIRH_backend.model.DTO.AuthDTOs.LoginRequestDTO;
+import com.tarmiz.SIRH_backend.model.DTO.AuthDTOs.LoginResponseDTO;
 import com.tarmiz.SIRH_backend.model.entity.User;
 import com.tarmiz.SIRH_backend.model.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;

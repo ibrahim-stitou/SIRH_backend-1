@@ -5,8 +5,8 @@ import com.tarmiz.SIRH_backend.enums.Gender;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Department;
 import com.tarmiz.SIRH_backend.model.repository.DepartmentRepository;
 import tools.jackson.databind.ObjectMapper;
-import com.tarmiz.SIRH_backend.model.DTO.AttestationDTO;
-import com.tarmiz.SIRH_backend.model.DTO.AttestationRequestDTO;
+import com.tarmiz.SIRH_backend.model.DTO.AttestationDTOs.AttestationDTO;
+import com.tarmiz.SIRH_backend.model.DTO.AttestationDTOs.AttestationRequestDTO;
 import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Employee;
 import com.tarmiz.SIRH_backend.model.repository.EmployeeRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -75,7 +75,7 @@ public class AttestationControllerTest {
     /* ==================== Attestation Requests ==================== */
 
 /*
-import com.tarmiz.SIRH_backend.model.DTO.AttestationRequestDTO;
+import com.tarmiz.SIRH_backend.model.DTO.AttestationDTOs.AttestationRequestDTO;
 
 @Test
     public void testCreateAttestationRequest() throws Exception {

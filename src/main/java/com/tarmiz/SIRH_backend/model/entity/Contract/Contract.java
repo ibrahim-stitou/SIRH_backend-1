@@ -53,8 +53,8 @@ public class Contract extends Auditable {
 
     private LocalDate endDate;
 
-    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL)
-    private List<ContractJob> jobs;
+    @OneToOne(mappedBy = "contract", cascade = CascadeType.ALL)
+    private ContractJob job;
 
     @OneToOne(mappedBy = "contract", cascade = CascadeType.ALL)
     private ContractSalary salary;

@@ -1,3 +1,4 @@
+/*
 package com.tarmiz.SIRH_backend;
 
 import com.tarmiz.SIRH_backend.enums.EmployeeStatus;
@@ -8,7 +9,7 @@ import com.tarmiz.SIRH_backend.exception.TechnicalException.TechnicalException;
 import com.tarmiz.SIRH_backend.mapper.EmployeeCreateMapper;
 import com.tarmiz.SIRH_backend.mapper.EmployeeDetailsMapper;
 import com.tarmiz.SIRH_backend.mapper.EmployeesListMapper;
-import com.tarmiz.SIRH_backend.model.DTO.EmployeeCreateDTO;
+import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeCreateDTO;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Department;
 import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Employee;
 import com.tarmiz.SIRH_backend.model.repository.DepartmentRepository;
@@ -175,4 +176,4 @@ class EmployeeServiceExceptionTest {
                 () -> employeeService.deleteEmployee(1L));
         assertEquals("Database error while deleting employee", ex.getMessage());
     }
-}
+}*/

@@ -1,7 +1,7 @@
 package com.tarmiz.SIRH_backend.mapper;
 
-import com.tarmiz.SIRH_backend.model.DTO.AttestationDTO;
-import com.tarmiz.SIRH_backend.model.DTO.AttestationRequestDTO;
+import com.tarmiz.SIRH_backend.model.DTO.AttestationDTOs.AttestationDTO;
+import com.tarmiz.SIRH_backend.model.DTO.AttestationDTOs.AttestationRequestDTO;
 import com.tarmiz.SIRH_backend.model.entity.Attestation.Attestation;
 import com.tarmiz.SIRH_backend.model.entity.Attestation.DemandeAttestation;
 import com.tarmiz.SIRH_backend.enums.FilePurpose;

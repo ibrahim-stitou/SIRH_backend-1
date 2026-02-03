@@ -10,7 +10,7 @@ ALTER TABLE employees
 
 CREATE TABLE contract_clauses (
                                   contract_id BIGINT NOT NULL,
-                                  clause_id VARCHAR(50) NOT NULL,
+                                  clause_id BIGINT NOT NULL,
                                   is_active BOOLEAN DEFAULT TRUE,
                                   added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                   PRIMARY KEY (contract_id, clause_id),

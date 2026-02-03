@@ -1,18 +1,16 @@
 package com.tarmiz.SIRH_backend.controller;
 
 import com.tarmiz.SIRH_backend.model.DTO.ApiListResponse;
-import com.tarmiz.SIRH_backend.model.DTO.GroupListDTO;
-import com.tarmiz.SIRH_backend.model.DTO.SiegeCreateDTO;
-import com.tarmiz.SIRH_backend.model.DTO.SiegeListDTO;
+import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.GroupListDTO;
+import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.SiegeCreateDTO;
+import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.SiegeListDTO;
 import com.tarmiz.SIRH_backend.service.GroupService;
 import com.tarmiz.SIRH_backend.service.SiegeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/sieges")

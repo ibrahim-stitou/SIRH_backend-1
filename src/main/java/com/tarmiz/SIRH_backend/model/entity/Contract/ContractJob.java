@@ -3,9 +3,14 @@ package com.tarmiz.SIRH_backend.model.entity.Contract;
 import com.tarmiz.SIRH_backend.enums.Contract.WorkLevelEnum;
 import com.tarmiz.SIRH_backend.enums.Contract.WorkModeEnum;
 import com.tarmiz.SIRH_backend.model.entity.Auditable;
+import com.tarmiz.SIRH_backend.model.entity.Job.Poste;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "contract_job")
 public class ContractJob extends Auditable {
 
@@ -13,21 +18,18 @@ public class ContractJob extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "contract_id", nullable = false)
     private Contract contract;
 
-    private String metier;
-    private String emploi;
-    private String poste;
+    @ManyToOne
+    @JoinColumn(name = "poste_id", nullable = false)
+    private Poste poste;
 
     @Enumerated(EnumType.STRING)
     private WorkModeEnum workMode;
 
     private String classification;
-
-    @Enumerated(EnumType.STRING)
-    private String workLocation;
 
     @Enumerated(EnumType.STRING)
     private WorkLevelEnum level;
@@ -36,4 +38,3 @@ public class ContractJob extends Auditable {
     private String responsibilities;
 
 }
-

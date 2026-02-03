@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Objects;
+
 @Entity
 @Getter
 @Setter
@@ -30,5 +32,24 @@ class TrialPeriodCriteriaId implements java.io.Serializable {
     private Long trialPeriodId;
     private Long trialCriteriaId;
 
-    // hashCode, equals
+    public TrialPeriodCriteriaId() {}
+
+    public TrialPeriodCriteriaId(Long trialPeriodId, Long trialCriteriaId) {
+        this.trialPeriodId = trialPeriodId;
+        this.trialCriteriaId = trialCriteriaId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TrialPeriodCriteriaId that = (TrialPeriodCriteriaId) o;
+        return Objects.equals(trialPeriodId, that.trialPeriodId) &&
+                Objects.equals(trialCriteriaId, that.trialCriteriaId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(trialPeriodId, trialCriteriaId);
+    }
 }

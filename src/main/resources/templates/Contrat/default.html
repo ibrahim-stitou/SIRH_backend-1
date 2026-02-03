@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Contrat de Travail</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 50px;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 40px 50px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .company-name {
+            font-size: 22px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .company-address {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .title {
+            font-size: 26px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: underline;
+            color: #34495e;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            margin: 15px 0;
+            font-size: 15px;
+        }
+
+        .content strong {
+            color: #2c3e50;
+        }
+
+        .footer {
+            margin-top: 50px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .signature {
+            margin-top: 60px;
+            text-align: left;
+        }
+
+        .signature-line {
+            margin-top: 60px;
+            border-top: 1px solid #7f8c8d;
+            width: 250px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+        <div class="company-name">${company_name}</div>
+        <div class="company-address">${company_address}, ${company_city}, ${company_country}</div>
+        <div class="company-contact">Tel: ${company_phone} | Email: ${company_email}</div>
+    </div>
+
+    <!-- Title -->
+    <div class="title">Contrat de Travail</div>
+
+    <!-- General Info -->
+    <div class="section-title">Informations Générales</div>
+    <div class="content">
+        <p><strong>Référence :</strong> ${contract_reference}</p>
+        <p><strong>Type de contrat :</strong> ${contract_type}</p>
+        <p><strong>Statut :</strong> ${contract_status}</p>
+        <p><strong>Date de signature :</strong> ${signature_date}</p>
+        <p><strong>Date de début :</strong> ${start_date}</p>
+        <p><strong>Date de fin :</strong> ${end_date}</p>
+        <p><strong>Description :</strong> ${contract_description}</p>
+    </div>
+
+    <!-- Employee Info -->
+    <div class="section-title">Informations sur l'Employé</div>
+    <div class="content">
+        <p><strong>Nom complet :</strong> ${employee_name}</p>
+        <p><strong>Matricule :</strong> ${employee_matricule}</p>
+        <p><strong>ID Employé :</strong> ${employee_id}</p>
+    </div>
+
+    <!-- Poste & Job -->
+    <div class="section-title">Poste et Fonction</div>
+    <div class="content">
+        <p><strong>Métier :</strong> ${job_metier}</p>
+        <p><strong>Emploi :</strong> ${job_emploi}</p>
+        <p><strong>Poste :</strong> ${job_poste}</p>
+        <p><strong>Niveau :</strong> ${job_level}</p>
+        <p><strong>Mode de travail :</strong> ${job_work_mode}</p>
+        <p><strong>Classification :</strong> ${job_classification}</p>
+        <p><strong>Responsabilités :</strong> ${job_responsibilities}</p>
+    </div>
+
+    <!-- Trial Period -->
+    <div class="section-title">Période d'Essai</div>
+    <div class="content">
+        <p><strong>Activée :</strong> ${trial_enabled}</p>
+        <p><strong>Durée (mois) :</strong> ${trial_duration_months}</p>
+        <p><strong>Durée (jours) :</strong> ${trial_duration_days}</p>
+        <p><strong>Date de fin :</strong> ${trial_end_date}</p>
+        <p><strong>Renouvelable :</strong> ${trial_renewable}</p>
+        <p><strong>Nombre maximal de renouvellements :</strong> ${trial_max_renewals}</p>
+        <p><strong>Conditions :</strong> ${trial_conditions}</p>
+        <p><strong>Critères d'acceptation :</strong></p>
+        <ul>
+            ${trial_criteria.map(c => `<li>${c.id} - ${c.label} - ${c.description}</li>`).join('')}
+        </ul>
+    </div>
+
+    <!-- Schedule -->
+    <div class="section-title">Horaires</div>
+    <div class="content">
+        <p><strong>Type d'horaires :</strong> ${schedule_type}</p>
+        <p><strong>Travail posté :</strong> ${schedule_shift_work}</p>
+        <p><strong>Heures/jour :</strong> ${schedule_hours_per_day}</p>
+        <p><strong>Jours/semaine :</strong> ${schedule_days_per_week}</p>
+        <p><strong>Heures/semaine :</strong> ${schedule_hours_per_week}</p>
+        <p><strong>Début :</strong> ${schedule_start_time}</p>
+        <p><strong>Fin :</strong> ${schedule_end_time}</p>
+        <p><strong>Durée pause (min) :</strong> ${schedule_break_duration}</p>
+        <p><strong>Congés annuels :</strong> ${schedule_annual_leave_days}</p>
+        <p><strong>Autres congés :</strong> ${schedule_other_leaves}</p>
+    </div>
+
+    <!-- Salary -->
+    <div class="section-title">Salaire</div>
+    <div class="content">
+        <p><strong>Salaire Brut :</strong> ${salary_brut}</p>
+        <p><strong>Salaire Net :</strong> ${salary_net}</p>
+        <p><strong>Devise :</strong> ${salary_currency}</p>
+        <p><strong>Méthode de paiement :</strong> ${salary_payment_method}</p>
+        <p><strong>Périodicité :</strong> ${salary_periodicity}</p>
+        <p><strong>Primes :</strong></p>
+        <ul>
+            ${salary_primes.map(p => `<li>${p.prime_type_id} - ${p.label} - ${p.amount} (Taxable: ${p.is_taxable}, CNSS: ${p.is_subject_to_cnss})</li>`).join('')}
+        </ul>
+        <p><strong>Avantages :</strong></p>
+        <ul>
+            <li>Voiture: ${benefit_voiture}</li>
+            <li>Logement: ${benefit_logement}</li>
+            <li>Téléphone: ${benefit_telephone}</li>
+            <li>Assurance santé: ${benefit_assurance_sante}</li>
+            <li>Tickets restaurant: ${benefit_tickets_restaurant}</li>
+        </ul>
+        <p><strong>Indemnités :</strong> ${indemnites}</p>
+    </div>
+
+    <!-- Legal -->
+    <div class="section-title">Aspects Légaux</div>
+    <div class="content">
+        <p><strong>CNSS :</strong> ${legal_cnss_affiliation}</p>
+        <p><strong>AMO :</strong> ${legal_amo_affiliation}</p>
+        <p><strong>IR applicable :</strong> ${legal_ir_applicable}</p>
+        <p><strong>Clause de confidentialité :</strong> ${legal_clause_confidentialite}</p>
+        <p><strong>Clause de non-concurrence :</strong> ${legal_clause_non_concurrence}</p>
+    </div>
+
+    <!-- Signed Documents -->
+    <div class="section-title">Documents Signés</div>
+    <div class="content">
+        <ul>
+            ${signed_documents.map(d => `<li><strong>${d.name}</strong> - <a href="${d.url}">${d.url}</a> - ${d.uploaded_at}</li>`).join('')}
+        </ul>
+    </div>
+
+    <!-- Audit / Historique -->
+    <div class="section-title">Historique</div>
+    <div class="content">
+        <p><strong>Créé par :</strong> ${historique_created_by}</p>
+        <p><strong>Créé le :</strong> ${historique_created_at}</p>
+        <p><strong>Mis à jour par :</strong> ${historique_updated_by}</p>
+        <p><strong>Mis à jour le :</strong> ${historique_updated_at}</p>
+    </div>
+
+    <div class="footer">
+        Ce document est généré automatiquement et constitue une preuve contractuelle.
+    </div>
+
+    <div class="signature">
+        <div class="signature-line">Signature Employeur</div>
+        <div class="signature-line">Signature Employé</div>
+    </div>
+
+</div>
+</body>
+</html>

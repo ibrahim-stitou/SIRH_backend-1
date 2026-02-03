@@ -39,4 +39,3 @@ public class TrialPeriod extends Auditable {
     @OneToMany(mappedBy = "trialPeriod", cascade = CascadeType.ALL)
     private List<TrialPeriodCriteria> trialPeriodCriteriaList;
 }
-

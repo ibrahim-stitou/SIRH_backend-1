@@ -1,6 +1,6 @@
 package com.tarmiz.SIRH_backend.mapper;
 
-import com.tarmiz.SIRH_backend.model.DTO.GroupListDTO;
+import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.GroupListDTO;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Group;
 import org.springframework.stereotype.Component;
 

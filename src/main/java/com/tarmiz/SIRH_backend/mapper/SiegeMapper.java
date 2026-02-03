@@ -1,7 +1,7 @@
 package com.tarmiz.SIRH_backend.mapper;
 
-import com.tarmiz.SIRH_backend.model.DTO.SiegeCreateDTO;
-import com.tarmiz.SIRH_backend.model.DTO.SiegeListDTO;
+import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.SiegeCreateDTO;
+import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.SiegeListDTO;
 import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Address;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Siege;
 import org.mapstruct.*;

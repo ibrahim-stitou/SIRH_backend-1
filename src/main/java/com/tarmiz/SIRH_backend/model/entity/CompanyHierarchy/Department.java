@@ -1,6 +1,7 @@
 package com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy;
 
 import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Employee;
+import com.tarmiz.SIRH_backend.model.entity.Job.Poste;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,5 +35,8 @@ public class Department {
 
     @OneToMany(mappedBy = "department")
     private List<Employee> employees = new ArrayList<>();
+
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Poste> postes;
 }
 

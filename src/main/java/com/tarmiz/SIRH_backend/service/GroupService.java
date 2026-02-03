@@ -4,10 +4,12 @@ import com.tarmiz.SIRH_backend.exception.BusinessException.BusinessException;
 import com.tarmiz.SIRH_backend.exception.BusinessException.GroupNotEmptyException;
 import com.tarmiz.SIRH_backend.mapper.GroupDetailsMapper;
 import com.tarmiz.SIRH_backend.mapper.GroupMapper;
+import com.tarmiz.SIRH_backend.mapper.ManagerMapper;
 import com.tarmiz.SIRH_backend.model.DTO.ApiListResponse;
-import com.tarmiz.SIRH_backend.model.DTO.GroupDetailsDTO;
-import com.tarmiz.SIRH_backend.model.DTO.GroupListDTO;
-import com.tarmiz.SIRH_backend.model.DTO.GroupMembersDTO;
+import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.GroupDetailsDTO;
+import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.GroupListDTO;
+import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.GroupMembersDTO;
+import com.tarmiz.SIRH_backend.model.DTO.ParamsDTOs.ManagersDTO;
 import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Employee;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Group;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Siege;
@@ -16,6 +18,7 @@ import com.tarmiz.SIRH_backend.model.repository.GroupRepository;
 import com.tarmiz.SIRH_backend.model.repository.SiegeRepository;
 import com.tarmiz.SIRH_backend.util.Filtres.GroupSpecifications;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
@@ -27,6 +30,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class GroupService {
 
     @Autowired
@@ -42,6 +46,9 @@ public class GroupService {
 
     @Autowired
     private GroupMapper groupMapper;
+
+    @Autowired
+    private final ManagerMapper managerMapper;
 
     public ApiListResponse<GroupListDTO> getGroups(Integer start, Integer length, String dir,
                                                    String name, String code,
@@ -200,5 +207,15 @@ public class GroupService {
         groupRepository.save(group);
 
         return mapper.toDetailsDTO(group);
+    }
+
+    public List<ManagersDTO> getAllManagers() {
+
+        return groupRepository.findAllGroupsWithManagers()
+                .stream()
+                .map(Group::getManager)
+                .distinct()
+                .map(managerMapper::toDto)
+                .toList();
     }
 }

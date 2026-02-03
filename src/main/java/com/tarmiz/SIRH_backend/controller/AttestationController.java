@@ -3,6 +3,9 @@ package com.tarmiz.SIRH_backend.controller;
 import com.tarmiz.SIRH_backend.model.DTO.*;
 import com.tarmiz.SIRH_backend.enums.AttestationDemandStatus;
 import com.tarmiz.SIRH_backend.enums.AttestationType;
+import com.tarmiz.SIRH_backend.model.DTO.AttestationDTOs.AttestationDTO;
+import com.tarmiz.SIRH_backend.model.DTO.AttestationDTOs.AttestationRequestCreationDTO;
+import com.tarmiz.SIRH_backend.model.DTO.AttestationDTOs.AttestationRequestDTO;
 import com.tarmiz.SIRH_backend.service.AttestationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -11,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,11 +25,11 @@ import java.time.LocalDateTime;
         description = "Gestion des attestations et des demandes d'attestation"
 )
 @RestController
+@AllArgsConstructor
 @RequestMapping("/")
 public class AttestationController {
 
-    @Autowired
-    private AttestationService attestationService;
+    private final AttestationService attestationService;
 
     /* ================== Attestation Requests ================== */
 
@@ -154,9 +158,9 @@ public class AttestationController {
             )
     )
     @DeleteMapping("/attestationRequests/{id}")
-    public com.tarmiz.SIRH_backend.model.DTO.ApiResponse cancelRequest(@PathVariable Long id) {
+    public ApiResponseDTO<Void> cancelRequest(@PathVariable Long id) {
         attestationService.deleteRequest(id);
-        return com.tarmiz.SIRH_backend.model.DTO.ApiResponse.success("Attestation request canceled successfully");
+        return ApiResponseDTO.success("Attestation request canceled successfully", null);
     }
 
     /* ================== Attestations ================== */
@@ -232,12 +236,12 @@ public class AttestationController {
             )
     )
     @PostMapping("/attestations/{requestId}")
-    public com.tarmiz.SIRH_backend.model.DTO.ApiResponse generateAttestationPdf(
+    public ApiResponseDTO<Void> generateAttestationPdf(
             @PathVariable Long requestId
     ) {
         attestationService.generateAttestation(requestId);
 
-        return com.tarmiz.SIRH_backend.model.DTO.ApiResponse.success("Attestation generated successfully");
+        return ApiResponseDTO.success("Attestation generated successfully", null);
     }
 
     @PutMapping("/attestations/{id}")

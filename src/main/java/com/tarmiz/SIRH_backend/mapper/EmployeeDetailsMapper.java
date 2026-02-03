@@ -1,6 +1,6 @@
 package com.tarmiz.SIRH_backend.mapper;
 
-import com.tarmiz.SIRH_backend.model.DTO.EmployeeDetailsDTO;
+import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeDetailsDTO;
 import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Employee;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

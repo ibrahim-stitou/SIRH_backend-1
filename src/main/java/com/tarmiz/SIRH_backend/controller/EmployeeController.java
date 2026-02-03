@@ -1,7 +1,8 @@
 package com.tarmiz.SIRH_backend.controller;
 
-import com.tarmiz.SIRH_backend.model.DTO.EmployeeCreateDTO;
-import com.tarmiz.SIRH_backend.model.DTO.EmployeeDetailsDTO;
+import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeCreateDTO;
+import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeDetailsDTO;
+import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeIdNameDTO;
 import com.tarmiz.SIRH_backend.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -53,6 +55,41 @@ public class EmployeeController {
             @PathVariable Long id) {
         EmployeeDetailsDTO dto = employeeService.getEmployeeDetails(id);
         return ResponseEntity.ok(dto);
+    }
+
+    @Operation(
+            summary = "Get list of employees with ID and full name",
+            description = "Returns a list of employees containing only their ID and full name (firstName + lastName)"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Employees list retrieved successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    example = """
+                                {
+                                  "status": "success",
+                                  "message": "Liste des employés récupérée avec succès",
+                                  "data": [
+                                    {"id": 1, "fullName": "Ahmed El Amrani"},
+                                    {"id": 2, "fullName": "Fatima Zahra"}
+                                  ]
+                                }
+                                """
+                            )
+                    )
+            )
+    })
+    @GetMapping("/id-name")
+    public ResponseEntity<Map<String, Object>> getEmployeesIdAndFullName() {
+        List<EmployeeIdNameDTO> data = employeeService.getEmployeesIdAndFullName();
+        return ResponseEntity.ok(Map.of(
+                "status", "success",
+                "message", "Liste des employés récupérée avec succès",
+                "data", data
+        ));
     }
 
 

@@ -1,7 +1,6 @@
 package com.tarmiz.SIRH_backend.model.entity.Contract;
 
 
-import com.tarmiz.SIRH_backend.enums.Contract.ContractConditionId;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,9 +13,9 @@ public class TrialCriteria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private ContractConditionId id;
+    private Long id;
 
-    private String label;
+    private String name;
 
     @Column(columnDefinition = "TEXT")
     private String description;

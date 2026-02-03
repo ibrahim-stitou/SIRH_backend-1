@@ -2,8 +2,8 @@ package com.tarmiz.SIRH_backend.controller;
 
 import com.tarmiz.SIRH_backend.enums.Relationship;
 import com.tarmiz.SIRH_backend.mapper.EmployeeDetailsMapper;
-import com.tarmiz.SIRH_backend.model.DTO.EmployeeDetailsDTO;
-import com.tarmiz.SIRH_backend.model.DTO.EmployeeSubResourcesDTO;
+import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeDetailsDTO;
+import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeSubResourcesDTO;
 import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.*;
 import com.tarmiz.SIRH_backend.service.EmployeeSubResourcesService;
 import io.swagger.v3.oas.annotations.Operation;

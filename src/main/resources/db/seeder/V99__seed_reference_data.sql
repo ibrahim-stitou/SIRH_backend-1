@@ -178,7 +178,8 @@ VALUES
     ('default', 'SALAIRE', '/templates/Bulletin de paie/default.html', TRUE, NOW(), 'system'),
 
     -- Contrat
-    ('default', 'TRAVAIL', '/templates/Contrat/default.html', TRUE, NOW(), 'system');
+    ('default', 'TRAVAIL', '/templates/Contrat/default.html', TRUE, NOW(), 'system'),
+    ('default', 'GENERATED', '/templates/Contrat/default.html', TRUE, NOW(), 'system');
 
 
 -- Seed demande_attestation
@@ -215,3 +216,40 @@ VALUES
 
 -- Exemple 10
 (10, 'OTHER', CURRENT_DATE, CURRENT_DATE + INTERVAL '3 days', 'PENDING', 'Autre demande', NULL, NOW(), NOW());
+
+
+INSERT INTO metier (id, code, libelle, domaine, statut) VALUES
+                                                            (1, 'DEV', 'Développement logiciel', 'IT', 'actif'),
+                                                            (2, 'RH', 'Ressources humaines', 'RH', 'actif'),
+                                                            (3, 'FIN', 'Finance & Comptabilité', 'Finance', 'actif'),
+                                                            (4, 'OPS', 'Opérations', 'Logistique', 'actif');
+
+INSERT INTO emploi (id, metier_id, code, libelle, statut) VALUES
+-- IT
+(1, 1, 'BE_DEV', 'Backend Developer', 'actif'),
+(2, 1, 'FE_DEV', 'Frontend Developer', 'actif'),
+
+-- RH
+(3, 2, 'HR_GEN', 'RH Généraliste', 'actif'),
+
+-- Finance
+(4, 3, 'ACC', 'Comptable', 'actif'),
+
+-- Operations
+(5, 4, 'LOG_SUP', 'Superviseur Logistique', 'actif');
+
+
+INSERT INTO poste (id, emploi_id, departement_id, code, libelle, statut) VALUES
+-- IT Department (dept 1)
+(1, 1, 1, 'BE_JUN', 'Backend Developer Junior', 'actif'),
+(2, 1, 1, 'BE_SEN', 'Backend Developer Senior', 'actif'),
+(3, 2, 1, 'FE_JUN', 'Frontend Developer Junior', 'actif'),
+
+-- RH Department (dept 2)
+(4, 3, 2, 'RH_GEN', 'RH Généraliste', 'actif'),
+
+-- Finance Department (dept 3)
+(5, 4, 3, 'ACC_STD', 'Comptable', 'actif'),
+
+-- Operations Department (dept 4)
+(6, 5, 4, 'LOG_SUP', 'Superviseur Logistique', 'actif');

@@ -2,8 +2,8 @@ package com.tarmiz.SIRH_backend.controller;
 
 
 import com.tarmiz.SIRH_backend.model.DTO.ApiListResponse;
-import com.tarmiz.SIRH_backend.model.DTO.GroupListDTO;
-import com.tarmiz.SIRH_backend.model.DTO.UpdateGroupMembersDTO;
+import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.GroupListDTO;
+import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.UpdateGroupMembersDTO;
 import com.tarmiz.SIRH_backend.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

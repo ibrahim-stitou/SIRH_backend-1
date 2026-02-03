@@ -3,9 +3,14 @@ package com.tarmiz.SIRH_backend.model.entity.Contract;
 import com.tarmiz.SIRH_backend.enums.Contract.ScheduleTypeEnum;
 import com.tarmiz.SIRH_backend.model.entity.Auditable;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalTime;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "contract_schedules")
 public class ContractSchedule extends Auditable {
 
@@ -33,7 +38,5 @@ public class ContractSchedule extends Auditable {
 
     @Column(columnDefinition = "TEXT")
     private String otherLeaves;
-
-    // Getters and setters
 }
 

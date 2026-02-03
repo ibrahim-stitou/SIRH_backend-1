@@ -14,5 +14,6 @@ public enum FilePurpose {
     TRAVAIL,
     STAGE   ,
     SIGNED_CONTRACT,
+    GENERATED, SCANNED,
     OTHER
 }
