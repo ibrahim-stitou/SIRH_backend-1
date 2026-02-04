@@ -1,9 +1,9 @@
 -- =========================================
 -- Seed Company
 -- =========================================
-INSERT INTO company (name, name_ar, phone, email, created_at, updated_at)
+INSERT INTO company (id,name, name_ar, phone, email, created_at, updated_at)
 VALUES
-    ('TechCorp', 'تك كورب', '+212 530000000', 'contact@techcorp.com', NOW(), NOW());
+    (1,'TechCorp', 'تك كورب', '+212 530000000', 'contact@techcorp.com', NOW(), NOW());
 
 
 -- =========================================
@@ -18,12 +18,12 @@ VALUES
 -- =========================================
 -- Seed Departments
 -- =========================================
-INSERT INTO departments (id, name, name_ar, description, company_id, created_at, updated_at)
+INSERT INTO departments (id, name, name_ar, description, status, company_id, created_by, created_date, last_modified_by, last_modified_date)
 VALUES
-    (1,'IT','تقنية المعلومات','Département IT',1,NOW(),NOW()),
-    (2,'RH','الموارد البشرية','Département RH',1,NOW(),NOW()),
-    (3,'Finance','المالية','Département Finance',1,NOW(),NOW()),
-    (4,'Marketing','التسويق','Département Marketing',1,NOW(),NOW());
+    (1, 'IT', 'تقنية المعلومات', 'Département IT', 'ACTIVE', 1, 'system', NOW(), 'system', NOW()),
+    (2, 'RH', 'الموارد البشرية', 'Département RH', 'ACTIVE', 1, 'system', NOW(), 'system', NOW()),
+    (3, 'Finance', 'المالية', 'Département Finance', 'ACTIVE', 1, 'system', NOW(), 'system', NOW()),
+    (4, 'Marketing', 'التسويق', 'Département Marketing', 'ACTIVE', 1, 'system', NOW(), 'system', NOW());
 
 -- =========================================
 -- Seed Groups (with manager_id pointing to employee)

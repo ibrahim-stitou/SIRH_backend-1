@@ -1,5 +1,7 @@
 package com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy;
 
+import com.tarmiz.SIRH_backend.enums.DepartmentStatus;
+import com.tarmiz.SIRH_backend.model.entity.Auditable;
 import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Employee;
 import com.tarmiz.SIRH_backend.model.entity.Job.Poste;
 import jakarta.persistence.*;
@@ -15,7 +17,7 @@ import java.util.List;
 @Table(name = "departments", uniqueConstraints = {
         @UniqueConstraint(columnNames = "name")
 })
-public class Department {
+public class Department extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +30,10 @@ public class Department {
 
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private DepartmentStatus status = DepartmentStatus.ACTIVE;
 
     @ManyToOne
     @JoinColumn(name = "company_id", nullable = false)
