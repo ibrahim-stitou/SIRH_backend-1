@@ -73,10 +73,10 @@ public class ContractController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping
-    public ResponseEntity<ApiResponseDTO<Contract>> createContract(
+    public ResponseEntity<ApiResponseDTO<ContractDetailsDTO>> createContract(
             @RequestBody ContractCreationDTO dto) throws Exception {
 
-        Contract createdContract = contractService.createContract(dto);
+        ContractDetailsDTO createdContract = contractService.createContract(dto);
         return new ResponseEntity<>(ApiResponseDTO.success("Contract created successfully", createdContract), HttpStatus.CREATED);
     }
 

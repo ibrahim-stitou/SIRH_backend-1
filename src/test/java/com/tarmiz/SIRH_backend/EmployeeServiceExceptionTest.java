@@ -12,7 +12,7 @@ import com.tarmiz.SIRH_backend.mapper.EmployeesListMapper;
 import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeCreateDTO;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Department;
 import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Employee;
-import com.tarmiz.SIRH_backend.model.repository.DepartmentRepository;
+import com.tarmiz.SIRH_backend.model.repository.CompanyHierarchyRepos.DepartmentRepository;
 import com.tarmiz.SIRH_backend.model.repository.EmployeeRepository;
 import com.tarmiz.SIRH_backend.service.EmployeeService;
 import org.junit.jupiter.api.BeforeEach;

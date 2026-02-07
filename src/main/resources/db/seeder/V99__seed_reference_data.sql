@@ -7,7 +7,8 @@ VALUES
 
 
 -- =========================================
--- Seed Sieges (Headquarters)
+-- Seed Sieges (
+-- Headquarters)
 -- =========================================
 INSERT INTO sieges (name, code, company_id, phone, created_at, updated_at)
 VALUES
@@ -26,7 +27,7 @@ VALUES
     (4, 'Marketing', 'التسويق', 'Département Marketing', 'ACTIVE', 1, 'system', NOW(), 'system', NOW());
 
 -- =========================================
--- Seed Groups (with manager_id pointing to employee)
+-- Seed Groups
 -- =========================================
 INSERT INTO groups (id, name, code, siege_id, description, manager_id)
 VALUES

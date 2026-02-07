@@ -6,7 +6,7 @@ import com.tarmiz.SIRH_backend.model.entity.Attestation.Attestation;
 import com.tarmiz.SIRH_backend.model.entity.Attestation.DemandeAttestation;
 import com.tarmiz.SIRH_backend.enums.FilePurpose;
 import com.tarmiz.SIRH_backend.enums.EntityType;
-import com.tarmiz.SIRH_backend.service.FileService;
+import com.tarmiz.SIRH_backend.service.document.FileService;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 

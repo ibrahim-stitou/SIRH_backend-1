@@ -4,8 +4,8 @@ package com.tarmiz.SIRH_backend.service.SettingsServices;
 import com.tarmiz.SIRH_backend.exception.BusinessException.BusinessException;
 import com.tarmiz.SIRH_backend.model.DTO.ParamsDTOs.ClauseUpdateDTO;
 import com.tarmiz.SIRH_backend.model.entity.Contract.Clause;
-import com.tarmiz.SIRH_backend.model.repository.ClauseRepository;
-import com.tarmiz.SIRH_backend.model.repository.ContractClauseRepository;
+import com.tarmiz.SIRH_backend.model.repository.ContractRepos.ClauseRepository;
+import com.tarmiz.SIRH_backend.model.repository.ContractRepos.ContractClauseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

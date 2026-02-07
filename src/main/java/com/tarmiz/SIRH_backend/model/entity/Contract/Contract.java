@@ -1,6 +1,7 @@
 package com.tarmiz.SIRH_backend.model.entity.Contract;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.tarmiz.SIRH_backend.enums.Contract.ContractStatusEnum;
 import com.tarmiz.SIRH_backend.enums.Contract.ContractTypeEnum;
 import com.tarmiz.SIRH_backend.model.entity.Auditable;
@@ -66,5 +67,6 @@ public class Contract extends Auditable {
     private TrialPeriod trialPeriod;
 
     @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<ContractClause> contractClauses;
 }

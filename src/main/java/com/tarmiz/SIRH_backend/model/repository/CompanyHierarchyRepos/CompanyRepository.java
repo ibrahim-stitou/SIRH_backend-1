@@ -1,4 +1,4 @@
-package com.tarmiz.SIRH_backend.model.repository;
+package com.tarmiz.SIRH_backend.model.repository.CompanyHierarchyRepos;
 
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Company;
 import org.springframework.data.jpa.repository.JpaRepository;

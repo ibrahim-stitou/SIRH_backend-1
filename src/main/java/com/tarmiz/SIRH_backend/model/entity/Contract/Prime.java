@@ -1,11 +1,17 @@
 package com.tarmiz.SIRH_backend.model.entity.Contract;
 
+import com.tarmiz.SIRH_backend.enums.Contract.PrimeTypeIdEnum;
 import com.tarmiz.SIRH_backend.model.entity.Auditable;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 
+@Getter
+@Setter
 @Entity
-@Table(name = "contract_primes")
+@Table(name = "primes")
 public class Prime extends Auditable {
 
     @Id
@@ -17,7 +23,7 @@ public class Prime extends Auditable {
     private ContractSalary contractSalary;
 
     @Column(name = "prime_type_id")
-    private String primeTypeId;
+    private PrimeTypeIdEnum primeTypeId;
 
     @Column(nullable = false)
     private String label;
@@ -30,6 +36,4 @@ public class Prime extends Auditable {
 
     @Column(name = "is_subject_to_cnss", nullable = false)
     private Boolean isSubjectToCnss = true;
-
 }
-

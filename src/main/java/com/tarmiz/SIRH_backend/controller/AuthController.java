@@ -2,8 +2,8 @@ package com.tarmiz.SIRH_backend.controller;
 
 import com.tarmiz.SIRH_backend.model.DTO.AuthDTOs.LoginRequestDTO;
 import com.tarmiz.SIRH_backend.model.DTO.AuthDTOs.LoginResponseDTO;
-import com.tarmiz.SIRH_backend.service.AuthService;
-import com.tarmiz.SIRH_backend.service.TokenBlacklistService;
+import com.tarmiz.SIRH_backend.service.Auth.AuthService;
+import com.tarmiz.SIRH_backend.service.Auth.TokenBlacklistService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

@@ -1,4 +1,4 @@
-package com.tarmiz.SIRH_backend.service;
+package com.tarmiz.SIRH_backend.service.Auth;
 
 import org.springframework.stereotype.Service;
 

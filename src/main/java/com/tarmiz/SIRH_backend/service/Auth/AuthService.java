@@ -1,4 +1,4 @@
-package com.tarmiz.SIRH_backend.service;
+package com.tarmiz.SIRH_backend.service.Auth;
 
 import com.tarmiz.SIRH_backend.config.JwtTokenProvider;
 import com.tarmiz.SIRH_backend.exception.BusinessException.BusinessException;

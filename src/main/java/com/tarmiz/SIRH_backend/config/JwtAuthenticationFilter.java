@@ -1,6 +1,6 @@
 package com.tarmiz.SIRH_backend.config;
 
-import com.tarmiz.SIRH_backend.service.TokenBlacklistService;
+import com.tarmiz.SIRH_backend.service.Auth.TokenBlacklistService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

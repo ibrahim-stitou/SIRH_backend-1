@@ -1,4 +1,4 @@
-package com.tarmiz.SIRH_backend.model.repository;
+package com.tarmiz.SIRH_backend.model.repository.FilesRepos;
 
 import com.tarmiz.SIRH_backend.enums.EntityType;
 import com.tarmiz.SIRH_backend.enums.FilePurpose;

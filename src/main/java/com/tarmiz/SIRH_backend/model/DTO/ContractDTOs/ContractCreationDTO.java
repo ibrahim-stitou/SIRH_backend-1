@@ -1,6 +1,7 @@
 package com.tarmiz.SIRH_backend.model.DTO.ContractDTOs;
 
 import com.tarmiz.SIRH_backend.enums.Contract.ContractTypeEnum;
+import com.tarmiz.SIRH_backend.enums.Contract.PrimeTypeIdEnum;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -80,7 +81,7 @@ public class ContractCreationDTO {
         @Getter
         @Setter
         public static class PrimeDTO {
-            private Long primeTypeId;
+            private PrimeTypeIdEnum primeTypeId;
             private BigDecimal amount;
             private Boolean isTaxable;
             private Boolean isSubjectToCnss;

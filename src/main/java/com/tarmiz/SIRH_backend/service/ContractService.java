@@ -14,11 +14,18 @@ import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Employee;
 import com.tarmiz.SIRH_backend.model.entity.Files.File;
 import com.tarmiz.SIRH_backend.model.entity.Job.Poste;
 import com.tarmiz.SIRH_backend.model.repository.*;
+import com.tarmiz.SIRH_backend.model.repository.ContractRepos.ClauseRepository;
+import com.tarmiz.SIRH_backend.model.repository.ContractRepos.ContractClauseRepository;
+import com.tarmiz.SIRH_backend.model.repository.ContractRepos.ContractRepository;
+import com.tarmiz.SIRH_backend.model.repository.FilesRepos.FileRepository;
 import com.tarmiz.SIRH_backend.model.repository.JobRepos.PosteRepository;
+import com.tarmiz.SIRH_backend.service.document.FileService;
 import com.tarmiz.SIRH_backend.service.document.PdfGeneratorService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.math.BigDecimal;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,12 +33,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.databind.ObjectMapper;
 
-import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -85,7 +90,7 @@ public class ContractService {
     }
 
     @Transactional
-    public Contract createContract(ContractCreationDTO dto) {
+    public ContractDetailsDTO createContract(ContractCreationDTO dto) {
         ObjectMapper mapper = new ObjectMapper();
         System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(dto));
 
@@ -216,7 +221,48 @@ public class ContractService {
             salary.setSalaryBrut(s.getSalaryBrut());
             salary.setSalaryNet(s.getSalaryNet());
             salary.setCurrency(s.getCurrency() != null ? s.getCurrency() : "MAD");
+            salary.setPaymentMethod(s.getPaymentMethod() != null
+                    ? PaymentMethodEnum.valueOf(s.getPaymentMethod())
+                    : null);
+            salary.setPeriodicity(s.getPeriodicity() != null
+                    ? PaymentPeriodicityEnum.valueOf(s.getPeriodicity())
+                    : null);
+
+            // --- 7.a Handle Primes ---
+
+            if (s.getPrimes() != null && !s.getPrimes().isEmpty()) {
+                List<Prime> primes = s.getPrimes().stream()
+                        .filter(pdto -> pdto != null && pdto.getPrimeTypeId() != null)
+                        .map(pdto -> {
+
+                            PrimeTypeIdEnum primeType = pdto.getPrimeTypeId();
+
+                            Prime prime = new Prime();
+                            prime.setContractSalary(salary);
+                            prime.setPrimeTypeId(primeType);
+
+                            prime.setLabel(primeType.getLabel());
+
+                            prime.setAmount(
+                                    pdto.getAmount() != null ? pdto.getAmount() : BigDecimal.ZERO
+                            );
+
+                            prime.setIsTaxable(
+                                    pdto.getIsTaxable() != null ? pdto.getIsTaxable() : true
+                            );
+
+                            prime.setIsSubjectToCnss(
+                                    pdto.getIsSubjectToCnss() != null ? pdto.getIsSubjectToCnss() : true
+                            );
+
+                            return prime;
+                        })
+                        .collect(Collectors.toList());
+                salary.setPrimes(primes);
+            }
+
             savedContract.setSalary(salary);
+
         } else {
             log.debug("No salary information provided, skipping");
         }
@@ -227,6 +273,9 @@ public class ContractService {
             ContractSchedule schedule = new ContractSchedule();
             schedule.setContract(savedContract);
             schedule.setShiftWork(sc.getWorkShift() != null ? sc.getWorkShift() : false);
+            if (sc.getScheduleType() != null) {
+                schedule.setScheduleType(ScheduleTypeEnum.valueOf(sc.getScheduleType()));
+            }
             savedContract.setSchedule(schedule);
         } else {
             log.debug("No schedule information provided, skipping");
@@ -236,7 +285,11 @@ public class ContractService {
         log.info("========== Contract creation completed successfully. Contract ID: {} ==========",
                 finalSavedContract.getId());
 
-        return finalSavedContract;
+        // --- 10. Map to DTO ---
+        ContractDetailsDTO dtoResult = contractDetailsMapper.toDTO(finalSavedContract, null);
+
+
+        return dtoResult;
     }
 
 

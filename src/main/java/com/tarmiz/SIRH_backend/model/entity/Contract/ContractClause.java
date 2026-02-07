@@ -1,5 +1,6 @@
 package com.tarmiz.SIRH_backend.model.entity.Contract;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +20,7 @@ public class ContractClause {
     @ManyToOne
     @MapsId("contractId")
     @JoinColumn(name = "contract_id")
+    @JsonBackReference
     private Contract contract;
 
     @ManyToOne

@@ -1,4 +1,4 @@
-package com.tarmiz.SIRH_backend.model.repository;
+package com.tarmiz.SIRH_backend.model.repository.AttestationRepos;
 
 import com.tarmiz.SIRH_backend.model.entity.Attestation.DemandeAttestation;
 import com.tarmiz.SIRH_backend.enums.AttestationDemandStatus;

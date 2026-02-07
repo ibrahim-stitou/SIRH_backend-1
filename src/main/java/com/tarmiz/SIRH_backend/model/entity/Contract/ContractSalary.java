@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -44,6 +45,9 @@ public class ContractSalary extends Auditable {
 
     @Enumerated(EnumType.STRING)
     private PaymentPeriodicityEnum periodicity;
+
+    @OneToMany(mappedBy = "contractSalary", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Prime> primes;
 
     @Min(1)
     @Max(31)

@@ -4,7 +4,7 @@ import com.tarmiz.SIRH_backend.model.DTO.ApiResponseDTO;
 import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.DepartmentListDTO;
 import com.tarmiz.SIRH_backend.model.DTO.DepartmentCreationDTO;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Department;
-import com.tarmiz.SIRH_backend.service.DepartmentService;
+import com.tarmiz.SIRH_backend.service.SettingsServices.DepartmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

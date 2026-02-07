@@ -7,7 +7,7 @@ import com.tarmiz.SIRH_backend.model.DTO.ParamsDTOs.JobDTOs.PosteDetailDTO;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Department;
 import com.tarmiz.SIRH_backend.model.entity.Job.Emploi;
 import com.tarmiz.SIRH_backend.model.entity.Job.Poste;
-import com.tarmiz.SIRH_backend.model.repository.DepartmentRepository;
+import com.tarmiz.SIRH_backend.model.repository.CompanyHierarchyRepos.DepartmentRepository;
 import com.tarmiz.SIRH_backend.model.repository.JobRepos.EmploiRepository;
 import com.tarmiz.SIRH_backend.model.repository.JobRepos.PosteRepository;
 import lombok.RequiredArgsConstructor;

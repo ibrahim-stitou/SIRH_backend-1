@@ -3,8 +3,8 @@ package com.tarmiz.SIRH_backend.service.SettingsServices;
 import com.tarmiz.SIRH_backend.exception.BusinessException.BusinessException;
 import com.tarmiz.SIRH_backend.model.DTO.ParamsDTOs.TrialCriteriaUpdateDTO;
 import com.tarmiz.SIRH_backend.model.entity.Contract.TrialCriteria;
-import com.tarmiz.SIRH_backend.model.repository.TrialCriteriaRepository;
-import com.tarmiz.SIRH_backend.model.repository.TrialPeriodCriteriaRepository;
+import com.tarmiz.SIRH_backend.model.repository.ContractRepos.TrialCriteriaRepository;
+import com.tarmiz.SIRH_backend.model.repository.ContractRepos.TrialPeriodCriteriaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

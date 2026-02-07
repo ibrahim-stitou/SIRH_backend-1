@@ -3,7 +3,7 @@ package com.tarmiz.SIRH_backend;
 import com.tarmiz.SIRH_backend.enums.EmployeeStatus;
 import com.tarmiz.SIRH_backend.enums.Gender;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Department;
-import com.tarmiz.SIRH_backend.model.repository.DepartmentRepository;
+import com.tarmiz.SIRH_backend.model.repository.CompanyHierarchyRepos.DepartmentRepository;
 import tools.jackson.databind.ObjectMapper;
 import com.tarmiz.SIRH_backend.model.DTO.AttestationDTOs.AttestationDTO;
 import com.tarmiz.SIRH_backend.model.DTO.AttestationDTOs.AttestationRequestDTO;

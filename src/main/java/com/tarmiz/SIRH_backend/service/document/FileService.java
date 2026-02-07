@@ -1,9 +1,9 @@
-package com.tarmiz.SIRH_backend.service;
+package com.tarmiz.SIRH_backend.service.document;
 
 import com.tarmiz.SIRH_backend.enums.EntityType;
 import com.tarmiz.SIRH_backend.enums.FilePurpose;
 import com.tarmiz.SIRH_backend.model.entity.Files.File;
-import com.tarmiz.SIRH_backend.model.repository.FileRepository;
+import com.tarmiz.SIRH_backend.model.repository.FilesRepos.FileRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;

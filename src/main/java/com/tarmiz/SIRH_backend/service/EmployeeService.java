@@ -1,5 +1,6 @@
 package com.tarmiz.SIRH_backend.service;
 
+import com.tarmiz.SIRH_backend.enums.DepartmentStatus;
 import com.tarmiz.SIRH_backend.enums.EmployeeStatus;
 import com.tarmiz.SIRH_backend.enums.Gender;
 import com.tarmiz.SIRH_backend.enums.MaritalStatus;
@@ -17,7 +18,7 @@ import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Department;
 import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Employee;
 import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.PersonInCharge;
 import com.tarmiz.SIRH_backend.model.repository.EmployeeRepository;
-import com.tarmiz.SIRH_backend.model.repository.DepartmentRepository;
+import com.tarmiz.SIRH_backend.model.repository.CompanyHierarchyRepos.DepartmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -97,6 +98,12 @@ public class EmployeeService {
 
         Department department = departmentRepository.findById(dto.getDepartmentId() != null ? dto.getDepartmentId() : 1L)
                 .orElseThrow(() -> new DepartmentNotFoundException(dto.getDepartmentId() != null ? dto.getDepartmentId() : 1L));
+
+        if (department.getStatus() != DepartmentStatus.ACTIVE) {
+            throw new BusinessException(
+                    "Department with id " + dto.getDepartmentId() + " is inactive"
+            );
+        }
 
         employee.setDepartment(department);
 

@@ -1,4 +1,4 @@
-package com.tarmiz.SIRH_backend.service;
+package com.tarmiz.SIRH_backend.service.document;
 
 import com.tarmiz.SIRH_backend.config.FileStorageProperties;
 import org.springframework.core.io.UrlResource;

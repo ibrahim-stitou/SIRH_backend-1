@@ -1,4 +1,4 @@
-package com.tarmiz.SIRH_backend.service;
+package com.tarmiz.SIRH_backend.service.SettingsServices;
 
 import com.tarmiz.SIRH_backend.enums.DepartmentStatus;
 import com.tarmiz.SIRH_backend.exception.BusinessException.BusinessException;
@@ -7,8 +7,8 @@ import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.DepartmentListDTO;
 import com.tarmiz.SIRH_backend.model.DTO.DepartmentCreationDTO;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Company;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Department;
-import com.tarmiz.SIRH_backend.model.repository.CompanyRepository;
-import com.tarmiz.SIRH_backend.model.repository.DepartmentRepository;
+import com.tarmiz.SIRH_backend.model.repository.CompanyHierarchyRepos.CompanyRepository;
+import com.tarmiz.SIRH_backend.model.repository.CompanyHierarchyRepos.DepartmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
