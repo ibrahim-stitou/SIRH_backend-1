@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "contract_amendments")
@@ -47,6 +48,15 @@ public class Amendment extends Auditable {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 30)
     private AmendmentStatus status;
+
+    @OneToMany(mappedBy = "amendment", fetch = FetchType.LAZY)
+    private List<ContractJob> jobs;
+
+    @OneToMany(mappedBy = "amendment", fetch = FetchType.LAZY)
+    private List<ContractSalary> salaries;
+
+    @OneToMany(mappedBy = "amendment", fetch = FetchType.LAZY)
+    private List<ContractSchedule> schedules;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type_modification", nullable = false, length = 50)

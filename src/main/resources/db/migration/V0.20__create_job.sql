@@ -44,6 +44,10 @@ CREATE TABLE contract_job (
                               level VARCHAR(50),
                               responsibilities TEXT,
 
+                              amendment_id BIGINT,
+                              effective_date DATE,
+                              active BOOLEAN DEFAULT TRUE,
+
                               created_by VARCHAR(50),
                               created_date TIMESTAMP,
                               last_modified_by VARCHAR(50),
@@ -51,4 +55,4 @@ CREATE TABLE contract_job (
 
                               CONSTRAINT fk_contract_job_contract FOREIGN KEY (contract_id) REFERENCES contracts(id) ON DELETE CASCADE,
                               CONSTRAINT fk_contract_job_poste FOREIGN KEY (poste_id) REFERENCES poste(id)
-);
+                          );

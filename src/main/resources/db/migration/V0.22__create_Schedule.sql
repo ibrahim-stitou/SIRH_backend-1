@@ -12,6 +12,10 @@ CREATE TABLE contract_schedules (
                                     annual_leave_days INT,
                                     other_leaves TEXT,
 
+                                    amendment_id BIGINT,
+                                    effective_date DATE,
+                                    active BOOLEAN DEFAULT TRUE,
+
                                     created_by VARCHAR,
                                     created_date TIMESTAMP,
                                     last_modified_by VARCHAR,

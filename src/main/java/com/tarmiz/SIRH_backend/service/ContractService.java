@@ -26,12 +26,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -49,9 +50,8 @@ public class ContractService {
     private final ClauseRepository clauseRepo;
     private final ContractDetailsMapper contractDetailsMapper;
     private final ContractClauseRepository contractClauseRepo;
-    private final PdfGeneratorService pdfGeneratorService ;
+    private final PdfGeneratorService pdfGeneratorService;
     private final FileService fileService;
-
     private final FileRepository fileRepository;
 
     /**
@@ -91,8 +91,12 @@ public class ContractService {
 
     @Transactional
     public ContractDetailsDTO createContract(ContractCreationDTO dto) {
-        ObjectMapper mapper = new ObjectMapper();
-        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(dto));
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(dto));
+        } catch (Exception e) {
+            log.warn("Failed to serialize DTO for logging", e);
+        }
 
         // --- 1. Find Employee ---
         if (dto.getEmployeeId() == null) {
@@ -100,9 +104,7 @@ public class ContractService {
         }
 
         Employee employee = employeeRepo.findById(dto.getEmployeeId())
-                .orElseThrow(() -> {
-                    return new BusinessException("Employé non trouvé avec id=" + dto.getEmployeeId());
-                });
+                .orElseThrow(() -> new BusinessException("Employé non trouvé avec id=" + dto.getEmployeeId()));
 
         // --- 2. Find Poste ---
         if (dto.getJob() == null) {
@@ -113,11 +115,8 @@ public class ContractService {
         }
 
         Long posteId = dto.getJob().getPosteId();
-
         Poste poste = posteRepo.findById(posteId)
-                .orElseThrow(() -> {
-                    return new BusinessException("Poste non trouvé avec id=" + posteId);
-                });
+                .orElseThrow(() -> new BusinessException("Poste non trouvé avec id=" + posteId));
 
         // --- 3. Create Contract ---
         Contract contract = new Contract();
@@ -130,6 +129,12 @@ public class ContractService {
         contract.setSignatureDate(dto.getSignatureDate());
         contract.setDescription(dto.getDescription());
 
+        // Initialize collections
+        contract.setJobs(new ArrayList<>());
+        contract.setSalaries(new ArrayList<>());
+        contract.setSchedules(new ArrayList<>());
+        contract.setContractClauses(new ArrayList<>());
+
         Contract savedContract = contractRepository.save(contract);
 
         // --- 4. ContractJob ---
@@ -141,43 +146,48 @@ public class ContractService {
                     ? WorkModeEnum.valueOf(dto.getJob().getWorkMode())
                     : null);
             job.setClassification(dto.getJob().getClassification());
+            job.setLevel(dto.getJob().getLevel() != null
+                    ? WorkLevelEnum.valueOf(dto.getJob().getLevel())
+                    : null);
             job.setResponsibilities(dto.getJob().getResponsibilities());
-            savedContract.setJob(job);
+
+
+            // Set initial state (no amendment)
+            job.setAmendment(null);
+            job.setEffectiveDate(dto.getStartDate());
+            job.setActive(true);
+
+            savedContract.getJobs().add(job);
         } else {
             log.warn("Job DTO is null, skipping ContractJob creation");
         }
 
         // --- 5. ContractClauses ---
         if (dto.getConditions() != null && dto.getConditions().getSelectedConditionIds() != null) {
-                    dto.getConditions().getSelectedConditionIds().size();
-
             final Contract finalContract = savedContract;
 
-            List<ContractClause> contractClauses =
-                    dto.getConditions().getSelectedConditionIds().stream()
-                            .filter(clauseId -> {
-                                if (clauseId == null) {
-                                    log.warn("Found null clause ID in list, skipping");
-                                    return false;
-                                }
-                                return true;
-                            })
-                            .map(clauseId -> {
-                                Clause clause = clauseRepo.findById(clauseId)
-                                        .orElseThrow(() -> {
-                                            log.error("Clause not found with id={}", clauseId);
-                                            return new BusinessException(
-                                                    "Clause non trouvée avec id=" + clauseId);
-                                        });
+            List<ContractClause> contractClauses = dto.getConditions().getSelectedConditionIds().stream()
+                    .filter(clauseId -> {
+                        if (clauseId == null) {
+                            log.warn("Found null clause ID in list, skipping");
+                            return false;
+                        }
+                        return true;
+                    })
+                    .map(clauseId -> {
+                        Clause clause = clauseRepo.findById(clauseId)
+                                .orElseThrow(() -> {
+                                    log.error("Clause not found with id={}", clauseId);
+                                    return new BusinessException("Clause non trouvée avec id=" + clauseId);
+                                });
 
-                                ContractClause cc = new ContractClause();
-                                cc.setContract(finalContract);
-                                cc.setClause(clause);
-
-                                cc.setId(new ContractClauseId(finalContract.getId(), clause.getId()));
-                                return cc;
-                            })
-                            .collect(Collectors.toList());
+                        ContractClause cc = new ContractClause();
+                        cc.setContract(finalContract);
+                        cc.setClause(clause);
+                        cc.setId(new ContractClauseId(finalContract.getId(), clause.getId()));
+                        return cc;
+                    })
+                    .collect(Collectors.toList());
 
             savedContract.setContractClauses(contractClauses);
         } else {
@@ -192,13 +202,15 @@ public class ContractService {
             trial.setEnabled(t.getEnabled());
             trial.setDurationMonths(t.getDurationMonths() != null ? t.getDurationMonths() : 0);
             trial.setDurationDays(t.getDurationDays() != null ? t.getDurationDays() : 0);
+
             if (t.getStartDate() != null) {
                 trial.setStartDate(t.getStartDate());
             } else if (dto.getStartDate() != null) {
                 trial.setStartDate(dto.getStartDate());
-            }else {
+            } else {
                 log.warn("TrialPeriod startDate is null, setting it to today by default");
             }
+
             trial.setEndDate(t.getEndDate());
             trial.setRenewable(t.getRenewable() != null ? t.getRenewable() : false);
             trial.setMaxRenewals(t.getMaxRenewals() != null ? t.getMaxRenewals() : 0);
@@ -212,12 +224,14 @@ public class ContractService {
             ContractCreationDTO.ContractSalaryDTO s = dto.getSalary();
             ContractSalary salary = new ContractSalary();
             salary.setContract(savedContract);
+
             if (s.getSalaryBase() != null) {
-                salary.setBaseSalary(s.getSalaryBase().intValue());
+                salary.setBaseSalary(s.getSalaryBase());
             } else {
                 log.warn("Base salary is null, setting to 0 by default");
-                salary.setBaseSalary(0);
+                salary.setBaseSalary(BigDecimal.ZERO);
             }
+
             salary.setSalaryBrut(s.getSalaryBrut());
             salary.setSalaryNet(s.getSalaryNet());
             salary.setCurrency(s.getCurrency() != null ? s.getCurrency() : "MAD");
@@ -227,33 +241,27 @@ public class ContractService {
             salary.setPeriodicity(s.getPeriodicity() != null
                     ? PaymentPeriodicityEnum.valueOf(s.getPeriodicity())
                     : null);
+            salary.setPaymentDay(s.getPaymentDay());
+
+            // Set initial state (no amendment)
+            salary.setAmendment(null);
+            salary.setEffectiveDate(dto.getStartDate());
+            salary.setActive(true);
 
             // --- 7.a Handle Primes ---
-
             if (s.getPrimes() != null && !s.getPrimes().isEmpty()) {
                 List<Prime> primes = s.getPrimes().stream()
                         .filter(pdto -> pdto != null && pdto.getPrimeTypeId() != null)
                         .map(pdto -> {
-
                             PrimeTypeIdEnum primeType = pdto.getPrimeTypeId();
 
                             Prime prime = new Prime();
                             prime.setContractSalary(salary);
                             prime.setPrimeTypeId(primeType);
-
                             prime.setLabel(primeType.getLabel());
-
-                            prime.setAmount(
-                                    pdto.getAmount() != null ? pdto.getAmount() : BigDecimal.ZERO
-                            );
-
-                            prime.setIsTaxable(
-                                    pdto.getIsTaxable() != null ? pdto.getIsTaxable() : true
-                            );
-
-                            prime.setIsSubjectToCnss(
-                                    pdto.getIsSubjectToCnss() != null ? pdto.getIsSubjectToCnss() : true
-                            );
+                            prime.setAmount(pdto.getAmount() != null ? pdto.getAmount() : BigDecimal.ZERO);
+                            prime.setIsTaxable(pdto.getIsTaxable() != null ? pdto.getIsTaxable() : true);
+                            prime.setIsSubjectToCnss(pdto.getIsSubjectToCnss() != null ? pdto.getIsSubjectToCnss() : true);
 
                             return prime;
                         })
@@ -261,8 +269,7 @@ public class ContractService {
                 salary.setPrimes(primes);
             }
 
-            savedContract.setSalary(salary);
-
+            savedContract.getSalaries().add(salary);
         } else {
             log.debug("No salary information provided, skipping");
         }
@@ -273,10 +280,26 @@ public class ContractService {
             ContractSchedule schedule = new ContractSchedule();
             schedule.setContract(savedContract);
             schedule.setShiftWork(sc.getWorkShift() != null ? sc.getWorkShift() : false);
+
             if (sc.getScheduleType() != null) {
                 schedule.setScheduleType(ScheduleTypeEnum.valueOf(sc.getScheduleType()));
             }
-            savedContract.setSchedule(schedule);
+
+            schedule.setHoursPerDay(sc.getHoursPerDay());
+            schedule.setDaysPerWeek(sc.getDaysPerWeek());
+            schedule.setHoursPerWeek(sc.getHoursPerWeek());
+            schedule.setStartTime(sc.getStartTime());
+            schedule.setEndTime(sc.getEndTime());
+            schedule.setBreakDuration(sc.getBreakDuration());
+            schedule.setAnnualLeaveDays(sc.getAnnualLeaveDays());
+            schedule.setOtherLeaves(sc.getOtherLeaves());
+
+            // Set initial state (no amendment)
+            schedule.setAmendment(null);
+            schedule.setEffectiveDate(dto.getStartDate());
+            schedule.setActive(true);
+
+            savedContract.getSchedules().add(schedule);
         } else {
             log.debug("No schedule information provided, skipping");
         }
@@ -285,17 +308,14 @@ public class ContractService {
         log.info("========== Contract creation completed successfully. Contract ID: {} ==========",
                 finalSavedContract.getId());
 
-        // --- 10. Map to DTO ---
+        // --- 9. Map to DTO ---
         ContractDetailsDTO dtoResult = contractDetailsMapper.toDTO(finalSavedContract, null);
-
 
         return dtoResult;
     }
 
-
     @Transactional
     public void updateContract(Long contractId, ContractCreationDTO dto) {
-
         Contract contract = contractRepository.findById(contractId)
                 .orElseThrow(() -> new BusinessException("Contrat introuvable id=" + contractId));
 
@@ -344,36 +364,124 @@ public class ContractService {
             contract.setContractClauses(clauses);
         }
 
-        /* ===== Job (association only) ===== */
+        /* ===== Job (update existing active job) ===== */
         if (dto.getJob() != null && dto.getJob().getPosteId() != null) {
             Poste poste = posteRepo.findById(Long.valueOf(dto.getJob().getPosteId()))
                     .orElseThrow(() -> new BusinessException("Poste introuvable"));
 
-            contract.getJob().setPoste(poste);
-            if (dto.getJob().getWorkMode() != null)
-                contract.getJob().setWorkMode(WorkModeEnum.valueOf(dto.getJob().getWorkMode()));
-            if (dto.getJob().getClassification() != null)
-                contract.getJob().setClassification(dto.getJob().getClassification());
-            if (dto.getJob().getResponsibilities() != null)
-                contract.getJob().setResponsibilities(dto.getJob().getResponsibilities());
+            // Get active job
+            ContractJob activeJob = contract.getJobs().stream()
+                    .filter(j -> j.getActive() != null && j.getActive())
+                    .findFirst()
+                    .orElseThrow(() -> new BusinessException("Aucun poste actif trouvé"));
+
+            activeJob.setPoste(poste);
+
+            if (dto.getJob().getWorkMode() != null) {
+                activeJob.setWorkMode(WorkModeEnum.valueOf(dto.getJob().getWorkMode()));
+            }
+            if (dto.getJob().getLevel() != null) {
+                activeJob.setLevel(WorkLevelEnum.valueOf(dto.getJob().getLevel()));
+            }
+            if (dto.getJob().getClassification() != null) {
+                activeJob.setClassification(dto.getJob().getClassification());
+            }
+            if (dto.getJob().getResponsibilities() != null) {
+                activeJob.setResponsibilities(dto.getJob().getResponsibilities());
+            }
         }
 
-        /* ===== Salary ===== */
-        if (dto.getSalary() != null && contract.getSalary() != null) {
-            ContractSalary s = contract.getSalary();
-            if (dto.getSalary().getSalaryBrut() != null) s.setSalaryBrut(dto.getSalary().getSalaryBrut());
-            if (dto.getSalary().getSalaryNet() != null) s.setSalaryNet(dto.getSalary().getSalaryNet());
-            if (dto.getSalary().getPaymentMethod() != null)
-                s.setPaymentMethod(PaymentMethodEnum.valueOf(dto.getSalary().getPaymentMethod()));
+        /* ===== Salary (update existing active salary) ===== */
+        if (dto.getSalary() != null) {
+            ContractSalary activeSalary = contract.getSalaries().stream()
+                    .filter(s -> s.getActive() != null && s.getActive())
+                    .findFirst()
+                    .orElseThrow(() -> new BusinessException("Aucun salaire actif trouvé"));
+
+            if (dto.getSalary().getSalaryBase() != null) {
+                activeSalary.setBaseSalary(dto.getSalary().getSalaryBase());
+            }
+            if (dto.getSalary().getSalaryBrut() != null) {
+                activeSalary.setSalaryBrut(dto.getSalary().getSalaryBrut());
+            }
+            if (dto.getSalary().getSalaryNet() != null) {
+                activeSalary.setSalaryNet(dto.getSalary().getSalaryNet());
+            }
+            if (dto.getSalary().getPaymentMethod() != null) {
+                activeSalary.setPaymentMethod(PaymentMethodEnum.valueOf(dto.getSalary().getPaymentMethod()));
+            }
+            if (dto.getSalary().getPeriodicity() != null) {
+                activeSalary.setPeriodicity(PaymentPeriodicityEnum.valueOf(dto.getSalary().getPeriodicity()));
+            }
+            if (dto.getSalary().getPaymentDay() != null) {
+                activeSalary.setPaymentDay(dto.getSalary().getPaymentDay());
+            }
+
+            // Handle primes update
+            if (dto.getSalary().getPrimes() != null) {
+                // Clear existing primes
+                if (activeSalary.getPrimes() != null) {
+                    activeSalary.getPrimes().clear();
+                } else {
+                    activeSalary.setPrimes(new ArrayList<>());
+                }
+
+                // Add new primes
+                List<Prime> primes = dto.getSalary().getPrimes().stream()
+                        .filter(pdto -> pdto != null && pdto.getPrimeTypeId() != null)
+                        .map(pdto -> {
+                            Prime prime = new Prime();
+                            prime.setContractSalary(activeSalary);
+                            prime.setPrimeTypeId(pdto.getPrimeTypeId());
+                            prime.setLabel(pdto.getPrimeTypeId().getLabel());
+                            prime.setAmount(pdto.getAmount() != null ? pdto.getAmount() : BigDecimal.ZERO);
+                            prime.setIsTaxable(pdto.getIsTaxable() != null ? pdto.getIsTaxable() : true);
+                            prime.setIsSubjectToCnss(pdto.getIsSubjectToCnss() != null ? pdto.getIsSubjectToCnss() : true);
+                            return prime;
+                        })
+                        .collect(Collectors.toList());
+
+                activeSalary.getPrimes().addAll(primes);
+            }
         }
 
-        /* ===== Schedule ===== */
-        if (dto.getSchedule() != null && contract.getSchedule() != null) {
-            ContractSchedule sc = contract.getSchedule();
-            if (dto.getSchedule().getScheduleType() != null)
-                sc.setScheduleType(ScheduleTypeEnum.valueOf(dto.getSchedule().getScheduleType()));
-            if (dto.getSchedule().getWorkShift() != null)
-                sc.setShiftWork(dto.getSchedule().getWorkShift());
+        /* ===== Schedule (update existing active schedule) ===== */
+        if (dto.getSchedule() != null) {
+            ContractSchedule activeSchedule = contract.getSchedules().stream()
+                    .filter(sc -> sc.getActive() != null && sc.getActive())
+                    .findFirst()
+                    .orElseThrow(() -> new BusinessException("Aucun horaire actif trouvé"));
+
+            if (dto.getSchedule().getScheduleType() != null) {
+                activeSchedule.setScheduleType(ScheduleTypeEnum.valueOf(dto.getSchedule().getScheduleType()));
+            }
+            if (dto.getSchedule().getWorkShift() != null) {
+                activeSchedule.setShiftWork(dto.getSchedule().getWorkShift());
+            }
+            if (dto.getSchedule().getHoursPerDay() != null) {
+                activeSchedule.setHoursPerDay(dto.getSchedule().getHoursPerDay());
+            }
+            if (dto.getSchedule().getDaysPerWeek() != null) {
+                activeSchedule.setDaysPerWeek(dto.getSchedule().getDaysPerWeek());
+            }
+            if (dto.getSchedule().getHoursPerWeek() != null) {
+                activeSchedule.setHoursPerWeek(dto.getSchedule().getHoursPerWeek());
+            }
+            if (dto.getSchedule().getStartTime() != null) {
+                activeSchedule.setStartTime(dto.getSchedule().getStartTime());
+            }
+            if (dto.getSchedule().getEndTime() != null) {
+                activeSchedule.setEndTime(dto.getSchedule().getEndTime());
+            }
+            if (dto.getSchedule().getBreakDuration() != null) {
+                activeSchedule.setBreakDuration(dto.getSchedule().getBreakDuration());
+            }
+            if (dto.getSchedule().getAnnualLeaveDays() != null) {
+                activeSchedule.setAnnualLeaveDays(dto.getSchedule().getAnnualLeaveDays());
+            }
+            if (dto.getSchedule().getOtherLeaves() != null) {
+                activeSchedule.setOtherLeaves(dto.getSchedule().getOtherLeaves());
+            }
         }
 
         contractRepository.save(contract);
@@ -381,16 +489,23 @@ public class ContractService {
 
     @Transactional
     public void validateContract(Long id) {
-
         Contract c = contractRepository.findById(id)
                 .orElseThrow(() -> new BusinessException("Contrat introuvable"));
 
-        if (c.getEmployee() == null || c.getJob() == null
-                || c.getSalary() == null || c.getSchedule() == null) {
+        // Check if contract has at least one active job, salary, and schedule
+        boolean hasActiveJob = c.getJobs() != null && c.getJobs().stream()
+                .anyMatch(j -> j.getActive() != null && j.getActive());
+        boolean hasActiveSalary = c.getSalaries() != null && c.getSalaries().stream()
+                .anyMatch(s -> s.getActive() != null && s.getActive());
+        boolean hasActiveSchedule = c.getSchedules() != null && c.getSchedules().stream()
+                .anyMatch(sc -> sc.getActive() != null && sc.getActive());
+
+        if (c.getEmployee() == null || !hasActiveJob || !hasActiveSalary || !hasActiveSchedule) {
             throw new BusinessException("Le contrat est incomplet et ne peut pas être validé");
         }
 
         c.setStatus(ContractStatusEnum.ACTIF);
+        contractRepository.save(c);
     }
 
     @Transactional
@@ -399,7 +514,6 @@ public class ContractService {
                 .orElseThrow(() -> new BusinessException("Contrat introuvable avec id=" + contractId));
 
         contract.setStatus(ContractStatusEnum.SUSPENDU);
-
         contractRepository.save(contract);
     }
 
@@ -418,7 +532,6 @@ public class ContractService {
         }
 
         contract.setEmployee(null);
-
         contractRepository.delete(contract);
     }
 
@@ -434,6 +547,22 @@ public class ContractService {
         ).contains(contract.getStatus())) {
             throw new BusinessException("Contract status not allowed for generation");
         }
+
+        // Get active records
+        ContractJob activeJob = contract.getJobs() != null ? contract.getJobs().stream()
+                .filter(j -> j.getActive() != null && j.getActive())
+                .findFirst()
+                .orElse(null) : null;
+
+        ContractSalary activeSalary = contract.getSalaries() != null ? contract.getSalaries().stream()
+                .filter(s -> s.getActive() != null && s.getActive())
+                .findFirst()
+                .orElse(null) : null;
+
+        ContractSchedule activeSchedule = contract.getSchedules() != null ? contract.getSchedules().stream()
+                .filter(sc -> sc.getActive() != null && sc.getActive())
+                .findFirst()
+                .orElse(null) : null;
 
         // 1️⃣ Préparer les placeholders
         Map<String, String> placeholders = new HashMap<>();
@@ -456,17 +585,16 @@ public class ContractService {
         placeholders.put("employee_matricule", contract.getEmployee().getMatricule());
         placeholders.put("employee_id", contract.getEmployee().getId().toString());
 
-        // Job
-        if (contract.getJob() != null) {
-            placeholders.put("job_metier", contract.getJob().getPoste().getEmploi().getMetier().getLibelle());
-            placeholders.put("job_emploi", contract.getJob().getPoste().getEmploi().getLibelle());
-            placeholders.put("job_poste", contract.getJob().getPoste().getLibelle());
-            placeholders.put("job_level", contract.getJob().getLevel() != null ? contract.getJob().getLevel().name() : "N/A");
-            placeholders.put("job_work_mode", contract.getJob().getWorkMode() != null ? contract.getJob().getWorkMode().name() : "N/A");
-            placeholders.put("job_classification", contract.getJob().getClassification() != null ? contract.getJob().getClassification() : "N/A");
-            placeholders.put("job_responsibilities", contract.getJob().getResponsibilities() != null ? contract.getJob().getResponsibilities() : "N/A");
+        // Job (from active job)
+        if (activeJob != null) {
+            placeholders.put("job_metier", activeJob.getPoste().getEmploi().getMetier().getLibelle());
+            placeholders.put("job_emploi", activeJob.getPoste().getEmploi().getLibelle());
+            placeholders.put("job_poste", activeJob.getPoste().getLibelle());
+            placeholders.put("job_level", activeJob.getLevel() != null ? activeJob.getLevel().name() : "N/A");
+            placeholders.put("job_work_mode", activeJob.getWorkMode() != null ? activeJob.getWorkMode().name() : "N/A");
+            placeholders.put("job_classification", activeJob.getClassification() != null ? activeJob.getClassification() : "N/A");
+            placeholders.put("job_responsibilities", activeJob.getResponsibilities() != null ? activeJob.getResponsibilities() : "N/A");
         } else {
-            // Add default values for missing job info
             placeholders.put("job_metier", "N/A");
             placeholders.put("job_emploi", "N/A");
             placeholders.put("job_poste", "N/A");
@@ -486,7 +614,6 @@ public class ContractService {
             placeholders.put("trial_max_renewals", String.valueOf(contract.getTrialPeriod().getMaxRenewals()));
             placeholders.put("trial_conditions", contract.getTrialPeriod().getConditions() != null ? contract.getTrialPeriod().getConditions() : "");
 
-            // critère d'acceptation
             if (contract.getTrialPeriod().getTrialPeriodCriteriaList() != null && !contract.getTrialPeriod().getTrialPeriodCriteriaList().isEmpty()) {
                 StringBuilder sb = new StringBuilder();
                 contract.getTrialPeriod().getTrialPeriodCriteriaList().forEach(tc ->
@@ -508,18 +635,18 @@ public class ContractService {
             placeholders.put("trial_criteria", "N/A");
         }
 
-        // Schedule
-        if (contract.getSchedule() != null) {
-            placeholders.put("schedule_type", contract.getSchedule().getScheduleType() != null ? contract.getSchedule().getScheduleType().name() : "N/A");
-            placeholders.put("schedule_shift_work", contract.getSchedule().getShiftWork() != null && contract.getSchedule().getShiftWork() ? "Oui" : "Non");
-            placeholders.put("schedule_hours_per_day", contract.getSchedule().getHoursPerDay() != null ? contract.getSchedule().getHoursPerDay().toString() : "N/A");
-            placeholders.put("schedule_days_per_week", contract.getSchedule().getDaysPerWeek() != null ? contract.getSchedule().getDaysPerWeek().toString() : "N/A");
-            placeholders.put("schedule_hours_per_week", contract.getSchedule().getHoursPerWeek() != null ? contract.getSchedule().getHoursPerWeek().toString() : "N/A");
-            placeholders.put("schedule_start_time", contract.getSchedule().getStartTime() != null ? contract.getSchedule().getStartTime().toString() : "N/A");
-            placeholders.put("schedule_end_time", contract.getSchedule().getEndTime() != null ? contract.getSchedule().getEndTime().toString() : "N/A");
-            placeholders.put("schedule_break_duration", contract.getSchedule().getBreakDuration() != null ? contract.getSchedule().getBreakDuration().toString() : "N/A");
-            placeholders.put("schedule_annual_leave_days", contract.getSchedule().getAnnualLeaveDays() != null ? contract.getSchedule().getAnnualLeaveDays().toString() : "N/A");
-            placeholders.put("schedule_other_leaves", contract.getSchedule().getOtherLeaves() != null ? contract.getSchedule().getOtherLeaves() : "N/A");
+        // Schedule (from active schedule)
+        if (activeSchedule != null) {
+            placeholders.put("schedule_type", activeSchedule.getScheduleType() != null ? activeSchedule.getScheduleType().name() : "N/A");
+            placeholders.put("schedule_shift_work", activeSchedule.getShiftWork() != null && activeSchedule.getShiftWork() ? "Oui" : "Non");
+            placeholders.put("schedule_hours_per_day", activeSchedule.getHoursPerDay() != null ? activeSchedule.getHoursPerDay().toString() : "N/A");
+            placeholders.put("schedule_days_per_week", activeSchedule.getDaysPerWeek() != null ? activeSchedule.getDaysPerWeek().toString() : "N/A");
+            placeholders.put("schedule_hours_per_week", activeSchedule.getHoursPerWeek() != null ? activeSchedule.getHoursPerWeek().toString() : "N/A");
+            placeholders.put("schedule_start_time", activeSchedule.getStartTime() != null ? activeSchedule.getStartTime().toString() : "N/A");
+            placeholders.put("schedule_end_time", activeSchedule.getEndTime() != null ? activeSchedule.getEndTime().toString() : "N/A");
+            placeholders.put("schedule_break_duration", activeSchedule.getBreakDuration() != null ? activeSchedule.getBreakDuration().toString() : "N/A");
+            placeholders.put("schedule_annual_leave_days", activeSchedule.getAnnualLeaveDays() != null ? activeSchedule.getAnnualLeaveDays().toString() : "N/A");
+            placeholders.put("schedule_other_leaves", activeSchedule.getOtherLeaves() != null ? activeSchedule.getOtherLeaves() : "N/A");
         } else {
             placeholders.put("schedule_type", "N/A");
             placeholders.put("schedule_shift_work", "Non");
@@ -533,13 +660,13 @@ public class ContractService {
             placeholders.put("schedule_other_leaves", "N/A");
         }
 
-        // Salary
-        if (contract.getSalary() != null) {
-            placeholders.put("salary_brut", contract.getSalary().getSalaryBrut() != null ? contract.getSalary().getSalaryBrut().toString() : "0");
-            placeholders.put("salary_net", contract.getSalary().getSalaryNet() != null ? contract.getSalary().getSalaryNet().toString() : "0");
-            placeholders.put("salary_currency", contract.getSalary().getCurrency() != null ? contract.getSalary().getCurrency() : "MAD");
-            placeholders.put("salary_payment_method", contract.getSalary().getPaymentMethod() != null ? contract.getSalary().getPaymentMethod().name() : "N/A");
-            placeholders.put("salary_periodicity", contract.getSalary().getPeriodicity() != null ? contract.getSalary().getPeriodicity().name() : "N/A");
+        // Salary (from active salary)
+        if (activeSalary != null) {
+            placeholders.put("salary_brut", activeSalary.getSalaryBrut() != null ? activeSalary.getSalaryBrut().toString() : "0");
+            placeholders.put("salary_net", activeSalary.getSalaryNet() != null ? activeSalary.getSalaryNet().toString() : "0");
+            placeholders.put("salary_currency", activeSalary.getCurrency() != null ? activeSalary.getCurrency() : "MAD");
+            placeholders.put("salary_payment_method", activeSalary.getPaymentMethod() != null ? activeSalary.getPaymentMethod().name() : "N/A");
+            placeholders.put("salary_periodicity", activeSalary.getPeriodicity() != null ? activeSalary.getPeriodicity().name() : "N/A");
         } else {
             placeholders.put("salary_brut", "0");
             placeholders.put("salary_net", "0");
@@ -574,4 +701,42 @@ public class ContractService {
         );
     }
 
+    /**
+     * Helper method to get the active job for a contract
+     */
+    private ContractJob getActiveJob(Contract contract) {
+        if (contract.getJobs() == null) {
+            return null;
+        }
+        return contract.getJobs().stream()
+                .filter(j -> j.getActive() != null && j.getActive())
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * Helper method to get the active salary for a contract
+     */
+    private ContractSalary getActiveSalary(Contract contract) {
+        if (contract.getSalaries() == null) {
+            return null;
+        }
+        return contract.getSalaries().stream()
+                .filter(s -> s.getActive() != null && s.getActive())
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * Helper method to get the active schedule for a contract
+     */
+    private ContractSchedule getActiveSchedule(Contract contract) {
+        if (contract.getSchedules() == null) {
+            return null;
+        }
+        return contract.getSchedules().stream()
+                .filter(sc -> sc.getActive() != null && sc.getActive())
+                .findFirst()
+                .orElse(null);
+    }
 }

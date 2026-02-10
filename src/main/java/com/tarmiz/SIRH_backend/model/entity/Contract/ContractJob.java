@@ -8,6 +8,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Entity
 @Getter
 @Setter
@@ -18,7 +20,7 @@ public class ContractJob extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "contract_id", nullable = false)
     private Contract contract;
 
@@ -36,5 +38,14 @@ public class ContractJob extends Auditable {
 
     @Column(columnDefinition = "TEXT")
     private String responsibilities;
+
+    @ManyToOne
+    @JoinColumn(name = "amendment_id")
+    private Amendment amendment;
+
+    private LocalDate effectiveDate;
+
+    @Column(nullable = false)
+    private Boolean active = true;
 
 }

@@ -54,14 +54,14 @@ public class Contract extends Auditable {
 
     private LocalDate endDate;
 
-    @OneToOne(mappedBy = "contract", cascade = CascadeType.ALL)
-    private ContractJob job;
+    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ContractSalary> salaries;
 
-    @OneToOne(mappedBy = "contract", cascade = CascadeType.ALL)
-    private ContractSalary salary;
+    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ContractJob> jobs;
 
-    @OneToOne(mappedBy = "contract", cascade = CascadeType.ALL)
-    private ContractSchedule schedule;
+    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ContractSchedule> schedules;
 
     @OneToOne(mappedBy = "contract", cascade = CascadeType.ALL)
     private TrialPeriod trialPeriod;
@@ -69,4 +69,7 @@ public class Contract extends Auditable {
     @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<ContractClause> contractClauses;
+
+    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Amendment> amendments;
 }

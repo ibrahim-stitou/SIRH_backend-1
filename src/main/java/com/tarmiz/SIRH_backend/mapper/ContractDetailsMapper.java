@@ -2,6 +2,9 @@ package com.tarmiz.SIRH_backend.mapper;
 
 import com.tarmiz.SIRH_backend.model.DTO.ContractDTOs.ContractDetailsDTO;
 import com.tarmiz.SIRH_backend.model.entity.Contract.Contract;
+import com.tarmiz.SIRH_backend.model.entity.Contract.ContractJob;
+import com.tarmiz.SIRH_backend.model.entity.Contract.ContractSalary;
+import com.tarmiz.SIRH_backend.model.entity.Contract.ContractSchedule;
 import com.tarmiz.SIRH_backend.enums.EntityType;
 import com.tarmiz.SIRH_backend.model.entity.Contract.TrialPeriodCriteria;
 import com.tarmiz.SIRH_backend.model.entity.Files.File;
@@ -56,50 +59,89 @@ public class ContractDetailsMapper {
             dto.setTrialPeriod(trialDto);
         }
 
-        // ===== Job =====
-        if (contract.getJob() != null) {
+        // ===== Job (get active job) =====
+        ContractJob activeJob = getActiveJob(contract);
+        if (activeJob != null) {
             ContractDetailsDTO.JobDTO jobDto = new ContractDetailsDTO.JobDTO();
-            jobDto.setMetier(contract.getJob().getPoste().getEmploi().getMetier().getLibelle());
-            jobDto.setEmploi(contract.getJob().getPoste().getEmploi().getLibelle());
-            jobDto.setPoste(contract.getJob().getPoste().getLibelle());
-            jobDto.setLevel(contract.getJob().getLevel() != null
-                    ? contract.getJob().getLevel().name()
+            jobDto.setMetier(activeJob.getPoste().getEmploi().getMetier().getLibelle());
+            jobDto.setEmploi(activeJob.getPoste().getEmploi().getLibelle());
+            jobDto.setPoste(activeJob.getPoste().getLibelle());
+            jobDto.setPosteId(activeJob.getPoste().getId());
+            jobDto.setLevel(activeJob.getLevel() != null
+                    ? activeJob.getLevel().name()
                     : null);
-            jobDto.setWorkMode(contract.getJob().getWorkMode() != null
-                    ? contract.getJob().getWorkMode().name()
+            jobDto.setWorkMode(activeJob.getWorkMode() != null
+                    ? activeJob.getWorkMode().name()
                     : null);
-            jobDto.setClassification(contract.getJob().getClassification());
-            jobDto.setResponsibilities(contract.getJob().getResponsibilities());
+            jobDto.setClassification(activeJob.getClassification());
+            jobDto.setResponsibilities(activeJob.getResponsibilities());
             dto.setJob(jobDto);
         }
 
-        // ===== Schedule =====
-        if (contract.getSchedule() != null) {
+        // ===== Schedule (get active schedule) =====
+        ContractSchedule activeSchedule = getActiveSchedule(contract);
+        if (activeSchedule != null) {
             ContractDetailsDTO.ScheduleDTO schedDto = new ContractDetailsDTO.ScheduleDTO();
-            schedDto.setScheduleType(contract.getSchedule().getScheduleType()!= null
-                    ? contract.getSchedule().getScheduleType().name()
+            schedDto.setScheduleType(activeSchedule.getScheduleType() != null
+                    ? activeSchedule.getScheduleType().name()
                     : null);
-            schedDto.setShiftWork(contract.getSchedule().getShiftWork());
-            schedDto.setHoursPerDay(contract.getSchedule().getHoursPerDay());
-            schedDto.setDaysPerWeek(contract.getSchedule().getDaysPerWeek());
-            schedDto.setHoursPerWeek(contract.getSchedule().getHoursPerWeek());
-            schedDto.setStartTime(contract.getSchedule().getStartTime());
-            schedDto.setEndTime(contract.getSchedule().getEndTime());
-            schedDto.setBreakDuration(contract.getSchedule().getBreakDuration());
-            schedDto.setAnnualLeaveDays(contract.getSchedule().getAnnualLeaveDays());
-            schedDto.setOtherLeaves(contract.getSchedule().getOtherLeaves());
+            schedDto.setShiftWork(activeSchedule.getShiftWork());
+            schedDto.setHoursPerDay(activeSchedule.getHoursPerDay());
+            schedDto.setDaysPerWeek(activeSchedule.getDaysPerWeek());
+            schedDto.setHoursPerWeek(activeSchedule.getHoursPerWeek());
+            schedDto.setStartTime(activeSchedule.getStartTime());
+            schedDto.setEndTime(activeSchedule.getEndTime());
+            schedDto.setBreakDuration(activeSchedule.getBreakDuration());
+            schedDto.setAnnualLeaveDays(activeSchedule.getAnnualLeaveDays());
+            schedDto.setOtherLeaves(activeSchedule.getOtherLeaves());
             dto.setSchedule(schedDto);
         }
 
-        // ===== Salary =====
-        if (contract.getSalary() != null) {
+        // ===== Salary (get active salary) =====
+        ContractSalary activeSalary = getActiveSalary(contract);
+        if (activeSalary != null) {
             ContractDetailsDTO.SalaryDTO salaryDto = new ContractDetailsDTO.SalaryDTO();
-            salaryDto.setSalaryBrut(contract.getSalary().getSalaryBrut());
-            salaryDto.setSalaryNet(contract.getSalary().getSalaryNet());
-            salaryDto.setCurrency(contract.getSalary().getCurrency());
-            salaryDto.setPaymentMethod(contract.getSalary().getPaymentMethod() != null ? contract.getSalary().getPaymentMethod().name() : null);
-            salaryDto.setPeriodicity(contract.getSalary().getPeriodicity() != null ? contract.getSalary().getPeriodicity().name() : null);
+            salaryDto.setBaseSalary(activeSalary.getBaseSalary());
+            salaryDto.setSalaryBrut(activeSalary.getSalaryBrut());
+            salaryDto.setSalaryNet(activeSalary.getSalaryNet());
+            salaryDto.setCurrency(activeSalary.getCurrency());
+            salaryDto.setPaymentMethod(activeSalary.getPaymentMethod() != null
+                    ? activeSalary.getPaymentMethod().name()
+                    : null);
+            salaryDto.setPeriodicity(activeSalary.getPeriodicity() != null
+                    ? activeSalary.getPeriodicity().name()
+                    : null);
+            salaryDto.setPaymentDay(activeSalary.getPaymentDay());
+
+            // Map primes if they exist
+            if (activeSalary.getPrimes() != null && !activeSalary.getPrimes().isEmpty()) {
+                salaryDto.setPrimes(activeSalary.getPrimes().stream()
+                        .map(prime -> {
+                            ContractDetailsDTO.PrimeDTO primeDto = new ContractDetailsDTO.PrimeDTO();
+                            primeDto.setPrimeTypeId(prime.getPrimeTypeId() != null
+                                    ? prime.getPrimeTypeId().name()
+                                    : null);
+                            primeDto.setLabel(prime.getLabel());
+                            primeDto.setAmount(prime.getAmount());
+                            primeDto.setIsTaxable(prime.getIsTaxable());
+                            primeDto.setIsSubjectToCnss(prime.getIsSubjectToCnss());
+                            return primeDto;
+                        }).collect(Collectors.toList()));
+            }
+
             dto.setSalary(salaryDto);
+        }
+
+        // ===== Clauses =====
+        if (contract.getContractClauses() != null && !contract.getContractClauses().isEmpty()) {
+            dto.setConditions(contract.getContractClauses().stream()
+                    .map(cc -> {
+                        ContractDetailsDTO.ClauseDTO clauseDto = new ContractDetailsDTO.ClauseDTO();
+                        clauseDto.setId(cc.getClause().getId());
+                        clauseDto.setTitle(cc.getClause().getName());
+                        clauseDto.setDescription(cc.getClause().getDescription());
+                        return clauseDto;
+                    }).collect(Collectors.toList()));
         }
 
         // ===== Legal =====
@@ -133,5 +175,44 @@ public class ContractDetailsMapper {
         dto.setHistorique(audit);
 
         return dto;
+    }
+
+    /**
+     * Get the active job for a contract
+     */
+    private ContractJob getActiveJob(Contract contract) {
+        if (contract.getJobs() == null || contract.getJobs().isEmpty()) {
+            return null;
+        }
+        return contract.getJobs().stream()
+                .filter(j -> j.getActive() != null && j.getActive())
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * Get the active salary for a contract
+     */
+    private ContractSalary getActiveSalary(Contract contract) {
+        if (contract.getSalaries() == null || contract.getSalaries().isEmpty()) {
+            return null;
+        }
+        return contract.getSalaries().stream()
+                .filter(s -> s.getActive() != null && s.getActive())
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * Get the active schedule for a contract
+     */
+    private ContractSchedule getActiveSchedule(Contract contract) {
+        if (contract.getSchedules() == null || contract.getSchedules().isEmpty()) {
+            return null;
+        }
+        return contract.getSchedules().stream()
+                .filter(sc -> sc.getActive() != null && sc.getActive())
+                .findFirst()
+                .orElse(null);
     }
 }

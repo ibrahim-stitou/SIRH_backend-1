@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
@@ -18,7 +19,7 @@ public class ContractSchedule extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "contract_id", nullable = false)
     private Contract contract;
 
@@ -38,5 +39,13 @@ public class ContractSchedule extends Auditable {
 
     @Column(columnDefinition = "TEXT")
     private String otherLeaves;
-}
 
+    @ManyToOne
+    @JoinColumn(name = "amendment_id")
+    private Amendment amendment;
+
+    private LocalDate effectiveDate;
+
+    @Column(nullable = false)
+    private Boolean active = true;
+}

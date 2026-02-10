@@ -8,6 +8,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+
+import java.time.LocalDate;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,12 +26,12 @@ public class ContractSalary extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "contract_id", nullable = false)
     private Contract contract;
 
     @NotNull
-    private Integer baseSalary;
+    private BigDecimal baseSalary;
 
     @NotNull
     private BigDecimal salaryBrut;
@@ -42,6 +44,15 @@ public class ContractSalary extends Auditable {
 
     @Enumerated(EnumType.STRING)
     private PaymentMethodEnum paymentMethod;
+
+    @ManyToOne
+    @JoinColumn(name = "amendment_id")
+    private Amendment amendment;
+
+    private LocalDate effectiveDate;
+
+    @Column(nullable = false)
+    private Boolean active = true;
 
     @Enumerated(EnumType.STRING)
     private PaymentPeriodicityEnum periodicity;

@@ -18,6 +18,19 @@ public interface EmployeeCreateMapper {
     @Mapping(target = "experiences", ignore = true)
     @Mapping(target = "certifications", ignore = true)
     @Mapping(target = "emergencyContacts", ignore = true)
+
+    @Mapping(target = "id", ignore = true)
+    // Auditing fields
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "lastModifiedBy", ignore = true)
+    @Mapping(target = "lastModifiedDate", ignore = true)
+
+    // Optional / later-managed fields
+    @Mapping(target = "aptitudeMedical", ignore = true)
+    @Mapping(target = "bankName", ignore = true)
+    @Mapping(target = "rib", ignore = true)
+    @Mapping(target = "group", ignore = true)
     Employee toEntity(EmployeeCreateDTO dto);
 
     @Named("toAddress")

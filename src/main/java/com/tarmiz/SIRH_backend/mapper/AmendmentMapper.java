@@ -1,58 +1,167 @@
-//package com.tarmiz.SIRH_backend.mapper;
-//
-//import com.tarmiz.SIRH_backend.model.DTO.ContractDTOs.AvenantDetailDTO;
-//import com.tarmiz.SIRH_backend.model.DTO.ContractDTOs.AvenantListDTO;
-//import com.tarmiz.SIRH_backend.model.entity.Contract.Amendment;
-//import org.mapstruct.Mapper;
-//import org.mapstruct.Mapping;
-//
-//import java.util.List;
-//
-//@Mapper(componentModel = "spring")
-//public interface AmendmentMapper {
-//
-//    @Mapping(target = "id", expression = "java(String.valueOf(amendment.getId()))")
-//    @Mapping(target = "contractReference", source = "contract.reference")
-//    @Mapping(target = "typeModification", expression = "java(amendment.getTypeModification().name())")
-//    @Mapping(target = "status", expression = "java(amendment.getStatus().name())")
-//    @Mapping(target = "documents", ignore = true)
-//    @Mapping(target = "createdAt", expression = "java(amendment.getCreatedDate() != null ? amendment.getCreatedDate().toString() : null)")
-//    AvenantListDTO toListDTO(Amendment amendment);
-//
-//    List<AvenantListDTO> toListDTO(List<Amendment> amendments);
-//
-//    @Mapping(target = "id", expression = "java(amendment.getId().toString())")
-//    @Mapping(target = "contractReference", source = "amendment.contract.reference")
-//    @Mapping(target = "date", expression = "java(amendment.getAmendmentDate().toString())")
-//    @Mapping(target = "typeModification", expression = "java(amendment.getTypeModification().name())")
-//    @Mapping(target = "status", expression = "java(amendment.getStatus().name())")
-//    @Mapping(target = "createdAt", expression = "java(amendment.getCreatedDate().toString())")
-//    @Mapping(target = "createdBy", source = "amendment.createdBy")
-//    @Mapping(target = "actions", expression = "java(java.util.Collections.singletonList(\"Modifier\"))")
-//    @Mapping(target = "contractId", expression = "java(amendment.getContract().getId().toString())")
-//    @Mapping(target = "motif", source = "amendment.motif")
-//    @Mapping(target = "description", source = "amendment.description")
-//    @Mapping(target = "notes", source = "amendment.notes")
-//    @Mapping(target = "validations.manager", expression = "java(false)")
-//    @Mapping(target = "validations.rh", expression = "java(false)")
-//    @Mapping(target = "documentUrl", expression = "java(null)")
-//    @Mapping(target = "signedDocument", expression = "java(null)")
-//    @Mapping(target = "changes.salary.apres.salaryBrut", source = "amendment.contract.salary.salaryBrut")
-//    @Mapping(target = "changes.salary.apres.salaryNet", source = "amendment.contract.salary.salaryNet")
-//    @Mapping(target = "changes.salary.apres.currency", source = "amendment.contract.salary.currency")
-//    @Mapping(target = "changes.salary.apres.paymentMethod", expression = "java(amendment.contract.salary.getPaymentMethod().name())")
-//    @Mapping(target = "changes.salary.avant", expression = "java(null)")
-//    @Mapping(target = "changes.schedule.apres.scheduleType", expression = "java(amendment.contract.schedule.getScheduleType().name())")
-//    @Mapping(target = "changes.schedule.apres.shiftWork", source = "amendment.contract.schedule.shiftWork")
-//    @Mapping(target = "changes.schedule.apres.annualLeaveDays", source = "amendment.contract.schedule.annualLeaveDays")
-//    @Mapping(target = "changes.schedule.apres.otherLeaves", source = "amendment.contract.schedule.otherLeaves")
-//    @Mapping(target = "changes.schedule.avant", expression = "java(null)")
-//    @Mapping(target = "changes.job.apres.posteId", expression = "java(amendment.contract.job.getPoste().getId().toString())")
-//    @Mapping(target = "changes.job.apres.departementId", expression = "java(amendment.contract.job.getPoste().getDepartement().getId().toString())")
-//    @Mapping(target = "changes.job.apres.workMode", expression = "java(amendment.contract.job.getWorkMode().name())")
-//    @Mapping(target = "changes.job.apres.classification", source = "amendment.contract.job.classification")
-//    @Mapping(target = "changes.job.apres.level", expression = "java(amendment.contract.job.getLevel().name())")
-//    @Mapping(target = "changes.job.apres.responsibilities", source = "amendment.contract.job.responsibilities")
-//    @Mapping(target = "changes.job.avant", expression = "java(null)")
-//    AvenantDetailDTO toDetailDTO(Amendment amendment);
-//}
+package com.tarmiz.SIRH_backend.mapper;
+
+import com.tarmiz.SIRH_backend.model.DTO.ContractDTOs.AvenantDetailDTO;
+import com.tarmiz.SIRH_backend.model.DTO.ContractDTOs.AvenantListDTO;
+import com.tarmiz.SIRH_backend.model.entity.Contract.*;
+import org.mapstruct.*;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.stream.Collectors;
+
+@Mapper(componentModel = "spring", imports = {Collectors.class, DateTimeFormatter.class})
+public interface AmendmentMapper {
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "reference", target = "reference")
+    @Mapping(source = "contract.reference", target = "contractReference")
+    @Mapping(source = "numero", target = "numero")
+    @Mapping(source = "objet", target = "objet")
+    @Mapping(source = "typeModification", target = "typeModification")
+    @Mapping(source = "amendmentDate", target = "date")
+    @Mapping(source = "status", target = "status")
+    @Mapping(source = "createdDate", target = "createdAt")
+    AvenantListDTO toAvenantListDTO(Amendment amendment);
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "reference", target = "reference")
+    @Mapping(source = "contract.id", target = "contractId")
+    @Mapping(source = "contract.reference", target = "contractReference")
+    @Mapping(target = "employeeName", expression = "java(amendment.getContract().getEmployee().getFirstName() + \" \" + amendment.getContract().getEmployee().getLastName())")
+    @Mapping(source = "numero", target = "numero")
+    @Mapping(source = "amendmentDate", target = "date")
+    @Mapping(source = "objet", target = "objet")
+    @Mapping(source = "motif", target = "motif")
+    @Mapping(source = "description", target = "description")
+    @Mapping(source = "typeModification", target = "typeModification")
+    @Mapping(source = "status", target = "status")
+    @Mapping(source = "createdDate", target = "createdAt")
+    @Mapping(source = "createdBy", target = "createdBy")
+    @Mapping(target = "changes", ignore = true)
+    @Mapping(target = "actions", ignore = true)
+    @Mapping(target = "validations", ignore = true)
+    @Mapping(target = "notes", source = "notes")
+    @Mapping(target = "documentUrl", ignore = true)
+    @Mapping(target = "signedDocument", ignore = true)
+    AvenantDetailDTO toAvenantDetailDTO(Amendment amendment);
+
+    /* -------------------- AFTER MAPPING -------------------- */
+    @AfterMapping
+    default void populateChanges(Amendment amendment, @MappingTarget AvenantDetailDTO dto) {
+        AvenantDetailDTO.ChangesDTO changes = new AvenantDetailDTO.ChangesDTO();
+        LocalDate amendmentDate = amendment.getAmendmentDate();
+
+        Contract contract = amendment.getContract();
+
+        // ---------- Salary ----------
+        AvenantDetailDTO.SalaryDetailDTO salary = new AvenantDetailDTO.SalaryDetailDTO();
+
+        // "avant" = dernier salary avant la date de l'avenant
+        ContractSalary avantSalary = contract.getSalaries().stream()
+                .filter(s -> s.getEffectiveDate() != null && s.getEffectiveDate().isBefore(amendmentDate))
+                .max(Comparator.comparing(ContractSalary::getEffectiveDate))
+                .orElseGet(() -> contract.getSalaries().stream()
+                        .filter(s -> s.getAmendment() == null)
+                        .min(Comparator.comparing(ContractSalary::getEffectiveDate))
+                        .orElse(null));
+
+        if (avantSalary != null) {
+            AvenantDetailDTO.SalaryInfoDTO avant = new AvenantDetailDTO.SalaryInfoDTO();
+            avant.setSalaryBrut(avantSalary.getSalaryBrut().intValue());
+            avant.setSalaryNet(avantSalary.getSalaryNet().intValue());
+            avant.setCurrency(avantSalary.getCurrency());
+            avant.setPaymentMethod(avantSalary.getPaymentMethod().name());
+            salary.setAvant(avant);
+        }
+
+        // "apres" = salary de l'avenant
+        ContractSalary apresSalary = contract.getSalaries().stream()
+                .filter(s -> amendment.equals(s.getAmendment()))
+                .findFirst()
+                .orElse(null);
+
+        if (apresSalary != null) {
+            AvenantDetailDTO.SalaryInfoDTO apres = new AvenantDetailDTO.SalaryInfoDTO();
+            apres.setSalaryBrut(apresSalary.getSalaryBrut().intValue());
+            apres.setSalaryNet(apresSalary.getSalaryNet().intValue());
+            apres.setCurrency(apresSalary.getCurrency());
+            apres.setPaymentMethod(apresSalary.getPaymentMethod().name());
+            salary.setApres(apres);
+        }
+        changes.setSalary(salary);
+
+        // ---------- Schedule ----------
+        AvenantDetailDTO.ScheduleDetailDTO schedule = new AvenantDetailDTO.ScheduleDetailDTO();
+
+        ContractSchedule avantSchedule = contract.getSchedules().stream()
+                .filter(s -> s.getEffectiveDate() != null && s.getEffectiveDate().isBefore(amendmentDate))
+                .max(Comparator.comparing(ContractSchedule::getEffectiveDate))
+                .orElseGet(() -> contract.getSchedules().stream()
+                        .filter(s -> s.getAmendment() == null)
+                        .min(Comparator.comparing(ContractSchedule::getEffectiveDate))
+                        .orElse(null));
+
+        if (avantSchedule != null) {
+            AvenantDetailDTO.ScheduleInfoDTO avant = new AvenantDetailDTO.ScheduleInfoDTO();
+            avant.setScheduleType(avantSchedule.getScheduleType().name());
+            avant.setShiftWork(avantSchedule.getShiftWork());
+            avant.setAnnualLeaveDays(avantSchedule.getAnnualLeaveDays());
+            avant.setOtherLeaves(avantSchedule.getOtherLeaves());
+            schedule.setAvant(avant);
+        }
+
+        ContractSchedule apresSchedule = contract.getSchedules().stream()
+                .filter(s -> amendment.equals(s.getAmendment()))
+                .findFirst()
+                .orElse(null);
+
+        if (apresSchedule != null) {
+            AvenantDetailDTO.ScheduleInfoDTO apres = new AvenantDetailDTO.ScheduleInfoDTO();
+            apres.setScheduleType(apresSchedule.getScheduleType().name());
+            apres.setShiftWork(apresSchedule.getShiftWork());
+            apres.setAnnualLeaveDays(apresSchedule.getAnnualLeaveDays());
+            apres.setOtherLeaves(apresSchedule.getOtherLeaves());
+            schedule.setApres(apres);
+        }
+        changes.setSchedule(schedule);
+
+        // ---------- Job ----------
+        AvenantDetailDTO.JobDetailDTO job = new AvenantDetailDTO.JobDetailDTO();
+
+        ContractJob avantJob = contract.getJobs().stream()
+                .filter(j -> j.getEffectiveDate() != null && j.getEffectiveDate().isBefore(amendmentDate))
+                .max(Comparator.comparing(ContractJob::getEffectiveDate))
+                .orElseGet(() -> contract.getJobs().stream()
+                        .filter(j -> j.getAmendment() == null)
+                        .min(Comparator.comparing(ContractJob::getEffectiveDate))
+                        .orElse(null));
+
+        if (avantJob != null) {
+            AvenantDetailDTO.JobInfoDTO avant = new AvenantDetailDTO.JobInfoDTO();
+            avant.setPosteId(avantJob.getPoste().getId().toString());
+            avant.setWorkMode(avantJob.getWorkMode().name());
+            avant.setClassification(avantJob.getClassification());
+            avant.setLevel(avantJob.getLevel() == null ? null : avantJob.getLevel().name());
+            avant.setResponsibilities(avantJob.getResponsibilities());
+            job.setAvant(avant);
+        }
+
+        ContractJob apresJob = contract.getJobs().stream()
+                .filter(j -> amendment.equals(j.getAmendment()))
+                .findFirst()
+                .orElse(null);
+
+        if (apresJob != null) {
+            AvenantDetailDTO.JobInfoDTO apres = new AvenantDetailDTO.JobInfoDTO();
+            apres.setPosteId(apresJob.getPoste().getId().toString());
+            apres.setWorkMode(apresJob.getWorkMode().name());
+            apres.setClassification(apresJob.getClassification());
+            apres.setLevel(apresJob.getLevel() == null ? null : apresJob.getLevel().name());
+            apres.setResponsibilities(apresJob.getResponsibilities());
+            job.setApres(apres);
+        }
+        changes.setJob(job);
+
+        dto.setChanges(changes);
+    }
+}

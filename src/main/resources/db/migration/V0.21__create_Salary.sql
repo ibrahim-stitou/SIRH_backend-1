@@ -9,6 +9,10 @@ CREATE TABLE contract_salary (
                                  periodicity VARCHAR(50),
                                  payment_day INT CHECK (payment_day BETWEEN 1 AND 31),
 
+                                 amendment_id BIGINT,
+                                 effective_date DATE,
+                                 active BOOLEAN DEFAULT TRUE,
+
                                  created_by VARCHAR,
                                  created_date TIMESTAMP,
                                  last_modified_by VARCHAR,

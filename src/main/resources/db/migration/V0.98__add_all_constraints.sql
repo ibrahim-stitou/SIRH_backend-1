@@ -25,3 +25,16 @@ CREATE TABLE trial_period_criteria (
                                        CONSTRAINT fk_trial_period_criteria_period FOREIGN KEY (trial_period_id) REFERENCES trial_periods(id) ON DELETE CASCADE,
                                        CONSTRAINT fk_trial_period_criteria_criteria FOREIGN KEY (trial_criteria_id) REFERENCES trial_criteria(id) ON DELETE CASCADE
 );
+
+-- Après la création de contract_amendments
+ALTER TABLE contract_job
+    ADD CONSTRAINT fk_contract_job_amendment FOREIGN KEY (amendment_id)
+        REFERENCES contract_amendments(id);
+
+ALTER TABLE contract_salary
+    ADD CONSTRAINT fk_contract_salary_amendment FOREIGN KEY (amendment_id)
+        REFERENCES contract_amendments(id);
+
+ALTER TABLE contract_schedules
+    ADD CONSTRAINT fk_contract_schedule_amendment FOREIGN KEY (amendment_id)
+        REFERENCES contract_amendments(id);

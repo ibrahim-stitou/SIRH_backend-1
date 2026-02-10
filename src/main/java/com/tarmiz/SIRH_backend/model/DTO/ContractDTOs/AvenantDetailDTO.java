@@ -16,7 +16,7 @@ public class AvenantDetailDTO {
     private String contractId;
     private String contractReference;
 
-    //employee_name : nom complet de employee
+    private String EmployeeName ;
 
     private Integer numero;
     private String date;

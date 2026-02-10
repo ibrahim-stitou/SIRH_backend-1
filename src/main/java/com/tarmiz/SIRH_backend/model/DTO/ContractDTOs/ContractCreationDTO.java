@@ -8,6 +8,7 @@ import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Getter
@@ -48,6 +49,8 @@ public class ContractCreationDTO {
         private Long emploiId;
         private Long posteId;
 
+        private String level;
+
         private String workMode;
         private String classification;
         private Long siegeId;
@@ -65,6 +68,14 @@ public class ContractCreationDTO {
     public static class ContractScheduleDTO {
         private String scheduleType;
         private Boolean workShift;
+        private Integer hoursPerDay;
+        private Integer daysPerWeek;
+        private Integer hoursPerWeek;
+        private LocalTime startTime;
+        private LocalTime endTime;
+        private Integer breakDuration;
+        private Integer annualLeaveDays;
+        private String otherLeaves;
     }
 
     @Getter
@@ -76,6 +87,7 @@ public class ContractCreationDTO {
         private String currency;
         private String paymentMethod;
         private String periodicity;
+        private Integer PaymentDay;
         private List<PrimeDTO> primes;
 
         @Getter

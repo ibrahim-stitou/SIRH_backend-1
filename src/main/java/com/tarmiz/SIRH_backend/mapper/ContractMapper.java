@@ -2,6 +2,9 @@ package com.tarmiz.SIRH_backend.mapper;
 
 import com.tarmiz.SIRH_backend.model.DTO.ContractDTOs.ContractListDTO;
 import com.tarmiz.SIRH_backend.model.entity.Contract.Contract;
+import com.tarmiz.SIRH_backend.model.entity.Contract.ContractJob;
+import com.tarmiz.SIRH_backend.model.entity.Contract.ContractSalary;
+import com.tarmiz.SIRH_backend.model.entity.Contract.ContractSchedule;
 
 public class ContractMapper {
 
@@ -22,9 +25,10 @@ public class ContractMapper {
 
         dto.setTypeDeContract(contract.getType() != null ? contract.getType().name() : null);
 
-        // Job: metier, emploi, poste
-        if (contract.getJob() != null && contract.getJob().getPoste() != null) {
-            var poste = contract.getJob().getPoste();
+        // Job: metier, emploi, poste (get active job)
+        ContractJob activeJob = getActiveJob(contract);
+        if (activeJob != null && activeJob.getPoste() != null) {
+            var poste = activeJob.getPoste();
 
             // Metier
             if (poste.getEmploi() != null && poste.getEmploi().getMetier() != null) {
@@ -44,13 +48,14 @@ public class ContractMapper {
             dto.setPoste(poste.getLibelle());
         }
 
-        // Schedule
-        if (contract.getSchedule() != null) {
+        // Schedule (get active schedule)
+        ContractSchedule activeSchedule = getActiveSchedule(contract);
+        if (activeSchedule != null) {
             ContractListDTO.ScheduleDTO scheduleDTO = new ContractListDTO.ScheduleDTO();
-            scheduleDTO.setScheduleType(contract.getSchedule().getScheduleType() != null ?
-                    contract.getSchedule().getScheduleType().name() : null);
-            scheduleDTO.setShiftWork(contract.getSchedule().getShiftWork() != null ?
-                    contract.getSchedule().getShiftWork() : false);
+            scheduleDTO.setScheduleType(activeSchedule.getScheduleType() != null ?
+                    activeSchedule.getScheduleType().name() : null);
+            scheduleDTO.setShiftWork(activeSchedule.getShiftWork() != null ?
+                    activeSchedule.getShiftWork() : false);
             dto.setSchedule(scheduleDTO);
         }
 
@@ -58,14 +63,15 @@ public class ContractMapper {
         dto.setDateDebut(contract.getStartDate());
         dto.setDateFin(contract.getEndDate());
 
-        // Salary
-        if (contract.getSalary() != null) {
+        // Salary (get active salary)
+        ContractSalary activeSalary = getActiveSalary(contract);
+        if (activeSalary != null) {
             ContractListDTO.SalaryDTO salaryDTO = new ContractListDTO.SalaryDTO();
-            salaryDTO.setSalaryBrut(contract.getSalary().getSalaryBrut() != null ?
-                    contract.getSalary().getSalaryBrut().doubleValue() : null);
-            salaryDTO.setSalaryNet(contract.getSalary().getSalaryNet() != null ?
-                    contract.getSalary().getSalaryNet().doubleValue() : null);
-            salaryDTO.setCurrency(contract.getSalary().getCurrency());
+            salaryDTO.setSalaryBrut(activeSalary.getSalaryBrut() != null ?
+                    activeSalary.getSalaryBrut().doubleValue() : null);
+            salaryDTO.setSalaryNet(activeSalary.getSalaryNet() != null ?
+                    activeSalary.getSalaryNet().doubleValue() : null);
+            salaryDTO.setCurrency(activeSalary.getCurrency());
             dto.setSalary(salaryDTO);
         }
 
@@ -75,5 +81,44 @@ public class ContractMapper {
         dto.setActions(1);
 
         return dto;
+    }
+
+    /**
+     * Get the active job for a contract
+     */
+    private static ContractJob getActiveJob(Contract contract) {
+        if (contract.getJobs() == null || contract.getJobs().isEmpty()) {
+            return null;
+        }
+        return contract.getJobs().stream()
+                .filter(j -> j.getActive() != null && j.getActive())
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * Get the active salary for a contract
+     */
+    private static ContractSalary getActiveSalary(Contract contract) {
+        if (contract.getSalaries() == null || contract.getSalaries().isEmpty()) {
+            return null;
+        }
+        return contract.getSalaries().stream()
+                .filter(s -> s.getActive() != null && s.getActive())
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * Get the active schedule for a contract
+     */
+    private static ContractSchedule getActiveSchedule(Contract contract) {
+        if (contract.getSchedules() == null || contract.getSchedules().isEmpty()) {
+            return null;
+        }
+        return contract.getSchedules().stream()
+                .filter(sc -> sc.getActive() != null && sc.getActive())
+                .findFirst()
+                .orElse(null);
     }
 }

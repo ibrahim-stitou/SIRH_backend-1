@@ -20,6 +20,7 @@ public class ContractDetailsDTO {
     private LocalDate signatureDate;
     private LocalDate startDate;
     private LocalDate endDate;
+    private List<ClauseDTO> conditions;
 
     private String employeeId;
     private String employeeName;
@@ -35,6 +36,14 @@ public class ContractDetailsDTO {
     private AuditDTO historique;
 
     /* ================= Nested DTOs ================= */
+
+    @Getter
+    @Setter
+    public static class ClauseDTO {
+        private Long id;
+        private String title;
+        private String description;
+    }
 
     @Getter
     @Setter
@@ -64,6 +73,7 @@ public class ContractDetailsDTO {
         private String metier;
         private String emploi;
         private String poste;
+        private Long posteId;
         private String level;
         private String workMode;
         private String classification;
@@ -89,6 +99,7 @@ public class ContractDetailsDTO {
     @Getter
     @Setter
     public static class SalaryDTO {
+        private BigDecimal baseSalary;
         private BigDecimal salaryBrut;
         private BigDecimal salaryNet;
         private String currency;
@@ -96,6 +107,7 @@ public class ContractDetailsDTO {
         private String periodicity;
         private List<PrimeDTO> primes;
         private AvantagesDTO avantages;
+        private Integer paymentDay;
         private String indemnites;
     }
 

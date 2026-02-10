@@ -1,11 +1,12 @@
 package com.tarmiz.SIRH_backend.controller;
 
 import com.tarmiz.SIRH_backend.model.DTO.ApiResponseDTO;
+import com.tarmiz.SIRH_backend.model.DTO.ContractDTOs.AvenantDetailDTO;
 import com.tarmiz.SIRH_backend.model.DTO.ContractDTOs.ContractCreationDTO;
 import com.tarmiz.SIRH_backend.model.DTO.ContractDTOs.ContractDetailsDTO;
 import com.tarmiz.SIRH_backend.model.DTO.ContractDTOs.ContractListDTO;
-import com.tarmiz.SIRH_backend.model.entity.Contract.Contract;
 import com.tarmiz.SIRH_backend.model.entity.Files.File;
+import com.tarmiz.SIRH_backend.service.Amendment.AmendmentService;
 import com.tarmiz.SIRH_backend.service.ContractService;
 import com.tarmiz.SIRH_backend.service.SettingsServices.JobServices.EmploiService;
 import com.tarmiz.SIRH_backend.service.SettingsServices.JobServices.MetierService;
@@ -36,6 +37,7 @@ public class ContractController {
     private final PosteService posteService;
     private final MetierService metierService;
     private final ContractService contractService;
+    private final AmendmentService amendmentService;
 
     // ------------------------- CONTRACTS -------------------------
 
@@ -197,6 +199,16 @@ public class ContractController {
 
         contractService.generateContract(contractId);
         return ResponseEntity.ok(ApiResponseDTO.success("Contract generated successfully", null));
+    }
+
+
+    @Operation(summary = "Récupérer la liste des avenants d'un contrat",
+            description = "Retourne tous les avenants liés à un contrat donné")
+    @GetMapping("/{contractId}")
+    public ResponseEntity<List<AvenantDetailDTO>> getAmendmentsByContract(
+            @PathVariable Long contractId) {
+        List<AvenantDetailDTO> dtos = amendmentService.getAmendmentsByContractId(contractId);
+        return ResponseEntity.ok(dtos);
     }
 
 }
