@@ -17,3 +17,7 @@ CREATE TABLE contracts (
 
                           CONSTRAINT fk_contract_employee FOREIGN KEY (employee_id) REFERENCES employees(id)
 );
+
+CREATE UNIQUE INDEX unique_active_contract_per_employee
+    ON contracts(employee_id)
+    WHERE status = 'ACTIF';

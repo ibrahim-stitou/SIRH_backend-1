@@ -13,43 +13,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
-public abstract class AttestationMapper {
+public interface AttestationMapper {
 
-    @Autowired
-    protected FileService fileService;
-
-    /* ================= Mapping DemandeAttestation + Attestation → AttestationDTO ================= */
+    // DemandeAttestation -> AttestationDTO
     @Mapping(target = "employeeId", expression = "java(demande.getEmployee().getId())")
     @Mapping(target = "typeAttestation", expression = "java(demande.getTypeAttestation().getLabel())")
     @Mapping(target = "status", expression = "java(demande.getStatus().getLabel())")
     @Mapping(target = "raison", source = "note")
     @Mapping(target = "notes", expression = "java(demande.getAttestation() != null ? demande.getAttestation().getNotes() : null)")
     @Mapping(target = "dateGeneration", expression = "java(demande.getAttestation() != null ? demande.getAttestation().getDateGeneration() : null)")
-    @Mapping(target = "createdAt", source = "createdAt")
-    @Mapping(target = "updatedAt", source = "updatedAt")
-    @Mapping(target = "dateRequest", source = "dateRequest")
-    @Mapping(target = "dateSouhaitee", source = "dateSouhaitee")
-    @Mapping(target = "dateValidation", source = "dateValidation")
-    public abstract AttestationDTO toAttestationDTO(DemandeAttestation demande);
+    AttestationDTO toAttestationDTO(DemandeAttestation demande);
 
-    public abstract List<AttestationDTO> toAttestationDTOList(List<DemandeAttestation> demandes);
+    List<AttestationDTO> toAttestationDTOList(List<DemandeAttestation> demandes);
 
-    /* ================= Mapping Attestation → AttestationRequestDTO ================= */
+    // Attestation -> AttestationRequestDTO
     @Mapping(target = "requestId", source = "demandeAttestation.id")
     @Mapping(target = "employeeId", expression = "java(attestation.getDemandeAttestation().getEmployee().getId())")
     @Mapping(target = "typeAttestation", expression = "java(attestation.getTypeAttestation().getLabel())")
-    @Mapping(target = "documentPath", expression = "java(getDocumentPath(attestation.getId()))")
-    @Mapping(target = "notes", source = "notes")
-    @Mapping(target = "dateGeneration", source = "dateGeneration")
-    @Mapping(target = "numeroAttestation", source = "numeroAttestation")
-    @Mapping(target = "createdAt", source = "createdAt")
-    @Mapping(target = "updatedAt", source = "updatedAt")
-    public abstract AttestationRequestDTO toRequestDTO(Attestation attestation);
+    @Mapping(target = "documentPath", expression = "java(getDocumentPath(attestation.getId(), fileService))")
+    AttestationRequestDTO toRequestDTO(Attestation attestation, @Context FileService fileService);
 
-    public abstract List<AttestationRequestDTO> toRequestDTOList(List<Attestation> attestations);
+    List<AttestationRequestDTO> toRequestDTOList(List<Attestation> attestations, @Context FileService fileService);
 
-    /* ================= Helper to fetch documentPath from FileService ================= */
-    protected String getDocumentPath(Long attestationId) {
+    // Helper method
+    default String getDocumentPath(Long attestationId, @Context FileService fileService) {
         return fileService.findByEntityAndPurpose(EntityType.ATTESTATION, attestationId, FilePurpose.OTHER)
                 .stream()
                 .findFirst()

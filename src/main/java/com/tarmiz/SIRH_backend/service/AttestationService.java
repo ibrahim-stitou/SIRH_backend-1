@@ -14,11 +14,16 @@ import com.tarmiz.SIRH_backend.model.repository.EmployeeRepository;
 import com.tarmiz.SIRH_backend.enums.AttestationDemandStatus;
 import com.tarmiz.SIRH_backend.enums.AttestationType;
 import com.tarmiz.SIRH_backend.exception.BusinessException.BusinessException;
+import com.tarmiz.SIRH_backend.service.document.FileService;
 import com.tarmiz.SIRH_backend.service.document.PdfGeneratorService;
+import com.tarmiz.SIRH_backend.specs.AttestationRequestsSpecifications;
+import com.tarmiz.SIRH_backend.specs.AttestationSpecifications;
 import com.tarmiz.SIRH_backend.util.PdfTemplateUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -30,23 +35,32 @@ import java.util.Map;
 @Service
 public class AttestationService {
 
-    @Autowired
-    private DemandeAttestationRepository demandeRepo;
+    private final DemandeAttestationRepository demandeRepo;
+    private final AttestationRepository attestationRepo;
+    private final EmployeeRepository employeeRepo;
+    private final PdfGeneratorService pdfGeneratorService;
+    private final FileService fileService;
+    private final PdfTemplateUtils helper;
+    private final AttestationMapper mapper;
 
-    @Autowired
-    private AttestationRepository attestationRepo;
-
-    @Autowired
-    private EmployeeRepository employeeRepo;
-
-    @Autowired
-    PdfGeneratorService pdfGeneratorService ;
-
-    @Autowired
-    PdfTemplateUtils helper;
-
-    @Autowired
-    AttestationMapper mapper;
+    // Constructor injection
+    public AttestationService(
+            DemandeAttestationRepository demandeRepo,
+            AttestationRepository attestationRepo,
+            EmployeeRepository employeeRepo,
+            PdfGeneratorService pdfGeneratorService,
+            FileService fileService,
+            PdfTemplateUtils helper,
+            AttestationMapper mapper
+    ) {
+        this.demandeRepo = demandeRepo;
+        this.attestationRepo = attestationRepo;
+        this.employeeRepo = employeeRepo;
+        this.pdfGeneratorService = pdfGeneratorService;
+        this.fileService= fileService;
+        this.helper = helper;
+        this.mapper = mapper;
+    }
 
 
     public String generateNumeroAttestation() {
@@ -61,33 +75,25 @@ public class AttestationService {
 
     /* ================== Attestation Requests ================== */
 
-    public ApiListResponse<AttestationDTO> listRequests(Long employeeId, AttestationType type, AttestationDemandStatus status,
-                                             int start, int length, String sortDir) {
-        Pageable pageable = PageRequest.of(start, length, Sort.by(
-                sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
-                "createdAt"
-        ));
+    public ApiListResponse<AttestationDTO> listRequests(
+            Long employeeId,
+            AttestationType type,
+            AttestationDemandStatus status,
+            int start,
+            int length,
+            String sortDir
+    ) {
+        int page = start / length;
+        Sort.Direction direction = "asc".equalsIgnoreCase(sortDir) ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, length, Sort.by(direction, "createdAt"));
 
-        Page<DemandeAttestation> pageResult;
+        // Build combined specification
+        Specification<DemandeAttestation> spec = Specification
+                .where(AttestationRequestsSpecifications.hasEmployeeId(employeeId))
+                .and(AttestationRequestsSpecifications.hasType(type))
+                .and(AttestationRequestsSpecifications.hasStatus(status));
 
-        if (employeeId == null && type == null && status == null) {
-            pageResult = demandeRepo.findAll(pageable);
-        }else{
-            List<DemandeAttestation> filtered = demandeRepo.findAll(); // simple for now
-            filtered.removeIf(d -> employeeId != null && !d.getEmployee().getId().equals(employeeId));
-            filtered.removeIf(d -> type != null && !d.getTypeAttestation().equals(type));
-            filtered.removeIf(d -> status != null && !d.getStatus().equals(status));
-
-            int fromIndex = Math.min(start * length, filtered.size());
-            int toIndex = Math.min(fromIndex + length, filtered.size());
-            List<AttestationDTO> pageList = mapper.toAttestationDTOList(filtered.subList(fromIndex, toIndex));
-
-            pageResult = new PageImpl<>(
-                    filtered.subList(fromIndex, toIndex),
-                    pageable,
-                    filtered.size()
-            );
-        }
+        Page<DemandeAttestation> pageResult = demandeRepo.findAll(spec, pageable);
 
         List<AttestationDTO> data = mapper.toAttestationDTOList(pageResult.getContent());
 
@@ -99,6 +105,7 @@ public class AttestationService {
                 pageResult.getTotalElements()
         );
     }
+
 
     public AttestationDTO createRequest(Long employeeId, AttestationType type, LocalDate dateSouhaitee, String note) {
         Employee employee = employeeRepo.findById(employeeId)
@@ -167,34 +174,42 @@ public class AttestationService {
 
     /* ================== Attestations ================== */
 
-    public ApiListResponse<AttestationRequestDTO> listAttestations(Long employeeId, AttestationType type, String numero, int start, int length, String sortDir) {
-        Pageable pageable = PageRequest.of(start, length, Sort.by(
-                sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
-                "createdAt"
-        ));
+    public ApiListResponse<AttestationRequestDTO> listAttestations(
+            Long employeeId,
+            AttestationType type,
+            String numero,
+            int start,
+            int length,
+            String sortDir
+    ) {
+        int page = start / length;
+        Sort.Direction direction = "asc".equalsIgnoreCase(sortDir) ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, length, Sort.by(direction, "createdAt"));
 
-        List<Attestation> all = attestationRepo.findAll();
-        all.removeIf(a -> employeeId != null && !a.getDemandeAttestation().getEmployee().getId().equals(employeeId));
-        all.removeIf(a -> type != null && !a.getTypeAttestation().equals(type));
-        all.removeIf(a -> numero != null && !a.getNumeroAttestation().contains(numero));
+        // Build combined Specification
+        Specification<Attestation> spec = Specification
+                .where(AttestationSpecifications.hasEmployeeId(employeeId))
+                .and(AttestationSpecifications.hasType(type))
+                .and(AttestationSpecifications.hasNumero(numero));
 
-        int fromIndex = Math.min(start * length, all.size());
-        int toIndex = Math.min(fromIndex + length, all.size());
-        List<AttestationRequestDTO> pageList = mapper.toRequestDTOList(all.subList(fromIndex, toIndex));
+        Page<Attestation> pageResult = attestationRepo.findAll(spec, pageable);
+
+        List<AttestationRequestDTO> data = mapper.toRequestDTOList(pageResult.getContent(),fileService);
 
         return new ApiListResponse<>(
                 "success",
                 "Liste des attestations récupérée avec succès",
-                pageList,
-                all.size(),
-                all.size()
+                data,
+                pageResult.getTotalElements(),
+                pageResult.getTotalElements()
         );
     }
+
 
     public AttestationRequestDTO getAttestation(Long id) {
         Attestation attestation = attestationRepo.findById(id)
                 .orElseThrow(() -> new BusinessException("Attestation not found: " + id));
-        return mapper.toRequestDTO(attestation);
+        return mapper.toRequestDTO(attestation,fileService);
     }
 
     @Transactional
@@ -252,6 +267,6 @@ public class AttestationService {
         attestation.setUpdatedAt(LocalDateTime.now());
 
         Attestation saved = attestationRepo.save(attestation);
-        return mapper.toRequestDTO(saved);
+        return mapper.toRequestDTO(saved,fileService);
     }
 }

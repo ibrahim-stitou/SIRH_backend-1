@@ -4,6 +4,7 @@ import com.tarmiz.SIRH_backend.enums.*;
 import com.tarmiz.SIRH_backend.model.entity.*;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Department;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Group;
+import com.tarmiz.SIRH_backend.model.entity.Contract.Contract;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.Getter;
@@ -54,6 +55,7 @@ public class Employee extends Auditable {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @Enumerated(EnumType.STRING)
     private Nationality nationality;
 
     @Enumerated(EnumType.STRING)
@@ -100,4 +102,8 @@ public class Employee extends Auditable {
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Certification> certifications = new ArrayList<>();
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Contract> contracts = new ArrayList<>();
+
 }
