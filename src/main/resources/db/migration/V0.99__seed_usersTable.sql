@@ -5,7 +5,7 @@
 -- Clear existing data
 TRUNCATE TABLE users RESTART IDENTITY CASCADE;
 
--- PASSWORD : password123
+-- PASSWORD : admin123
 
 -- Insert ADMIN user
 INSERT INTO users (email, password_hash, role, status, created_by)

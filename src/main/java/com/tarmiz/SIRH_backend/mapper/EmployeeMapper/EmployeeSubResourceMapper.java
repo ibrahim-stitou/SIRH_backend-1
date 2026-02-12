@@ -1,4 +1,4 @@
-package com.tarmiz.SIRH_backend.mapper;
+package com.tarmiz.SIRH_backend.mapper.EmployeeMapper;
 
 import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeSubResourcesDTO.*;
 import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.*;

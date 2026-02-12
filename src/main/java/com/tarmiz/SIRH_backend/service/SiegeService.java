@@ -1,7 +1,7 @@
 package com.tarmiz.SIRH_backend.service;
 
 import com.tarmiz.SIRH_backend.exception.BusinessException.SiegeDeletionForbiddenException;
-import com.tarmiz.SIRH_backend.mapper.SiegeMapper;
+import com.tarmiz.SIRH_backend.mapper.CompanyHierarchyMappers.SiegeMapper;
 import com.tarmiz.SIRH_backend.model.DTO.ApiListResponse;
 import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.SiegeCreateDTO;
 import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.SiegeListDTO;

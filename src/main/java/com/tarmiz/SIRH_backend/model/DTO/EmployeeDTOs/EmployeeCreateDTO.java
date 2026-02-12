@@ -1,65 +1,88 @@
 package com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs;
 
-import com.tarmiz.SIRH_backend.enums.EmployeeStatus;
-import com.tarmiz.SIRH_backend.enums.Gender;
-import com.tarmiz.SIRH_backend.enums.MaritalStatus;
-import com.tarmiz.SIRH_backend.enums.Nationality;
+import com.tarmiz.SIRH_backend.enums.*;
 import com.tarmiz.SIRH_backend.validation.ValidEnum;
-import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
+
 
 @Getter
 @Setter
 public class EmployeeCreateDTO {
+
+    @NotBlank
     private String firstName;
+
+    @NotBlank
     private String lastName;
+
     private String firstNameAr;
     private String lastNameAr;
+
+    @NotBlank
     private String matricule;
+
+    @NotBlank
     private String cin;
-    private String numero_cnss;
+
+    @Past
     private LocalDate birthDate;
+
     private String birthPlace;
-    @Schema(
-            description = "Nationalité de l'employé",
-            allowableValues = { "MAROCAIN", "ETRANGER" },
-            example = "MAROCAIN"
-    )
+
+    @NotNull
     @ValidEnum(enumClass = Nationality.class)
     private String nationality;
-    @Schema(
-            description = "Genre de l'employé",
-            allowableValues = { "MALE", "FEMALE" },
-            example = "FEMALE"
-    )
+
+    @NotNull
     @ValidEnum(enumClass = Gender.class)
     private String gender;
-    @Schema(
-            description = "Situation matrimoniale de l'employé",
-            allowableValues = { "CELIBATAIRE", "MARIE", "DIVORCE", "VEUF_VEUVE" },
-            example = "MARIE"
-    )
+
+    @NotNull
     @ValidEnum(enumClass = MaritalStatus.class)
     private String maritalStatus;
+
+    @Min(0)
     private Integer numberOfChildren;
-    private String address;
-    private String city;
-    private String postalCode;
-    private String country;
+
+    @NotBlank
     private String phone;
+
+    @Email
+    @NotBlank
     private String email;
+
+    @NotNull
     private Long departmentId;
-    private LocalDate hireDate;
-    private String professionalCategory;
-    @Schema(
-            description = "Statut actuel de l'employé",
-            allowableValues = { "ACTIF", "SUSPENDU", "PARTI" },
-            example = "ACTIF"
-    )
+
+    @NotNull
+    private Long groupId;
+
+    @NotNull
     @ValidEnum(enumClass = EmployeeStatus.class)
     private String status;
-    private Boolean isActive;
+
+    // ================= Nested objects =================
+    @Valid
+    private EmployeeSubResourcesDTO.AddressDTO address;
+
+    @Valid
+    private List<EmployeeSubResourcesDTO.PersonInChargeDTO> emergencyContacts;
+
+    @Valid
+    private List<EmployeeSubResourcesDTO.SkillDTO> skills;
+
+    @Valid
+    private List<EmployeeSubResourcesDTO.EducationDTO> educationList;
+
+    @Valid
+    private List<EmployeeSubResourcesDTO.ExperienceDTO> experiences;
+
+    @Valid
+    private List<EmployeeSubResourcesDTO.CertificationDTO> certifications;
 }

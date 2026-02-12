@@ -1,6 +1,6 @@
-/*
 package com.tarmiz.SIRH_backend;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tarmiz.SIRH_backend.model.DTO.AuthDTOs.LoginRequestDTO;
 import com.tarmiz.SIRH_backend.model.entity.User;
 import com.tarmiz.SIRH_backend.model.repository.UserRepository;
@@ -8,20 +8,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
-import tools.jackson.databind.ObjectMapper;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@AutoConfigureMockMvc
 public class AuthControllerTest {
 
-    @Autowired
     private MockMvc mockMvc;
 
     @Autowired
@@ -30,17 +29,23 @@ public class AuthControllerTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private WebApplicationContext webApplicationContext;
 
     @BeforeEach
     void setup() {
+        // Initialize MockMvc and ObjectMapper explicitly
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        this.objectMapper = new ObjectMapper();
+
         userRepository.deleteAll();
 
         // Create a test user
         User user = new User();
         user.setEmail("admin@example.com");
-        user.setPasswordHash(passwordEncoder.encode("password123"));
+        user.setPasswordHash(passwordEncoder.encode("admin123"));
         user.setRole("ADMIN");
         user.setStatus("ACTIVE");
 
@@ -51,7 +56,7 @@ public class AuthControllerTest {
     void testLoginSuccess() throws Exception {
         LoginRequestDTO request = new LoginRequestDTO();
         request.setEmail("admin@example.com");
-        request.setPassword("password123");
+        request.setPassword("admin123");
 
         mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -81,11 +86,11 @@ public class AuthControllerTest {
 
         LoginRequestDTO request = new LoginRequestDTO();
         request.setEmail("admin@example.com");
-        request.setPassword("password123");
+        request.setPassword("admin123");
 
         mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().is4xxClientError());
     }
-}*/
+}

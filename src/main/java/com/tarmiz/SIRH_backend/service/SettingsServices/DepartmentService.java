@@ -2,7 +2,7 @@ package com.tarmiz.SIRH_backend.service.SettingsServices;
 
 import com.tarmiz.SIRH_backend.enums.DepartmentStatus;
 import com.tarmiz.SIRH_backend.exception.BusinessException.BusinessException;
-import com.tarmiz.SIRH_backend.mapper.DepartmentMapper;
+import com.tarmiz.SIRH_backend.mapper.CompanyHierarchyMappers.DepartmentMapper;
 import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.DepartmentListDTO;
 import com.tarmiz.SIRH_backend.model.DTO.DepartmentCreationDTO;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Company;

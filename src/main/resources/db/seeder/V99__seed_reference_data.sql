@@ -39,16 +39,16 @@ VALUES
 -- =========================================
 INSERT INTO employees (id, matricule, first_name, last_name, first_name_ar, last_name_ar, status, cin, birth_date, birth_place, gender, nationality, marital_status, number_of_children, phone, email, aptitude_medical, bank_name, rib, department_id, group_id, created_by)
 VALUES
-    (1,'EMP001','Ahmed','El Amrani','أحمد','الأمراني','ACTIF','CIN001','1985-03-15','Casablanca','Male','Marocaine','MARIE',2,'0600000001','ahmed.elamrani@example.com','APTE','Attijariwafa Bank','RIB001',1,1,'SYSTEM'),
-    (2,'EMP002','Fatima','El Fassi','فاطمة','الفاسي','ACTIF','CIN002','1990-06-22','Rabat','Female','Marocaine','CELIBATAIRE',0,'0600000002','fatima.elfassi@example.com','APTE','BMCE Bank','RIB002',2,2,'SYSTEM'),
-    (3,'EMP003','Mohamed','Benjelloun','محمد','بنجلون','SUSPENDU','CIN003','1982-11-05','Marrakech','Male','Marocaine','MARIE',3,'0600000003','mohamed.benjelloun@example.com','APTE','CIH Bank','RIB003',3,1,'SYSTEM'),
-    (4,'EMP004','Salma','Bennani','سلمى','بناني','ACTIF','CIN004','1995-01-18','Fès','Female','Marocaine','CELIBATAIRE',0,'0600000004','salma.bennani@example.com','APTE','Attijariwafa Bank','RIB004',3,2,'SYSTEM'),
-    (5,'EMP005','Youssef','El Idrissi','يوسف','الإدريسي','PARTI','CIN005','1988-08-30','Tanger','Male','Marocaine','DIVORCE',1,'0600000005','youssef.elidrissi@example.com','APTE','BMCE Bank','RIB005',4,1,'SYSTEM'),
-    (6,'EMP006','Khadija','El Khattabi','خديجة','الخطابي','ACTIF','CIN006','1992-12-12','Casablanca','Female','Marocaine','MARIE',2,'0600000006','khadija.elkhattabi@example.com','APTE','CIH Bank','RIB006',2,2,'SYSTEM'),
-    (7,'EMP007','Omar','El Fadli','عمر','الفاضلي','ACTIF','CIN007','1987-05-20','Rabat','Male','Marocaine','MARIE',3,'0600000007','omar.elfadli@example.com','APTE','Attijariwafa Bank','RIB007',1,1,'SYSTEM'),
-    (8,'EMP008','Imane','El Youssoufi','إيمان','اليوسفي','ACTIF','CIN008','1993-07-07','Marrakech','Female','Marocaine','CELIBATAIRE',0,'0600000008','imane.elyoussoufi@example.com','APTE','BMCE Bank','RIB008',2,2,'SYSTEM'),
-    (9,'EMP009','Hassan','El Ouazzani','حسن','الوزاني','SUSPENDU','CIN009','1984-09-11','Fès','Male','Marocaine','MARIE',4,'0600000009','hassan.elouazzani@example.com','APTE','CIH Bank','RIB009',3,1,'SYSTEM'),
-    (10,'EMP010','Sara','El Malki','سارة','المكي','ACTIF','CIN010','1991-04-25','Tanger','Female','Marocaine','CELIBATAIRE',0,'0600000010','sara.elmalki@example.com','APTE','Attijariwafa Bank','RIB010',4,2,'SYSTEM');
+    (1,'EMP001','Ahmed','El Amrani','أحمد','الأمراني','ACTIF','CIN001','1985-03-15','Casablanca','Male','MAROCAIN','MARIE',2,'0600000001','ahmed.elamrani@example.com','APTE','Attijariwafa Bank','RIB001',1,1,'SYSTEM'),
+    (2,'EMP002','Fatima','El Fassi','فاطمة','الفاسي','ACTIF','CIN002','1990-06-22','Rabat','Female','MAROCAIN','CELIBATAIRE',0,'0600000002','fatima.elfassi@example.com','APTE','BMCE Bank','RIB002',2,2,'SYSTEM'),
+    (3,'EMP003','Mohamed','Benjelloun','محمد','بنجلون','SUSPENDU','CIN003','1982-11-05','Marrakech','Male','MAROCAIN','MARIE',3,'0600000003','mohamed.benjelloun@example.com','APTE','CIH Bank','RIB003',3,1,'SYSTEM'),
+    (4,'EMP004','Salma','Bennani','سلمى','بناني','ACTIF','CIN004','1995-01-18','Fès','Female','MAROCAIN','CELIBATAIRE',0,'0600000004','salma.bennani@example.com','APTE','Attijariwafa Bank','RIB004',3,2,'SYSTEM'),
+    (5,'EMP005','Youssef','El Idrissi','يوسف','الإدريسي','PARTI','CIN005','1988-08-30','Tanger','Male','MAROCAIN','DIVORCE',1,'0600000005','youssef.elidrissi@example.com','APTE','BMCE Bank','RIB005',4,1,'SYSTEM'),
+    (6,'EMP006','Khadija','El Khattabi','خديجة','الخطابي','ACTIF','CIN006','1992-12-12','Casablanca','Female','MAROCAIN','MARIE',2,'0600000006','khadija.elkhattabi@example.com','APTE','CIH Bank','RIB006',2,2,'SYSTEM'),
+    (7,'EMP007','Omar','El Fadli','عمر','الفاضلي','ACTIF','CIN007','1987-05-20','Rabat','Male','MAROCAIN','MARIE',3,'0600000007','omar.elfadli@example.com','APTE','Attijariwafa Bank','RIB007',1,1,'SYSTEM'),
+    (8,'EMP008','Imane','El Youssoufi','إيمان','اليوسفي','ACTIF','CIN008','1993-07-07','Marrakech','Female','MAROCAIN','CELIBATAIRE',0,'0600000008','imane.elyoussoufi@example.com','APTE','BMCE Bank','RIB008',2,2,'SYSTEM'),
+    (9,'EMP009','Hassan','El Ouazzani','حسن','الوزاني','SUSPENDU','CIN009','1984-09-11','Fès','Male','MAROCAIN','MARIE',4,'0600000009','hassan.elouazzani@example.com','APTE','CIH Bank','RIB009',3,1,'SYSTEM'),
+    (10,'EMP010','Sara','El Malki','سارة','المكي','ACTIF','CIN010','1991-04-25','Tanger','Female','MAROCAIN','CELIBATAIRE',0,'0600000010','sara.elmalki@example.com','APTE','Attijariwafa Bank','RIB010',4,2,'SYSTEM');
 
 
 UPDATE groups SET manager_id = 1 WHERE id = 1;

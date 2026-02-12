@@ -1,5 +1,6 @@
-package com.tarmiz.SIRH_backend.mapper;
+package com.tarmiz.SIRH_backend.mapper.EmployeeMapper;
 
+import com.tarmiz.SIRH_backend.mapper.CompanyHierarchyMappers.DepartmentMapper;
 import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeDetailsDTO;
 import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Employee;
 import org.mapstruct.Mapper;
@@ -18,7 +19,9 @@ public interface EmployeeDetailsMapper {
     @Mappings({
             @Mapping(target = "status", expression = "java(employee.getStatus().getLabel())"),
             @Mapping(target = "gender", expression = "java(employee.getGender() != null ? employee.getGender().name() : null)"),
+            @Mapping(target = "nationality", expression = "java(employee.getNationality() != null ? employee.getNationality().name() : null)"),
             @Mapping(target = "maritalStatus", expression = "java(employee.getMaritalStatus() != null ? employee.getMaritalStatus().name() : null)"),
+            @Mapping(target = "aptitudeMedical", expression = "java(employee.getAptitudeMedical() != null ? employee.getAptitudeMedical().name() : null)"),
             @Mapping(target = "peopleInCharge", source = "emergencyContacts"),
             @Mapping(target = "education", source = "educationList"),
             @Mapping(target = "skills", source = "skills"),
@@ -27,5 +30,5 @@ public interface EmployeeDetailsMapper {
             @Mapping(target = "department", source = "department"),
             @Mapping(target = "address", source = "address")
     })
-    EmployeeDetailsDTO toResponse(Employee employee);
+    EmployeeDetailsDTO toDto(Employee employee);
 }

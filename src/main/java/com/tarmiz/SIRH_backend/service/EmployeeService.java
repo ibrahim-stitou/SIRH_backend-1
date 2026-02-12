@@ -1,30 +1,33 @@
 package com.tarmiz.SIRH_backend.service;
 
-import com.tarmiz.SIRH_backend.enums.DepartmentStatus;
-import com.tarmiz.SIRH_backend.enums.EmployeeStatus;
-import com.tarmiz.SIRH_backend.enums.Gender;
-import com.tarmiz.SIRH_backend.enums.MaritalStatus;
+import com.tarmiz.SIRH_backend.enums.*;
 import com.tarmiz.SIRH_backend.exception.BusinessException.*;
 import com.tarmiz.SIRH_backend.exception.TechnicalException.TechnicalException;
-import com.tarmiz.SIRH_backend.mapper.EmployeeCreateMapper;
-import com.tarmiz.SIRH_backend.mapper.EmployeeDetailsMapper;
-import com.tarmiz.SIRH_backend.mapper.EmployeesListMapper;
+import com.tarmiz.SIRH_backend.mapper.EmployeeMapper.EmployeeCreateMapper;
+import com.tarmiz.SIRH_backend.mapper.EmployeeMapper.EmployeeDetailsMapper;
+import com.tarmiz.SIRH_backend.mapper.EmployeeMapper.EmployeesListMapper;
+import com.tarmiz.SIRH_backend.model.DTO.ApiListResponse;
 import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeCreateDTO;
 import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeDetailsDTO;
 import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeIdNameDTO;
 import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeesListDTO;
+import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Group;
 import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Address;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Department;
 import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Employee;
 import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.PersonInCharge;
+import com.tarmiz.SIRH_backend.model.repository.CompanyHierarchyRepos.GroupRepository;
 import com.tarmiz.SIRH_backend.model.repository.EmployeeRepository;
 import com.tarmiz.SIRH_backend.model.repository.CompanyHierarchyRepos.DepartmentRepository;
+import com.tarmiz.SIRH_backend.specs.EmployeeSpecifications;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,12 +46,14 @@ public class EmployeeService {
     private final EmployeesListMapper employeesListMapper;
     private final EmployeeCreateMapper employeeCreateMapper;
 
+    private final GroupRepository groupRepository ;
+
     // ------------------------- GET EMPLOYEE -------------------------
     @Transactional(readOnly = true)
     public EmployeeDetailsDTO getEmployeeDetails(Long id) {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EmployeeNotFoundException(id));
-        return employeeDetailsMapper.toResponse(employee);
+        return employeeDetailsMapper.toDto(employee);
     }
 
     @Transactional(readOnly = true)
@@ -63,69 +68,138 @@ public class EmployeeService {
     }
 
     // ------------------------- LIST EMPLOYEES -------------------------
-    public Map<String, Object> getEmployeesList(int start, int length, String sortBy, String sortDir) {
+    public ApiListResponse<EmployeesListDTO> getEmployeesList(
+            int start,
+            int length,
+            String sortBy,
+            String sortDir,
+            String name,
+            String matricule,
+            String contractType,
+            String status
+    ) {
         int page = start / length;
         Sort.Direction direction = "desc".equalsIgnoreCase(sortDir) ? Sort.Direction.DESC : Sort.Direction.ASC;
         sortBy = (sortBy == null || sortBy.isEmpty()) ? "createdDate" : sortBy;
-
         PageRequest pageRequest = PageRequest.of(page, length, direction, sortBy);
-        Page<Employee> pageResult;
-        try {
-            pageResult = employeeRepository.findAll(pageRequest);
-        } catch (DataAccessException ex) {
-            throw new TechnicalException("Database error while retrieving employees list", 500, ex);
-        }
+
+        // Build combined Specification
+        Specification<Employee> spec = Specification.where(EmployeeSpecifications.hasName(name))
+                .and(EmployeeSpecifications.hasMatricule(matricule))
+                .and(EmployeeSpecifications.hasStatus(status))
+                .and(EmployeeSpecifications.hasContractType(contractType));
+
+        Page<Employee> pageResult = employeeRepository.findAll(spec, pageRequest);
 
         List<EmployeesListDTO> data = pageResult.getContent()
                 .stream()
                 .map(employeesListMapper::toListItem)
                 .toList();
 
-        return Map.of(
-                "status", "success",
-                "message", "Liste des employés récupérée avec succès",
-                "data", data,
-                "recordsTotal", pageResult.getTotalElements(),
-                "recordsFiltered", pageResult.getTotalElements()
+        return new ApiListResponse<>(
+                "success",
+                "Liste des employés récupérée avec succès",
+                data,
+                pageResult.getTotalElements(),
+                pageResult.getTotalElements()
         );
     }
 
     // ------------------------- CREATE EMPLOYEE -------------------------
     @Transactional
-    public Map<String, Object> createEmployee(EmployeeCreateDTO dto) {
+    public EmployeeDetailsDTO createEmployee(EmployeeCreateDTO dto) {
 
+        // =========================
+        // 1️⃣ Mapping DTO -> Entity
+        // =========================
         Employee employee = employeeCreateMapper.toEntity(dto);
 
-        Department department = departmentRepository.findById(dto.getDepartmentId() != null ? dto.getDepartmentId() : 1L)
-                .orElseThrow(() -> new DepartmentNotFoundException(dto.getDepartmentId() != null ? dto.getDepartmentId() : 1L));
+        // =========================
+        // 2️⃣ Status (default ACTIF)
+        // =========================
+        EmployeeStatus status = (dto.getStatus() == null || dto.getStatus().isBlank())
+                ? EmployeeStatus.ACTIF
+                : EmployeeStatus.valueOf(dto.getStatus());
 
-        if (department.getStatus() != DepartmentStatus.ACTIVE) {
-            throw new BusinessException(
-                    "Department with id " + dto.getDepartmentId() + " is inactive"
-            );
+        employee.setStatus(status);
+
+        // =========================
+        // 3️⃣ Enum conversions
+        // =========================
+        employee.setGender(Gender.valueOf(dto.getGender()));
+        employee.setMaritalStatus(MaritalStatus.valueOf(dto.getMaritalStatus()));
+        employee.setNationality(Nationality.valueOf(dto.getNationality()));
+
+        // =========================
+        // 4️⃣ Department validation
+        // =========================
+        if (status == EmployeeStatus.ACTIF) {
+
+            if (dto.getDepartmentId() == null) {
+                throw new IllegalArgumentException(
+                        "Department is mandatory for ACTIVE employees"
+                );
+            }
+
+            Department department = departmentRepository.findById(dto.getDepartmentId())
+                    .orElseThrow(() -> new EntityNotFoundException("Department not found"));
+
+            if (department.getStatus() != DepartmentStatus.ACTIVE) {
+                throw new IllegalStateException(
+                        "Cannot assign employee to inactive department"
+                );
+            }
+
+            employee.setDepartment(department);
         }
 
-        employee.setDepartment(department);
+        // =========================
+        // 5️⃣ Group (OPTIONAL)
+        // =========================
+        if (dto.getGroupId() != null) {
 
+            Group group = groupRepository.findById(dto.getGroupId())
+                    .orElseThrow(() -> new EntityNotFoundException("Group not found"));
+
+            employee.setGroup(group);
+        }
+
+        // =========================
+        // 6️⃣ Link children to parent
+        // =========================
         if (employee.getAddress() != null) {
             employee.getAddress().setEmployee(employee);
         }
 
-        employee.setStatus(dto.getIsActive() != null && dto.getIsActive() ? EmployeeStatus.ACTIF : EmployeeStatus.SUSPENDU);
-
-        try {
-            Employee saved = employeeRepository.save(employee);
-
-            EmployeeCreateDTO response = mapEmployeeToDTO(saved);
-
-            return Map.of(
-                    "status", "success",
-                    "message", "Création réussie",
-                    "data", response
-            );
-        } catch (DataIntegrityViolationException | TransactionSystemException ex) {
-            throw new TechnicalException("Database error while creating employee", 500, ex);
+        if (employee.getSkills() != null) {
+            employee.getSkills().forEach(s -> s.setEmployee(employee));
         }
+
+        if (employee.getEducationList() != null) {
+            employee.getEducationList().forEach(e -> e.setEmployee(employee));
+        }
+
+        if (employee.getExperiences() != null) {
+            employee.getExperiences().forEach(e -> e.setEmployee(employee));
+        }
+
+        if (employee.getCertifications() != null) {
+            employee.getCertifications().forEach(c -> c.setEmployee(employee));
+        }
+
+        if (employee.getEmergencyContacts() != null) {
+            employee.getEmergencyContacts().forEach(p -> p.setEmployee(employee));
+        }
+
+        // =========================
+        // 7️⃣ Persist
+        // =========================
+        Employee saved = employeeRepository.save(employee);
+
+        // =========================
+        // 8️⃣ Return details DTO
+        // =========================
+        return employeeDetailsMapper.toDto(saved);
     }
 
     // ------------------------- Create EmergencyContact -------------------------
@@ -139,7 +213,7 @@ public class EmployeeService {
 
         Employee saved = employeeRepository.save(employee);
 
-        return employeeDetailsMapper.toResponse(saved);
+        return employeeDetailsMapper.toDto(saved);
     }
 
     // ------------------------- PATCH EMPLOYEE -------------------------
@@ -153,7 +227,7 @@ public class EmployeeService {
 
             Employee updated = employeeRepository.save(employee);
 
-            return employeeDetailsMapper.toResponse(updated);
+            return employeeDetailsMapper.toDto(updated);
 
         } catch (IllegalArgumentException ex) {
             throw ex;
@@ -185,6 +259,8 @@ public class EmployeeService {
 
     // ------------------------- HELPER METHODS -------------------------
     private void updateEmployeeFields(Employee employee, EmployeeCreateDTO dto) {
+
+        // ======== Basic fields ========
         if (dto.getFirstName() != null) employee.setFirstName(dto.getFirstName());
         if (dto.getLastName() != null) employee.setLastName(dto.getLastName());
         if (dto.getFirstNameAr() != null) employee.setFirstNameAr(dto.getFirstNameAr());
@@ -193,63 +269,87 @@ public class EmployeeService {
         if (dto.getCin() != null) employee.setCin(dto.getCin());
         if (dto.getBirthDate() != null) employee.setBirthDate(dto.getBirthDate());
         if (dto.getBirthPlace() != null) employee.setBirthPlace(dto.getBirthPlace());
-        if (dto.getNationality() != null) employee.setNationality(dto.getNationality());
+        if (dto.getNationality() != null) employee.setNationality(Nationality.valueOf(dto.getNationality()));
         if (dto.getGender() != null) employee.setGender(Gender.valueOf(dto.getGender()));
         if (dto.getMaritalStatus() != null) employee.setMaritalStatus(MaritalStatus.valueOf(dto.getMaritalStatus()));
         if (dto.getNumberOfChildren() != null) employee.setNumberOfChildren(dto.getNumberOfChildren());
         if (dto.getPhone() != null) employee.setPhone(dto.getPhone());
         if (dto.getEmail() != null) employee.setEmail(dto.getEmail());
 
-        // Address
-        Address address = employee.getAddress();
-        if (address == null) {
-            address = new Address();
-            address.setEmployee(employee);
-            employee.setAddress(address);
+        // ======== Status ========
+        if (dto.getStatus() != null) {
+            employee.setStatus(EmployeeStatus.valueOf(dto.getStatus().toUpperCase()));
+        } else if (employee.getStatus() == null) {
+            employee.setStatus(EmployeeStatus.ACTIF);
         }
-        if (dto.getAddress() != null) address.setStreet(dto.getAddress());
-        if (dto.getCity() != null) address.setCity(dto.getCity());
-        if (dto.getPostalCode() != null) address.setPostalCode(dto.getPostalCode());
-        if (dto.getCountry() != null) address.setCountry(dto.getCountry());
 
-        // Department
+        // ======== Department (mandatory) ========
         if (dto.getDepartmentId() != null) {
-            Department dept = new Department();
-            dept.setId(dto.getDepartmentId());
+            Department dept = departmentRepository.findById(dto.getDepartmentId())
+                    .orElseThrow(() -> new EntityNotFoundException("Department not found"));
+            if (dept.getStatus() != DepartmentStatus.ACTIVE) {
+                throw new IllegalStateException("Cannot assign employee to inactive department");
+            }
             employee.setDepartment(dept);
         }
 
-        // Status
-        if (dto.getIsActive() != null) {
-            employee.setStatus(dto.getIsActive() ? EmployeeStatus.ACTIF : EmployeeStatus.SUSPENDU);
-        } else if (dto.getStatus() != null) {
-            employee.setStatus(EmployeeStatus.valueOf(dto.getStatus().toUpperCase()));
+        // ======== Group (optional) ========
+        if (dto.getGroupId() != null) {
+            Group group = groupRepository.findById(dto.getGroupId())
+                    .orElseThrow(() -> new EntityNotFoundException("Group not found"));
+            employee.setGroup(group);
         }
-    }
 
-    private EmployeeCreateDTO mapEmployeeToDTO(Employee saved) {
-        EmployeeCreateDTO response = new EmployeeCreateDTO();
-        response.setFirstName(saved.getFirstName());
-        response.setLastName(saved.getLastName());
-        response.setFirstNameAr(saved.getFirstNameAr());
-        response.setLastNameAr(saved.getLastNameAr());
-        response.setMatricule(saved.getMatricule());
-        response.setCin(saved.getCin());
-        response.setBirthDate(saved.getBirthDate());
-        response.setBirthPlace(saved.getBirthPlace());
-        response.setNationality(saved.getNationality());
-        response.setGender(saved.getGender() != null ? saved.getGender().name() : null);
-        response.setMaritalStatus(saved.getMaritalStatus() != null ? saved.getMaritalStatus().name() : null);
-        response.setNumberOfChildren(saved.getNumberOfChildren());
-        response.setAddress(saved.getAddress() != null ? saved.getAddress().getStreet() : null);
-        response.setCity(saved.getAddress() != null ? saved.getAddress().getCity() : null);
-        response.setPostalCode(saved.getAddress() != null ? saved.getAddress().getPostalCode() : null);
-        response.setCountry(saved.getAddress() != null ? saved.getAddress().getCountry() : null);
-        response.setPhone(saved.getPhone());
-        response.setEmail(saved.getEmail());
-        response.setDepartmentId(saved.getDepartment() != null ? saved.getDepartment().getId() : null);
-        response.setStatus(saved.getStatus() != null ? saved.getStatus().getLabel() : null);
-        response.setIsActive(saved.getStatus() == EmployeeStatus.ACTIF);
-        return response;
+        // ======== Nested resources ========
+        // Using your mappers instead of manually creating
+        if (dto.getAddress() != null) {
+            employee.setAddress(employeeCreateMapper.toEntity(dto.getAddress()));
+            employee.getAddress().setEmployee(employee); // ensure bi-directional link
+        }
+
+        if (dto.getEmergencyContacts() != null) {
+            employee.setEmergencyContacts(
+                    dto.getEmergencyContacts().stream()
+                            .map(employeeCreateMapper::toEntity)
+                            .peek(c -> c.setEmployee(employee))
+                            .toList()
+            );
+        }
+
+        if (dto.getSkills() != null) {
+            employee.setSkills(
+                    dto.getSkills().stream()
+                            .map(employeeCreateMapper::toEntity)
+                            .peek(s -> s.setEmployee(employee))
+                            .toList()
+            );
+        }
+
+        if (dto.getEducationList() != null) {
+            employee.setEducationList(
+                    dto.getEducationList().stream()
+                            .map(employeeCreateMapper::toEntity)
+                            .peek(e -> e.setEmployee(employee))
+                            .toList()
+            );
+        }
+
+        if (dto.getExperiences() != null) {
+            employee.setExperiences(
+                    dto.getExperiences().stream()
+                            .map(employeeCreateMapper::toEntity)
+                            .peek(e -> e.setEmployee(employee))
+                            .toList()
+            );
+        }
+
+        if (dto.getCertifications() != null) {
+            employee.setCertifications(
+                    dto.getCertifications().stream()
+                            .map(employeeCreateMapper::toEntity)
+                            .peek(c -> c.setEmployee(employee))
+                            .toList()
+            );
+        }
     }
 }

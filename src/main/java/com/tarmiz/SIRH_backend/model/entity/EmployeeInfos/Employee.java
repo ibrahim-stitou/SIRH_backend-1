@@ -1,9 +1,6 @@
 package com.tarmiz.SIRH_backend.model.entity.EmployeeInfos;
 
-import com.tarmiz.SIRH_backend.enums.AptitudeMedical;
-import com.tarmiz.SIRH_backend.enums.EmployeeStatus;
-import com.tarmiz.SIRH_backend.enums.Gender;
-import com.tarmiz.SIRH_backend.enums.MaritalStatus;
+import com.tarmiz.SIRH_backend.enums.*;
 import com.tarmiz.SIRH_backend.model.entity.*;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Department;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Group;
@@ -57,7 +54,7 @@ public class Employee extends Auditable {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    private String nationality;
+    private Nationality nationality;
 
     @Enumerated(EnumType.STRING)
     private MaritalStatus maritalStatus;

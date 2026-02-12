@@ -2,9 +2,9 @@ package com.tarmiz.SIRH_backend.service;
 
 import com.tarmiz.SIRH_backend.exception.BusinessException.BusinessException;
 import com.tarmiz.SIRH_backend.exception.BusinessException.GroupNotEmptyException;
-import com.tarmiz.SIRH_backend.mapper.GroupDetailsMapper;
-import com.tarmiz.SIRH_backend.mapper.GroupMapper;
-import com.tarmiz.SIRH_backend.mapper.ManagerMapper;
+import com.tarmiz.SIRH_backend.mapper.CompanyHierarchyMappers.GroupDetailsMapper;
+import com.tarmiz.SIRH_backend.mapper.CompanyHierarchyMappers.GroupMapper;
+import com.tarmiz.SIRH_backend.mapper.CompanyHierarchyMappers.ManagerMapper;
 import com.tarmiz.SIRH_backend.model.DTO.ApiListResponse;
 import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.GroupDetailsDTO;
 import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.GroupListDTO;

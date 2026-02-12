@@ -1,7 +1,7 @@
 package com.tarmiz.SIRH_backend.controller;
 
 import com.tarmiz.SIRH_backend.enums.Relationship;
-import com.tarmiz.SIRH_backend.mapper.EmployeeDetailsMapper;
+import com.tarmiz.SIRH_backend.mapper.EmployeeMapper.EmployeeDetailsMapper;
 import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeDetailsDTO;
 import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeSubResourcesDTO;
 import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.*;
@@ -54,7 +54,7 @@ public class EmployeeSubResourcesController {
                 (e, emp) -> e.setEmployee(emp)
         );
 
-        return ResponseEntity.ok(employeeDetailsMapper.toResponse(updated));
+        return ResponseEntity.ok(employeeDetailsMapper.toDto(updated));
     }
 
     @PutMapping("/emergency-contacts/{contactId}")
@@ -79,7 +79,7 @@ public class EmployeeSubResourcesController {
                 "PersonInCharge"
         );
 
-        return ResponseEntity.ok(employeeDetailsMapper.toResponse(updated));
+        return ResponseEntity.ok(employeeDetailsMapper.toDto(updated));
     }
 
     @DeleteMapping("/emergency-contacts/{contactId}")
@@ -94,7 +94,7 @@ public class EmployeeSubResourcesController {
                 "PersonInCharge"
         );
 
-        return ResponseEntity.ok(employeeDetailsMapper.toResponse(updated));
+        return ResponseEntity.ok(employeeDetailsMapper.toDto(updated));
     }
 
     // ================= Skill =================
@@ -114,7 +114,7 @@ public class EmployeeSubResourcesController {
                 (Skill s,Employee emp) -> s.setEmployee(emp)
         );
 
-        return ResponseEntity.ok(employeeDetailsMapper.toResponse(updated));
+        return ResponseEntity.ok(employeeDetailsMapper.toDto(updated));
     }
 
     @PutMapping("/skills/{skillId}")
@@ -136,7 +136,7 @@ public class EmployeeSubResourcesController {
                 "Skill"
         );
 
-        return ResponseEntity.ok(employeeDetailsMapper.toResponse(updated));
+        return ResponseEntity.ok(employeeDetailsMapper.toDto(updated));
     }
 
     @DeleteMapping("/skills/{skillId}")
@@ -151,7 +151,7 @@ public class EmployeeSubResourcesController {
                 "Skill"
         );
 
-        return ResponseEntity.ok(employeeDetailsMapper.toResponse(updated));
+        return ResponseEntity.ok(employeeDetailsMapper.toDto(updated));
     }
 
     // ================= Education =================
@@ -173,7 +173,7 @@ public class EmployeeSubResourcesController {
                 (e, emp) -> e.setEmployee(emp)
         );
 
-        return ResponseEntity.ok(employeeDetailsMapper.toResponse(updated));
+        return ResponseEntity.ok(employeeDetailsMapper.toDto(updated));
     }
 
     @PutMapping("/education/{eduId}")
@@ -197,7 +197,7 @@ public class EmployeeSubResourcesController {
                 "Education"
         );
 
-        return ResponseEntity.ok(employeeDetailsMapper.toResponse(updated));
+        return ResponseEntity.ok(employeeDetailsMapper.toDto(updated));
     }
 
     @DeleteMapping("/education/{eduId}")
@@ -212,7 +212,7 @@ public class EmployeeSubResourcesController {
                 "Education"
         );
 
-        return ResponseEntity.ok(employeeDetailsMapper.toResponse(updated));
+        return ResponseEntity.ok(employeeDetailsMapper.toDto(updated));
     }
 
     // ================= Experience =================
@@ -235,7 +235,7 @@ public class EmployeeSubResourcesController {
                 (e, emp) -> e.setEmployee(emp)
         );
 
-        return ResponseEntity.ok(employeeDetailsMapper.toResponse(updated));
+        return ResponseEntity.ok(employeeDetailsMapper.toDto(updated));
     }
 
     @PutMapping("/experiences/{expId}")
@@ -260,7 +260,7 @@ public class EmployeeSubResourcesController {
                 "Experience"
         );
 
-        return ResponseEntity.ok(employeeDetailsMapper.toResponse(updated));
+        return ResponseEntity.ok(employeeDetailsMapper.toDto(updated));
     }
 
     @DeleteMapping("/experiences/{expId}")
@@ -275,7 +275,7 @@ public class EmployeeSubResourcesController {
                 "Experience"
         );
 
-        return ResponseEntity.ok(employeeDetailsMapper.toResponse(updated));
+        return ResponseEntity.ok(employeeDetailsMapper.toDto(updated));
     }
 
     // ================= Certification =================
@@ -297,7 +297,7 @@ public class EmployeeSubResourcesController {
                 (c, emp) -> c.setEmployee(emp)
         );
 
-        return ResponseEntity.ok(employeeDetailsMapper.toResponse(updated));
+        return ResponseEntity.ok(employeeDetailsMapper.toDto(updated));
     }
 
     @PutMapping("/certifications/{certId}")
@@ -321,7 +321,7 @@ public class EmployeeSubResourcesController {
                 "Certification"
         );
 
-        return ResponseEntity.ok(employeeDetailsMapper.toResponse(updated));
+        return ResponseEntity.ok(employeeDetailsMapper.toDto(updated));
     }
 
     @DeleteMapping("/certifications/{certId}")
@@ -336,6 +336,6 @@ public class EmployeeSubResourcesController {
                 "Certification"
         );
 
-        return ResponseEntity.ok(employeeDetailsMapper.toResponse(updated));
+        return ResponseEntity.ok(employeeDetailsMapper.toDto(updated));
     }
 }

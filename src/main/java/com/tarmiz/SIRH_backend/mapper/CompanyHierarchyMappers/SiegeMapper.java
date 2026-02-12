@@ -1,4 +1,4 @@
-package com.tarmiz.SIRH_backend.mapper;
+package com.tarmiz.SIRH_backend.mapper.CompanyHierarchyMappers;
 
 import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.SiegeCreateDTO;
 import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.SiegeListDTO;

@@ -15,6 +15,8 @@ import java.time.LocalDate;
 public class EmployeeSubResourcesDTO {
 
     /* ================= Address ================= */
+    @Getter
+    @Setter
     public static class AddressDTO {
         public String street;
         public String city;

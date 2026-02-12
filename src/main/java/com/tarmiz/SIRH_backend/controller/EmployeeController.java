@@ -1,8 +1,11 @@
 package com.tarmiz.SIRH_backend.controller;
 
+import com.tarmiz.SIRH_backend.model.DTO.ApiListResponse;
+import com.tarmiz.SIRH_backend.model.DTO.ApiResponseDTO;
 import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeCreateDTO;
 import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeDetailsDTO;
 import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeIdNameDTO;
+import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeesListDTO;
 import com.tarmiz.SIRH_backend.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -121,13 +124,19 @@ public class EmployeeController {
             )
     })
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getEmployeesList(
+    public ResponseEntity<ApiListResponse<EmployeesListDTO>> getEmployeesList(
             @RequestParam(defaultValue = "0") int start,
             @RequestParam(defaultValue = "10") int length,
             @RequestParam(required = false) String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir
+            @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String matricule,
+            @RequestParam(required = false) String contractType,
+            @RequestParam(required = false) String status
     ) {
-        Map<String, Object> response = employeeService.getEmployeesList(start, length, sortBy, sortDir);
+        ApiListResponse<EmployeesListDTO> response = employeeService.getEmployeesList(
+                start, length, sortBy, sortDir, name, matricule, contractType, status
+        );
         return ResponseEntity.ok(response);
     }
 
@@ -162,12 +171,18 @@ public class EmployeeController {
                     schema = @Schema(implementation = EmployeeCreateDTO.class)
             )
     )
-    public ResponseEntity<Map<String, Object>> createEmployee(
-            @Valid @org.springframework.web.bind.annotation.RequestBody EmployeeCreateDTO dto
+    public ResponseEntity<ApiResponseDTO<EmployeeDetailsDTO>> createEmployee(
+            @Valid @RequestBody EmployeeCreateDTO dto
     ) {
-        Map<String, Object> response = employeeService.createEmployee(dto);
-        return ResponseEntity.ok(response);
+        EmployeeDetailsDTO response = employeeService.createEmployee(dto);
+
+        ApiResponseDTO<EmployeeDetailsDTO> apiResponse = ApiResponseDTO.success(
+                "Création réussie", response
+        );
+
+        return ResponseEntity.ok(apiResponse);
     }
+
 
     // ------------------------- PATCH EMPLOYEE -------------------------
 

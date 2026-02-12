@@ -23,6 +23,4 @@ public class Skill {
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
-
-
 }

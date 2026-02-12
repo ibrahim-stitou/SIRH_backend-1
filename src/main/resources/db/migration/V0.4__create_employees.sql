@@ -35,6 +35,8 @@ CREATE TABLE employees (
 
 
 CREATE INDEX idx_employee_status ON employees(status);
+CREATE INDEX idx_employee_name ON employees (first_name, last_name);
+CREATE INDEX idx_employee_matricule ON employees (matricule);
 
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
