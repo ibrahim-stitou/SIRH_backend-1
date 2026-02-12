@@ -21,4 +21,6 @@ CREATE TABLE groups (
 
 CREATE INDEX idx_groups_name ON groups(name);
 CREATE INDEX idx_groups_code ON groups(code);
+CREATE INDEX idx_group_manager ON groups(manager_id);
+CREATE INDEX idx_group_siege ON groups(siege_id);
 CREATE INDEX idx_groups_full_filter ON groups(name, code);

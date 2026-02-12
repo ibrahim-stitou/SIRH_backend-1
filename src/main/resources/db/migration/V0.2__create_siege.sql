@@ -16,5 +16,5 @@ CREATE TABLE sieges (
 
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
-CREATE INDEX idx_siege_name_trgm ON sieges USING gin (lower(name) gin_trgm_ops);
-CREATE INDEX idx_sieges_code ON sieges(code);
+CREATE INDEX idx_siege_code ON sieges(code);
+CREATE INDEX idx_siege_name_trgm ON sieges USING gin (name gin_trgm_ops);

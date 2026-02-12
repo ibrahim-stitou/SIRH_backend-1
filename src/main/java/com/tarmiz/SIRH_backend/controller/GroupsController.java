@@ -20,7 +20,7 @@ public class GroupsController {
     @Autowired
     private GroupService groupService;
 
-    @GetMapping("/")
+    @GetMapping()
     public ApiListResponse<GroupListDTO> listGroups(
             @RequestParam(value = "start", defaultValue = "0") Integer start,
             @RequestParam(value = "length", defaultValue = "10") Integer length,

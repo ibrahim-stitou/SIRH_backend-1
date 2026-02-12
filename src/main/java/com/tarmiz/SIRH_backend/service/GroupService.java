@@ -53,12 +53,11 @@ public class GroupService {
     public ApiListResponse<GroupListDTO> getGroups(Integer start, Integer length, String dir,
                                                    String name, String code,
                                                    Long managerId, Long siegeId) {
-        // Pageable
+
         Sort sort = Sort.by("createdAt");
         sort = "asc".equalsIgnoreCase(dir) ? sort.ascending() : sort.descending();
         Pageable pageable = PageRequest.of(start / length, length, sort);
 
-        // Specification
         Specification<Group> spec = Specification.where(GroupSpecifications.nameContains(name))
                 .and(GroupSpecifications.codeContains(code))
                 .and(GroupSpecifications.managerIdEquals(managerId))
@@ -70,14 +69,13 @@ public class GroupService {
                 .map(groupMapper::toDTO)
                 .toList();
 
-        ApiListResponse<GroupListDTO> response = new ApiListResponse<>();
-        response.setStatus("success");
-        response.setMessage("Récupération réussie");
-        response.setData(dtos);
-        response.setRecordsTotal(groupRepository.count());
-        response.setRecordsFiltered(page.getTotalElements());
-
-        return response;
+        return new ApiListResponse<>(
+                "success",
+                "Récupération réussie",
+                dtos,
+                groupRepository.count(),
+                page.getTotalElements()
+        );
     }
 
     public ApiListResponse<GroupListDTO> getGroupsBySiege(Long siegeId, String nameFilter, String codeFilter) {

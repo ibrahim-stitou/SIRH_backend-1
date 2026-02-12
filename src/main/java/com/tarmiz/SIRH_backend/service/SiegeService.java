@@ -37,6 +37,7 @@ public class SiegeService {
 
     public ApiListResponse<SiegeListDTO> getSieges(Integer start, Integer length, String dir,
                                                    String name, String city, String country) {
+
         Sort sort = Sort.by("createdAt");
         sort = "asc".equalsIgnoreCase(dir) ? sort.ascending() : sort.descending();
         Pageable pageable = PageRequest.of(start / length, length, sort);
@@ -49,14 +50,13 @@ public class SiegeService {
 
         List<SiegeListDTO> dtos = siegeMapper.toDTOList(page.getContent());
 
-        ApiListResponse<SiegeListDTO> response = new ApiListResponse<>();
-        response.setStatus("success");
-        response.setMessage("Récupération réussie");
-        response.setData(dtos);
-        response.setRecordsTotal(siegeRepository.count());
-        response.setRecordsFiltered(page.getTotalElements());
-
-        return response;
+        return new ApiListResponse<>(
+                "success",
+                "Récupération réussie",
+                dtos,
+                siegeRepository.count(),
+                page.getTotalElements()
+        );
     }
 
     public SiegeListDTO getSiegeDetails(Long siegeId) {

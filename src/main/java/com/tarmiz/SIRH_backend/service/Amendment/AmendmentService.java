@@ -3,10 +3,14 @@ package com.tarmiz.SIRH_backend.service.Amendment;
 import com.tarmiz.SIRH_backend.enums.Contract.*;
 import com.tarmiz.SIRH_backend.exception.BusinessException.BusinessException;
 import com.tarmiz.SIRH_backend.mapper.AmendmentMapper;
+import com.tarmiz.SIRH_backend.model.DTO.ApiListResponse;
 import com.tarmiz.SIRH_backend.model.DTO.ContractDTOs.AvenantDetailDTO;
 import com.tarmiz.SIRH_backend.model.DTO.ContractDTOs.AvenantListDTO;
 import com.tarmiz.SIRH_backend.model.DTO.ContractDTOs.CreateAmendmentRequest;
 import com.tarmiz.SIRH_backend.model.entity.Contract.*;
+import com.tarmiz.SIRH_backend.specs.AmendmentSpecifications;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import com.tarmiz.SIRH_backend.model.entity.Job.Poste;
 import com.tarmiz.SIRH_backend.model.repository.ContractRepos.*;
 import com.tarmiz.SIRH_backend.model.repository.JobRepos.PosteRepository;
@@ -36,24 +40,47 @@ public class AmendmentService {
     private final PosteRepository posteRepository;
     private final AmendmentMapper amendmentMapper;
 
-    public Map<String, Object> getAmendmentsList(int start, int length, String sortBy, String sortDir) {
+    public ApiListResponse<AvenantListDTO> getAmendmentsList(
+            int start,
+            int length,
+            String sortBy,
+            String sortDir,
+            AmendmentStatus status,
+            AmendmentType typeModification,
+            String contractReference,
+            String objet
+    ) {
 
-        if (sortBy == null || sortBy.isEmpty()) sortBy = "createdDate";
-        Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        if (sortBy == null || sortBy.isBlank()) {
+            sortBy = "createdDate";
+        }
 
-        Pageable pageable = PageRequest.of(start, length, Sort.by(direction, sortBy));
+        Sort.Direction direction =
+                "desc".equalsIgnoreCase(sortDir) ? Sort.Direction.DESC : Sort.Direction.ASC;
 
-        Page<Amendment> page = amendmentRepository.findAll(pageable);
+        int page = start / length;
 
-        List<AvenantListDTO> dtoList = page.getContent().stream()
+        Pageable pageable = PageRequest.of(page, length, Sort.by(direction, sortBy));
+
+        Specification<Amendment> spec = Specification
+                .where(AmendmentSpecifications.hasStatus(status))
+                .and(AmendmentSpecifications.hasTypeModification(typeModification))
+                .and(AmendmentSpecifications.hasContractReference(contractReference))
+                .and(AmendmentSpecifications.hasObjetText(objet));
+
+        Page<Amendment> pageResult = amendmentRepository.findAll(spec, pageable);
+
+        List<AvenantListDTO> dtoList = pageResult.getContent()
+                .stream()
                 .map(amendmentMapper::toAvenantListDTO)
-                .collect(Collectors.toList());
+                .toList();
 
-        return Map.of(
-                "data", dtoList,
-                "currentPage", page.getNumber(),
-                "totalItems", page.getTotalElements(),
-                "totalPages", page.getTotalPages()
+        return new ApiListResponse<>(
+                "success",
+                "Amendments retrieved successfully",
+                dtoList,
+                pageResult.getTotalElements(),
+                pageResult.getTotalElements()
         );
     }
 

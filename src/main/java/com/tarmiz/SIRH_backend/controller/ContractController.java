@@ -1,5 +1,8 @@
 package com.tarmiz.SIRH_backend.controller;
 
+import com.tarmiz.SIRH_backend.enums.Contract.ContractStatusEnum;
+import com.tarmiz.SIRH_backend.enums.Contract.ContractTypeEnum;
+import com.tarmiz.SIRH_backend.model.DTO.ApiListResponse;
 import com.tarmiz.SIRH_backend.model.DTO.ApiResponseDTO;
 import com.tarmiz.SIRH_backend.model.DTO.ContractDTOs.AvenantDetailDTO;
 import com.tarmiz.SIRH_backend.model.DTO.ContractDTOs.ContractCreationDTO;
@@ -46,13 +49,25 @@ public class ContractController {
             @ApiResponse(responseCode = "200", description = "Contracts retrieved successfully")
     })
     @GetMapping
-    public ResponseEntity<ApiResponseDTO<List<ContractListDTO>>> getContractsPaginated(
-            @RequestParam(name = "start", defaultValue = "0") int start,
-            @RequestParam(name = "length", defaultValue = "10") int length) {
+    public ResponseEntity<ApiListResponse<ContractListDTO>> getContractsPaginated(
+            @RequestParam(defaultValue = "0") int start,
+            @RequestParam(defaultValue = "10") int length,
+            @RequestParam(defaultValue = "desc") String sortDir,
+            @RequestParam(required = false) Long employeeId,
+            @RequestParam(required = false) ContractTypeEnum type,
+            @RequestParam(required = false) ContractStatusEnum status,
+            @RequestParam(required = false) Long departmentId
+    ) {
 
-        List<ContractListDTO> contracts = contractService.getAllContracts(start, length);
-        return ResponseEntity.ok(ApiResponseDTO.success("Contracts retrieved successfully", contracts));
+        ApiListResponse<ContractListDTO> response =
+                contractService.getAllContracts(
+                        start, length, sortDir,
+                        employeeId, type, status, departmentId
+                );
+
+        return ResponseEntity.ok(response);
     }
+
 
     @Operation(summary = "Get full details of a contract by ID", description = "Retrieve contract details including job, clauses, salary, schedule, and trial period")
     @ApiResponses({

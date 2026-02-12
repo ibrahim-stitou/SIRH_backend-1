@@ -6,6 +6,7 @@ import com.tarmiz.SIRH_backend.enums.EntityType;
 import com.tarmiz.SIRH_backend.exception.BusinessException.BusinessException;
 import com.tarmiz.SIRH_backend.mapper.ContractDetailsMapper;
 import com.tarmiz.SIRH_backend.mapper.ContractMapper;
+import com.tarmiz.SIRH_backend.model.DTO.ApiListResponse;
 import com.tarmiz.SIRH_backend.model.DTO.ContractDTOs.ContractCreationDTO;
 import com.tarmiz.SIRH_backend.model.DTO.ContractDTOs.ContractDetailsDTO;
 import com.tarmiz.SIRH_backend.model.DTO.ContractDTOs.ContractListDTO;
@@ -21,6 +22,7 @@ import com.tarmiz.SIRH_backend.model.repository.FilesRepos.FileRepository;
 import com.tarmiz.SIRH_backend.model.repository.JobRepos.PosteRepository;
 import com.tarmiz.SIRH_backend.service.document.FileService;
 import com.tarmiz.SIRH_backend.service.document.PdfGeneratorService;
+import com.tarmiz.SIRH_backend.specs.ContractSpecifications;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,9 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -61,15 +66,42 @@ public class ContractService {
      * @param length number of records to fetch
      * @return list of ContractListDTO
      */
-    public List<ContractListDTO> getAllContracts(int start, int length) {
-        int pageNumber = start / length;
-        PageRequest pageable = PageRequest.of(pageNumber, length);
+    public ApiListResponse<ContractListDTO> getAllContracts(
+            int start,
+            int length,
+            String sortDir,
+            Long employeeId,
+            ContractTypeEnum type,
+            ContractStatusEnum status,
+            Long departmentId
+    ) {
+        int page = start / length;
 
-        Page<Contract> contractPage = contractRepository.findAll(pageable);
+        Sort.Direction direction =
+                "asc".equalsIgnoreCase(sortDir) ? Sort.Direction.ASC : Sort.Direction.DESC;
 
-        return contractPage.stream()
+        Pageable pageable = PageRequest.of(page, length, Sort.by(direction, "createdDate"));
+
+        Specification<Contract> spec = Specification
+                .where(ContractSpecifications.hasEmployeeId(employeeId))
+                .and(ContractSpecifications.hasType(type))
+                .and(ContractSpecifications.hasStatus(status))
+                .and(ContractSpecifications.hasDepartmentId(departmentId));
+
+        Page<Contract> contractPage = contractRepository.findAll(spec, pageable);
+
+        List<ContractListDTO> data = contractPage.getContent()
+                .stream()
                 .map(ContractMapper::toContractListDTO)
-                .collect(Collectors.toList());
+                .toList();
+
+        return new ApiListResponse<>(
+                "success",
+                "Contracts retrieved successfully",
+                data,
+                contractPage.getTotalElements(),
+                contractPage.getTotalElements()
+        );
     }
 
     /**

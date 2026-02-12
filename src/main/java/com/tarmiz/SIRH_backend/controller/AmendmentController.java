@@ -1,6 +1,10 @@
 package com.tarmiz.SIRH_backend.controller;
 
+import com.tarmiz.SIRH_backend.enums.Contract.AmendmentStatus;
+import com.tarmiz.SIRH_backend.enums.Contract.AmendmentType;
+import com.tarmiz.SIRH_backend.model.DTO.ApiListResponse;
 import com.tarmiz.SIRH_backend.model.DTO.ContractDTOs.AvenantDetailDTO;
+import com.tarmiz.SIRH_backend.model.DTO.ContractDTOs.AvenantListDTO;
 import com.tarmiz.SIRH_backend.model.DTO.ContractDTOs.CreateAmendmentRequest;
 import com.tarmiz.SIRH_backend.model.entity.Contract.Amendment;
 import com.tarmiz.SIRH_backend.service.Amendment.AmendmentService;
@@ -22,15 +26,26 @@ public class AmendmentController {
     private final AmendmentService amendmentService;
 
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getAmendmentsList(
+    public ResponseEntity<ApiListResponse<AvenantListDTO>> getAmendmentsList(
             @RequestParam(defaultValue = "0") int start,
             @RequestParam(defaultValue = "10") int length,
             @RequestParam(required = false) String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir
+            @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(required = false) AmendmentStatus status,
+            @RequestParam(required = false) AmendmentType typeModif,
+            @RequestParam(required = false) String contractReference,
+            @RequestParam(required = false) String objet
     ) {
-        Map<String, Object> response = amendmentService.getAmendmentsList(start, length, sortBy, sortDir);
+
+        ApiListResponse<AvenantListDTO> response =
+                amendmentService.getAmendmentsList(
+                        start, length, sortBy, sortDir,
+                        status, typeModif, contractReference, objet
+                );
+
         return ResponseEntity.ok(response);
     }
+
 
 
     @GetMapping("/{id}")

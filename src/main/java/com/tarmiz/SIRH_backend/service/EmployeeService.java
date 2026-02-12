@@ -12,7 +12,6 @@ import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeDetailsDTO;
 import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeIdNameDTO;
 import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeesListDTO;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Group;
-import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Address;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Department;
 import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Employee;
 import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.PersonInCharge;
