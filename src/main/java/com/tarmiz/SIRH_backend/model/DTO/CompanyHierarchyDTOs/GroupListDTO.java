@@ -8,7 +8,6 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class GroupListDTO {
-
     private Long id;
     private Long headquartersId; // siege id
     private String name;

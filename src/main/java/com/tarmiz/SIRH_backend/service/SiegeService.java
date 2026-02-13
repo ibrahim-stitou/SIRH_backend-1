@@ -83,14 +83,14 @@ public class SiegeService {
     /* ================= Delete Siege ================= */
     @Transactional
     public void deleteSiege(Long siegeId) {
-        Siege siege = siegeRepository.findById(siegeId).orElse(null);
+        Siege siege = siegeRepository.findById(siegeId)
+                .orElseThrow(() -> new IllegalArgumentException("Siege not found with id: " + siegeId));
 
         boolean hasActiveGroups = groupRepository.existsBySiegeId(siegeId);
         if (hasActiveGroups) {
             throw new SiegeDeletionForbiddenException(siegeId);
         }
 
-        //siege.setDeletedAt(LocalDateTime.now());
-        siegeRepository.save(siege);
+        siegeRepository.delete(siege);
     }
 }

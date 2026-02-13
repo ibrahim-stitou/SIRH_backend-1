@@ -19,8 +19,19 @@ public class GroupMembersDTO {
     @Setter
     public static class MemberInfo {
         private Long id;
-        private String matricule;
-        private String fullName;
+        private Long employeeId;
         private boolean isManager;
+        private EmployeeInfo employee;
+    }
+
+    @Getter
+    @Setter
+    public static class EmployeeInfo {
+        private Long id;
+        private String firstName;
+        private String lastName;
+        private String matricule;
+        private String email;
+        private String position;
     }
 }

@@ -2,10 +2,7 @@ package com.tarmiz.SIRH_backend.controller;
 
 import com.tarmiz.SIRH_backend.model.DTO.ApiListResponse;
 import com.tarmiz.SIRH_backend.model.DTO.ApiResponseDTO;
-import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeCreateDTO;
-import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeDetailsDTO;
-import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeIdNameDTO;
-import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeesListDTO;
+import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.*;
 import com.tarmiz.SIRH_backend.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -138,6 +135,16 @@ public class EmployeeController {
                 start, length, sortBy, sortDir, name, matricule, contractType, status
         );
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * GET /hrEmployees/simple-list
+     * Returns a simple list of all employees with id, firstName, lastName, and matricule
+     */
+
+    @GetMapping("/simple-list")
+    public ApiListResponse<EmployeeSimpleDTO> getSimpleList() {
+        return employeeService.getSimpleList();
     }
 
 

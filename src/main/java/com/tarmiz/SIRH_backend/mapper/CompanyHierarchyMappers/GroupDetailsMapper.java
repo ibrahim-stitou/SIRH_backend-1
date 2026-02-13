@@ -42,25 +42,58 @@ public class GroupDetailsMapper {
     }
 
     public GroupMembersDTO toMembersDTO(Group group) {
-        if (group == null) return null;
 
         GroupMembersDTO dto = new GroupMembersDTO();
+
         dto.setGroupId(group.getId());
         dto.setGroupName(group.getName());
         dto.setGroupCode(group.getCode());
-        dto.setHeadquartersId(group.getSiege() != null ? group.getSiege().getId() : null);
 
-        List<GroupMembersDTO.MemberInfo> members = new ArrayList<>();
-        if (group.getEmployees() != null) {
-            for (Employee e : group.getEmployees()) {
-                GroupMembersDTO.MemberInfo m = new GroupMembersDTO.MemberInfo();
-                m.setId(e.getId());
-                m.setFullName(e.getFirstName() + " " + e.getLastName());
-                m.setMatricule(e.getMatricule());
-                members.add(m);
-            }
+        if (group.getSiege() != null) {
+            dto.setHeadquartersId(group.getSiege().getId());
         }
+
+        List<GroupMembersDTO.MemberInfo> members = group.getEmployees()
+                .stream()
+                .map(employee -> toMemberInfo(employee, group.getManager()))
+                .toList();
+
         dto.setMembers(members);
+
+        return dto;
+    }
+
+    private GroupMembersDTO.MemberInfo toMemberInfo(Employee employee, Employee manager) {
+
+        GroupMembersDTO.MemberInfo memberDTO = new GroupMembersDTO.MemberInfo();
+
+        memberDTO.setId(employee.getId());
+        memberDTO.setEmployeeId(employee.getId());
+
+        boolean isManager = manager != null && employee.getId().equals(manager.getId());
+        memberDTO.setManager(isManager);
+
+        memberDTO.setEmployee(toEmployeeInfo(employee));
+
+        return memberDTO;
+    }
+
+    private GroupMembersDTO.EmployeeInfo toEmployeeInfo(Employee employee) {
+
+        GroupMembersDTO.EmployeeInfo dto = new GroupMembersDTO.EmployeeInfo();
+
+        dto.setId(employee.getId());
+        dto.setFirstName(employee.getFirstName());
+        dto.setLastName(employee.getLastName());
+        dto.setMatricule(employee.getMatricule());
+        dto.setEmail(employee.getEmail());
+
+        dto.setPosition(
+                employee.getContracts().isEmpty()
+                        ? null
+                        : "Employee"
+        );
+
         return dto;
     }
 }

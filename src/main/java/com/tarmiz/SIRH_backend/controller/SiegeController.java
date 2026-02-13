@@ -4,6 +4,7 @@ import com.tarmiz.SIRH_backend.model.DTO.ApiListResponse;
 import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.GroupListDTO;
 import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.SiegeCreateDTO;
 import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.SiegeListDTO;
+import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.SiegeWithGroupsDTO;
 import com.tarmiz.SIRH_backend.service.GroupService;
 import com.tarmiz.SIRH_backend.service.SiegeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +57,7 @@ public class SiegeController {
 
     /** ================= Get /Groups by siege ================= */
     @GetMapping("/{siegeId}/groups")
-    public ApiListResponse<GroupListDTO> listGroupsBySiege(
+        public ApiListResponse<SiegeWithGroupsDTO> listGroupsBySiege(
             @PathVariable Long siegeId,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "code", required = false) String code

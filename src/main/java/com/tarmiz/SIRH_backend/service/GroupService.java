@@ -5,10 +5,12 @@ import com.tarmiz.SIRH_backend.exception.BusinessException.GroupNotEmptyExceptio
 import com.tarmiz.SIRH_backend.mapper.CompanyHierarchyMappers.GroupDetailsMapper;
 import com.tarmiz.SIRH_backend.mapper.CompanyHierarchyMappers.GroupMapper;
 import com.tarmiz.SIRH_backend.mapper.CompanyHierarchyMappers.ManagerMapper;
+import com.tarmiz.SIRH_backend.mapper.CompanyHierarchyMappers.SiegeWithGroupsMapper;
 import com.tarmiz.SIRH_backend.model.DTO.ApiListResponse;
 import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.GroupDetailsDTO;
 import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.GroupListDTO;
 import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.GroupMembersDTO;
+import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.SiegeWithGroupsDTO;
 import com.tarmiz.SIRH_backend.model.DTO.ParamsDTOs.ManagersDTO;
 import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Employee;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Group;
@@ -41,11 +43,15 @@ public class GroupService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
     @Autowired
     private GroupDetailsMapper mapper;
 
     @Autowired
     private GroupMapper groupMapper;
+
+    @Autowired
+    private SiegeWithGroupsMapper siegeWithGroupsMapper ;
 
     @Autowired
     private final ManagerMapper managerMapper;
@@ -78,27 +84,18 @@ public class GroupService {
         );
     }
 
-    public ApiListResponse<GroupListDTO> getGroupsBySiege(Long siegeId, String nameFilter, String codeFilter) {
+    public ApiListResponse<SiegeWithGroupsDTO> getGroupsBySiege(Long siegeId, String nameFilter, String codeFilter) {
         Siege siege = siegeRepository.findById(siegeId)
                 .orElseThrow(() -> new IllegalArgumentException("Siege not found with id: " + siegeId));
 
-        List<Group> groups = groupRepository.findBySiege(siege);
+        SiegeWithGroupsDTO dto = siegeWithGroupsMapper.toDTO(siege, nameFilter, codeFilter);
 
-        List<Group> filtered = groups.stream()
-                .filter(g -> nameFilter == null || g.getName().toLowerCase().contains(nameFilter.toLowerCase()))
-                .filter(g -> codeFilter == null || g.getCode().toLowerCase().contains(codeFilter.toLowerCase()))
-                .collect(Collectors.toList());
-
-        List<GroupListDTO> dtos = filtered.stream()
-                .map(groupMapper::toDTO)
-                .collect(Collectors.toList());
-
-        ApiListResponse<GroupListDTO> response = new ApiListResponse<>();
+        ApiListResponse<SiegeWithGroupsDTO> response = new ApiListResponse<>();
         response.setStatus("success");
         response.setMessage("Récupération réussie");
-        response.setData(dtos);
-        response.setRecordsTotal(groups.size());
-        response.setRecordsFiltered(filtered.size());
+        response.setData(List.of(dto));
+        response.setRecordsTotal(siege.getGroups().size());
+        response.setRecordsFiltered(dto.getGroupsCount());
 
         return response;
     }
@@ -114,8 +111,10 @@ public class GroupService {
     public GroupMembersDTO getGroupMembers(Long id) {
         Group group = groupRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Group not found"));
+
         return mapper.toMembersDTO(group);
     }
+
 
     /* ================= Update Group Members ================= */
     @Transactional

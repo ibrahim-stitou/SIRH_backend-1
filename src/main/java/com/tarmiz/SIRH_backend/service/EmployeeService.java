@@ -5,12 +5,10 @@ import com.tarmiz.SIRH_backend.exception.BusinessException.*;
 import com.tarmiz.SIRH_backend.exception.TechnicalException.TechnicalException;
 import com.tarmiz.SIRH_backend.mapper.EmployeeMapper.EmployeeCreateMapper;
 import com.tarmiz.SIRH_backend.mapper.EmployeeMapper.EmployeeDetailsMapper;
+import com.tarmiz.SIRH_backend.mapper.EmployeeMapper.EmployeeSimpleMapper;
 import com.tarmiz.SIRH_backend.mapper.EmployeeMapper.EmployeesListMapper;
 import com.tarmiz.SIRH_backend.model.DTO.ApiListResponse;
-import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeCreateDTO;
-import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeDetailsDTO;
-import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeeIdNameDTO;
-import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.EmployeesListDTO;
+import com.tarmiz.SIRH_backend.model.DTO.EmployeeDTOs.*;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Group;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Department;
 import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Employee;
@@ -33,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +45,24 @@ public class EmployeeService {
     private final EmployeeCreateMapper employeeCreateMapper;
 
     private final GroupRepository groupRepository ;
+    private final EmployeeSimpleMapper employeeSimpleMapper;
+
+    public ApiListResponse<EmployeeSimpleDTO> getSimpleList() {
+        List<Employee> employees = employeeRepository.findAll();
+
+        List<EmployeeSimpleDTO> dtos = employees.stream()
+                .map(employeeSimpleMapper::toDTO)
+                .collect(Collectors.toList());
+
+        ApiListResponse<EmployeeSimpleDTO> response = new ApiListResponse<>();
+        response.setStatus("success");
+        response.setMessage("Récupération réussie");
+        response.setData(dtos);
+        response.setRecordsTotal(dtos.size());
+        response.setRecordsFiltered(dtos.size());
+
+        return response;
+    }
 
     // ------------------------- GET EMPLOYEE -------------------------
     @Transactional(readOnly = true)
