@@ -1,8 +1,10 @@
 package com.tarmiz.SIRH_backend.controller;
 
 
+import com.tarmiz.SIRH_backend.exception.BusinessException.BusinessException;
 import com.tarmiz.SIRH_backend.model.DTO.ApiListResponse;
 import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.GroupListDTO;
+import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.GroupMembersDTO;
 import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.UpdateGroupMembersDTO;
 import com.tarmiz.SIRH_backend.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,11 +56,18 @@ public class GroupsController {
     }
 
     @PutMapping("/{id}/members")
-    public ResponseEntity<?> updateGroupMembers(@PathVariable Long id, @RequestBody UpdateGroupMembersDTO body) {
+    public ResponseEntity<?> updateGroupMembers(
+            @PathVariable Long id,
+            @RequestBody UpdateGroupMembersDTO body) {
+
         try {
-            return ResponseEntity.ok(groupService.updateGroupMembers(id, body.getAdd(), body.getRemove()));
+            UpdateGroupMembersDTO updated = groupService.updateGroupMembers(id, body);
+            return ResponseEntity.ok(updated);
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("status", "error", "message", e.getMessage()));
+        } catch (BusinessException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("status", "error", "message", e.getMessage()));
         }
     }

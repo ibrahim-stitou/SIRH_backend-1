@@ -7,10 +7,7 @@ import com.tarmiz.SIRH_backend.mapper.CompanyHierarchyMappers.GroupMapper;
 import com.tarmiz.SIRH_backend.mapper.CompanyHierarchyMappers.ManagerMapper;
 import com.tarmiz.SIRH_backend.mapper.CompanyHierarchyMappers.SiegeWithGroupsMapper;
 import com.tarmiz.SIRH_backend.model.DTO.ApiListResponse;
-import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.GroupDetailsDTO;
-import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.GroupListDTO;
-import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.GroupMembersDTO;
-import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.SiegeWithGroupsDTO;
+import com.tarmiz.SIRH_backend.model.DTO.CompanyHierarchyDTOs.*;
 import com.tarmiz.SIRH_backend.model.DTO.ParamsDTOs.ManagersDTO;
 import com.tarmiz.SIRH_backend.model.entity.EmployeeInfos.Employee;
 import com.tarmiz.SIRH_backend.model.entity.CompanyHierarchy.Group;
@@ -118,49 +115,64 @@ public class GroupService {
 
     /* ================= Update Group Members ================= */
     @Transactional
-    public Map<String, Object> updateGroupMembers(Long groupId, List<Long> add, List<Long> remove) {
+    public UpdateGroupMembersDTO updateGroupMembers(Long groupId, UpdateGroupMembersDTO body) {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new NoSuchElementException("Group not found"));
 
-        List<Long> added = new ArrayList<>();
-        List<Long> removed = new ArrayList<>();
+        // IDs sélectionnés côté frontend
+        Set<Long> selectedIds = body.getMembers().stream()
+                .map(UpdateGroupMembersDTO.MemberDTO::getEmployeeId)
+                .collect(Collectors.toSet());
 
-        if (add != null) {
-            for (Long empId : add) {
-                Employee e = employeeRepository.findById(empId)
-                        .orElseThrow(() -> new NoSuchElementException("Employee not found: " + empId));
-                if (e.getGroup() != null) {
-                    throw new BusinessException(
-                            "Employee " + empId + " already belongs to a group");
-                }
-                group.getEmployees().add(e);
-                e.setGroup(group);
-                added.add(empId);
+        // IDs existants côté backend
+        Set<Long> existingIds = group.getEmployees().stream()
+                .map(Employee::getId)
+                .collect(Collectors.toSet());
+
+        // IDs à ajouter et à retirer
+        List<Long> addIds = selectedIds.stream()
+                .filter(id -> !existingIds.contains(id))
+                .toList();
+
+        List<Long> removeIds = existingIds.stream()
+                .filter(id -> !selectedIds.contains(id))
+                .toList();
+
+        // Ajouter les nouveaux membres
+        for (Long empId : addIds) {
+            Employee e = employeeRepository.findById(empId)
+                    .orElseThrow(() -> new NoSuchElementException("Employee not found: " + empId));
+            if (e.getGroup() != null && !e.getGroup().equals(group)) {
+                throw new BusinessException("Employee " + empId + " already belongs to another group");
             }
+            e.setGroup(group);
+            group.getEmployees().add(e);
         }
 
-        if (remove != null) {
-            for (Long empId : remove) {
-                Employee e = employeeRepository.findById(empId)
-                        .orElseThrow(() -> new NoSuchElementException("Employee not found: " + empId));
-                if (!group.equals(e.getGroup())) {
-                    throw new BusinessException(
-                            "Employee " + empId + " does not belong to group " + groupId);
-                }
-                group.getEmployees().remove(e);
-                e.setGroup(null);
-                removed.add(empId);
+        // Retirer les membres décochés
+        for (Long empId : removeIds) {
+            Employee e = employeeRepository.findById(empId)
+                    .orElseThrow(() -> new NoSuchElementException("Employee not found: " + empId));
+            if (!group.equals(e.getGroup())) {
+                throw new BusinessException("Employee " + empId + " does not belong to this group");
             }
+            e.setGroup(null);
+            group.getEmployees().remove(e);
         }
 
         groupRepository.save(group);
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("groupId", groupId);
-        result.put("added", added);
-        result.put("removed", removed);
-        log.info("Updated group members for group {}", groupId);
-        return result;
+        // Return updated members list
+        List<UpdateGroupMembersDTO.MemberDTO> updatedMembers = group.getEmployees().stream()
+                .map(e -> {
+                    UpdateGroupMembersDTO.MemberDTO dto = new UpdateGroupMembersDTO.MemberDTO();
+                    dto.setEmployeeId(e.getId());
+                    return dto;
+                }).toList();
+
+        UpdateGroupMembersDTO responseDTO = new UpdateGroupMembersDTO();
+        responseDTO.setMembers(updatedMembers);
+        return responseDTO;
     }
 
     /* ================= Delete Group ================= */

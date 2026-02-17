@@ -8,6 +8,11 @@ import java.util.List;
 @Getter
 @Setter
 public class UpdateGroupMembersDTO {
-    private List<Long> add;
-    private List<Long> remove;
+    private List<MemberDTO> members;
+
+    @Getter
+    @Setter
+    public static class MemberDTO {
+        private Long employeeId;
+    }
 }
